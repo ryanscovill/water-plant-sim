@@ -1,4 +1,5 @@
 import type { ProcessState } from './ProcessState';
+import { createInitialState } from './ProcessState';
 import { config } from './config';
 
 interface HistorianPoint {
@@ -54,8 +55,12 @@ export class Historian {
       .map((p) => ({ timestamp: p.timestamp, value: p.values[tag] ?? 0 }));
   }
 
+  clear(): void {
+    this.buffer = [];
+  }
+
   getAvailableTags(): string[] {
-    if (this.buffer.length === 0) return Object.keys(extractTagValues({ } as ProcessState));
+    if (this.buffer.length === 0) return Object.keys(extractTagValues(createInitialState()));
     return Object.keys(this.buffer[0].values);
   }
 }

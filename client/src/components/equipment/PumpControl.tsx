@@ -26,7 +26,7 @@ export function PumpControl({ pumpId, status, label }: PumpControlProps) {
         <span className="text-sm font-mono text-gray-300">
           {status.fault ? 'FAULT' : status.running ? 'RUNNING' : 'STOPPED'}
         </span>
-        <span className="text-xs text-gray-500 ml-auto">{status.runHours.toFixed(0)} hrs</span>
+        <span className="text-xs text-gray-300 ml-auto">{status.runHours.toFixed(0)} hrs</span>
       </div>
 
       <div className="grid grid-cols-2 gap-2">
@@ -34,21 +34,21 @@ export function PumpControl({ pumpId, status, label }: PumpControlProps) {
           id="ctrl-pump-start"
           onClick={() => sendCommand('start')}
           disabled={status.running && !status.fault}
-          className="px-3 py-2 bg-green-700 hover:bg-green-600 disabled:bg-gray-700 disabled:text-gray-500 text-white text-sm rounded font-semibold"
+          className="px-3 py-2 bg-green-700 hover:bg-green-600 disabled:bg-gray-700 disabled:text-gray-500 text-white text-sm rounded font-semibold cursor-pointer disabled:cursor-not-allowed"
         >
           START
         </button>
         <button
           onClick={() => sendCommand('stop')}
           disabled={!status.running}
-          className="px-3 py-2 bg-red-700 hover:bg-red-600 disabled:bg-gray-700 disabled:text-gray-500 text-white text-sm rounded font-semibold"
+          className="px-3 py-2 bg-red-700 hover:bg-red-600 disabled:bg-gray-700 disabled:text-gray-500 text-white text-sm rounded font-semibold cursor-pointer disabled:cursor-not-allowed"
         >
           STOP
         </button>
       </div>
 
       <div>
-        <label className="text-xs text-gray-400 block mb-1">Speed: {speed}%</label>
+        <label className="text-xs text-gray-300 block mb-1">Speed: {speed}%</label>
         <input
           type="range" min="0" max="100" value={speed}
           onChange={(e) => setSpeed(Number(e.target.value))}
@@ -58,7 +58,7 @@ export function PumpControl({ pumpId, status, label }: PumpControlProps) {
         />
       </div>
 
-      <div className="text-xs text-gray-500 font-mono">
+      <div className="text-xs text-gray-400 font-mono">
         <div>Tag: {label}</div>
         <div>ID: {pumpId}</div>
       </div>

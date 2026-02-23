@@ -9,6 +9,7 @@ import { AlarmsPage } from './pages/AlarmsPage';
 import { TrendsPage } from './pages/TrendsPage';
 import { ScenariosPage } from './pages/ScenariosPage';
 import { TutorialsPage } from './pages/TutorialsPage';
+import { HistoryPage } from './pages/HistoryPage';
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
           <Route path="/trends" element={<TrendsPage />} />
           <Route path="/scenarios" element={<ScenariosPage />} />
           <Route path="/tutorials" element={<TutorialsPage />} />
+          <Route path="/history" element={<HistoryPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

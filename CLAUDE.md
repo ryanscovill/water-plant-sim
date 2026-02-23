@@ -20,6 +20,45 @@ npm run test:ui                       # interactive UI mode
 npm run test:report                   # open last HTML report
 ```
 
+## Unit Tests (Vitest)
+
+**Unit tests** (`cd client`)
+```bash
+npm run test:unit          # single pass, CI-safe
+npm run test:unit:watch    # watch mode during development
+```
+
+Tests live in `client/src/simulation/__tests__/`. They cover the pure TypeScript simulation layer only — no DOM, no React, no browser environment.
+
+## TDD Mandate
+
+**All new simulation logic must be test-driven.** The workflow:
+
+1. Write a failing test that captures the required behaviour.
+2. Implement the minimum code to make the test pass.
+3. Refactor if needed, keeping tests green.
+
+Applies to:
+- New functions in `utils.ts`
+- New or changed stage physics models
+- New alarm thresholds added to `config.ts`
+- New methods on `AlarmManager`, `Historian`, or `ScenarioEngine`
+
+Do **not** add logic to the simulation layer without a corresponding unit test.
+
+## Simulation standards reference
+
+All alarm thresholds and process constants are verified against EPA SWTR (40 CFR 141), AWWA, and Ten States Standards (2022). The full reference table is in **`docs/water-treatment-standards.md`**.
+
+Key regulatory limits encoded in `config.ts`:
+- **Filter effluent H/HH**: 0.3 / 0.5 NTU — LT2ESWTR 95th-percentile limit / individual filter action level
+- **Plant Cl₂ HH**: 4.0 mg/L — EPA MRDL (40 CFR 141.65)
+- **Dist. Cl₂ LL**: 0.2 mg/L — EPA SWTR minimum (40 CFR 141.72)
+- **pH LL/HH**: 6.5 / 8.5 — EPA Secondary MCL bounds
+- **Fluoride L**: 0.7 mg/L — HHS/PHS optimal level (2015)
+
+Shared calculation primitives (`clamp`, `firstOrderLag`, `accumulateRunHours`, `rampDoseRate`) live in `client/src/simulation/utils.ts`.
+
 ## Architecture
 
 ### Layout
@@ -76,3 +115,26 @@ Each HMI (`IntakeHMI`, `CoagFloccHMI`, `SedimentationHMI`, `DisinfectionHMI`) fo
 - **Single worker, serial** — suites share simulation state in the browser session, so state can bleed between tests.
 - `waitForLive(page, url)` (from `tests/helpers/`) navigates to a page and waits up to 15 s for the `LIVE` indicator before making assertions.
 - Playwright launches only the Vite dev server; no backend needed.
+
+### Test output — everything goes to `screenshots/`
+
+All test artifacts are routed to the root-level `screenshots/` directory. Do **not** create extra output directories inside `tests/`.
+
+```
+screenshots/
+  *.png              # HMI screenshots saved by spec 13 (human review)
+  _artifacts/        # failure screenshots (created only on test failures)
+  _report/           # HTML report (created by npm run test:report)
+```
+
+### SPA navigation in tests
+When a test performs HMI actions and then needs to verify results on another page, use **SPA navigation** (clicking a sidebar/nav link) rather than `page.goto()`. `page.goto()` triggers a full page reload which wipes all in-memory Zustand store state. For example:
+
+```typescript
+// ✗ Wrong — reloads the page, clears Zustand store
+await page.goto('/history');
+
+// ✓ Correct — client-side navigation, store state is preserved
+await page.locator('#nav-history').click();
+await expect(page.locator('h2').first()).toContainText('OPERATOR HISTORY');
+```

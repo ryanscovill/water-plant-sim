@@ -10,6 +10,7 @@ interface AlarmStore {
   acknowledgeAlarm: (id: string) => void;
   acknowledgeAll: () => void;
   addHistory: (alarm: Alarm) => void;
+  resetAlarms: () => void;
 }
 
 export const useAlarmStore = create<AlarmStore>((set) => ({
@@ -48,4 +49,6 @@ export const useAlarmStore = create<AlarmStore>((set) => ({
 
   addHistory: (alarm) =>
     set((s) => ({ history: [alarm, ...s.history].slice(0, 500) })),
+
+  resetAlarms: () => set({ alarms: [], history: [] }),
 }));

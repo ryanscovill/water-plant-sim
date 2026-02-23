@@ -1,4 +1,4 @@
-import { Wifi, WifiOff } from 'lucide-react';
+import { Wifi, WifiOff, RotateCcw } from 'lucide-react';
 import { useSimulationStore } from '../../store/useSimulationStore';
 import { useAlarmStore } from '../../store/useAlarmStore';
 import { getEngine } from '../../simulation/engine';
@@ -11,6 +11,10 @@ export function Navbar() {
 
   const changeSpeed = (speed: number) => {
     getEngine().applyControl('setpoint', { tagId: 'simSpeed', value: speed });
+  };
+
+  const resetSim = () => {
+    getEngine().reset();
   };
 
   return (
@@ -40,6 +44,14 @@ export function Navbar() {
             {s}x
           </button>
         ))}
+        <button
+          onClick={resetSim}
+          title="Reset simulation"
+          className="ml-1 flex items-center gap-1 px-2 py-0.5 rounded text-xs font-mono bg-gray-800 text-gray-400 hover:bg-red-900 hover:text-red-300"
+        >
+          <RotateCcw size={11} />
+          RESET
+        </button>
       </div>
 
       {/* Active alarms indicator */}

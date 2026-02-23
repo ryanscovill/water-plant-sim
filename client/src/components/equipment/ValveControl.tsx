@@ -31,21 +31,21 @@ export function ValveControl({ valveId, status, label }: ValveControlProps) {
         <button
           onClick={() => sendCommand('open')}
           disabled={status.open && status.position === 100}
-          className="px-3 py-2 bg-green-700 hover:bg-green-600 disabled:bg-gray-700 disabled:text-gray-500 text-white text-sm rounded font-semibold"
+          className="px-3 py-2 bg-green-700 hover:bg-green-600 disabled:bg-gray-700 disabled:text-gray-500 text-white text-sm rounded font-semibold cursor-pointer disabled:cursor-not-allowed"
         >
           OPEN
         </button>
         <button
           onClick={() => sendCommand('close')}
           disabled={!status.open}
-          className="px-3 py-2 bg-red-700 hover:bg-red-600 disabled:bg-gray-700 disabled:text-gray-500 text-white text-sm rounded font-semibold"
+          className="px-3 py-2 bg-red-700 hover:bg-red-600 disabled:bg-gray-700 disabled:text-gray-500 text-white text-sm rounded font-semibold cursor-pointer disabled:cursor-not-allowed"
         >
           CLOSE
         </button>
       </div>
 
       <div>
-        <label className="text-xs text-gray-400 block mb-1">Position: {position}%</label>
+        <label className="text-xs text-gray-300 block mb-1">Position: {position}%</label>
         <input
           type="range" min="0" max="100" value={position}
           onChange={(e) => setPosition(Number(e.target.value))}
@@ -55,7 +55,7 @@ export function ValveControl({ valveId, status, label }: ValveControlProps) {
         />
       </div>
 
-      <div className="text-xs text-gray-500 font-mono">
+      <div className="text-xs text-gray-400 font-mono">
         <div>Tag: {label}</div>
         <div>ID: {valveId}</div>
       </div>

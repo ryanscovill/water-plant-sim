@@ -99,7 +99,7 @@ export function createInitialState(): ProcessState {
     running: true,
     simSpeed: 1,
     intake: {
-      rawWaterFlow: 5.2,
+      rawWaterFlow: 3.375,  // pump1 at 75% × 4.5 MGD max
       intakePump1: { running: true, fault: false, speed: 75, runHours: 1240 },
       intakePump2: { running: false, fault: false, speed: 0, runHours: 860 },
       screenDiffPressure: 1.8,
@@ -110,7 +110,7 @@ export function createInitialState(): ProcessState {
       sourceTemperature: 16,
       sourcePH: 7.2,
       sourceColor: 5,
-      naturalInflow: 0.05,
+      naturalInflow: 0.07,  // ft/s equivalent; equilibrium at rawWaterFlow ≈ 3.5 MGD
     },
     coagulation: {
       alumDoseRate: 18.0,

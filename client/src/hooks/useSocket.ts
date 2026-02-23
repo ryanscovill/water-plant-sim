@@ -3,7 +3,9 @@ import { getEngine } from '../simulation/engine';
 import { useSimulationStore } from '../store/useSimulationStore';
 import { useAlarmStore } from '../store/useAlarmStore';
 import { useScenarioStore } from '../store/useScenarioStore';
+import { useEventStore } from '../store/useEventStore';
 import type { ProcessState, Alarm } from '../types/process';
+import type { OperatorEvent } from '../store/useEventStore';
 
 export function useSocket() {
   const setState = useSimulationStore((s) => s.setState);
@@ -11,11 +13,17 @@ export function useSocket() {
   const setAlarms = useAlarmStore((s) => s.setAlarms);
   const addAlarm = useAlarmStore((s) => s.addAlarm);
   const clearAlarm = useAlarmStore((s) => s.clearAlarm);
+  const resetAlarms = useAlarmStore((s) => s.resetAlarms);
   const setActiveScenario = useScenarioStore((s) => s.setActiveScenario);
+  const addEvent = useEventStore((s) => s.addEvent);
 
   useEffect(() => {
     const engine = getEngine();
     setConnected(true);
+
+    const onOperatorEvent = (evt: unknown) => {
+      addEvent(evt as OperatorEvent);
+    };
 
     const onStateUpdate = (state: unknown) => {
       const s = state as ProcessState;
@@ -32,14 +40,22 @@ export function useSocket() {
       clearAlarm(alarm as Alarm);
     };
 
+    const onReset = () => {
+      resetAlarms();
+    };
+
     engine.on('state:update', onStateUpdate);
     engine.on('alarm:new', onAlarmNew);
     engine.on('alarm:cleared', onAlarmCleared);
+    engine.on('simulation:reset', onReset);
+    engine.on('operator:event', onOperatorEvent);
 
     return () => {
       engine.off('state:update', onStateUpdate);
       engine.off('alarm:new', onAlarmNew);
       engine.off('alarm:cleared', onAlarmCleared);
+      engine.off('simulation:reset', onReset);
+      engine.off('operator:event', onOperatorEvent);
     };
-  }, [setState, setConnected, setAlarms, addAlarm, clearAlarm, setActiveScenario]);
+  }, [setState, setConnected, setAlarms, addAlarm, clearAlarm, resetAlarms, setActiveScenario, addEvent]);
 }

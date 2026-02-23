@@ -22,7 +22,7 @@ export function ChemFeed({ status, doseRate, unit, label, id, onClick, x = 0, y 
       data-selected={selected ? 'true' : undefined}>
       {/* Clickable ring indicator */}
       {onClick && (
-        <rect x="-19" y="-31" width="38" height="55" rx="4" fill="none" stroke="#22d3ee"
+        <rect x="-19" y="-31" width="38" height="55" rx="4" fill="transparent" stroke="#22d3ee"
           strokeWidth="1.5" strokeDasharray="5,3" className="interactive-ring" />
       )}
       {/* Chemical drum */}

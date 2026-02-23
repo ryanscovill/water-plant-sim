@@ -28,7 +28,7 @@ export function Pump({ status, label, id, onClick, x = 0, y = 0, selected }: Pum
     >
       {/* Clickable ring indicator */}
       {onClick && (
-        <circle cx="0" cy="0" r="23" fill="none" stroke="#22d3ee" strokeWidth="1.5"
+        <circle cx="0" cy="0" r="23" fill="transparent" stroke="#22d3ee" strokeWidth="1.5"
           strokeDasharray="5,3" className="interactive-ring" />
       )}
       {/* Pump body circle */}

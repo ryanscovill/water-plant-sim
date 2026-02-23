@@ -76,7 +76,7 @@ export class SimulationEngine {
       disinfection: nextDis,
     };
 
-    const { newAlarms, clearedAlarms } = this.alarmManager.evaluate(preAlarmState);
+    const { newAlarms, clearedAlarms, valueUpdates } = this.alarmManager.evaluate(preAlarmState);
 
     let updatedAlarms = [...preAlarmState.alarms];
     for (const alarm of newAlarms) {
@@ -85,6 +85,11 @@ export class SimulationEngine {
     for (const cleared of clearedAlarms) {
       updatedAlarms = updatedAlarms.map((a) =>
         a.id === cleared.id ? { ...a, active: false, clearedAt: cleared.clearedAt } : a
+      );
+    }
+    for (const update of valueUpdates) {
+      updatedAlarms = updatedAlarms.map((a) =>
+        a.id === update.id ? { ...a, value: update.value } : a
       );
     }
     updatedAlarms = updatedAlarms.filter(
@@ -112,6 +117,7 @@ export class SimulationEngine {
   }
 
   applyControl(type: string, payload: Record<string, unknown>): void {
+    const description = this.buildEventDescription(type, payload); // read this.state BEFORE mutation
     switch (type) {
       case 'pump': {
         const { pumpId, command, value } = payload as { pumpId: string; command: string; value?: number };
@@ -163,7 +169,127 @@ export class SimulationEngine {
         break;
       }
     }
+    this.emit('operator:event', {
+      id: crypto.randomUUID(),
+      timestamp: new Date().toISOString(),
+      type,
+      description,
+    });
     this.emit('state:update', this.state);
+  }
+
+  private getPumpById(pumpId: string): { running: boolean; speed: number } | null {
+    const s = this.state;
+    switch (pumpId) {
+      case 'intakePump1':   return s.intake.intakePump1;
+      case 'intakePump2':   return s.intake.intakePump2;
+      case 'alumPump':      return s.coagulation.alumPumpStatus;
+      case 'rapidMixer':    return s.coagulation.rapidMixerStatus;
+      case 'slowMixer':     return s.coagulation.slowMixerStatus;
+      case 'sludgePump':    return s.sedimentation.sludgePumpStatus;
+      case 'clarifierRake': return s.sedimentation.clarifierRakeStatus;
+      case 'chlorinePump':  return s.disinfection.chlorinePumpStatus;
+      case 'fluoridePump':  return s.disinfection.fluoridePumpStatus;
+      case 'uvSystem':      return s.disinfection.uvSystemStatus;
+      default:              return null;
+    }
+  }
+
+  private buildEventDescription(type: string, payload: Record<string, unknown>): string {
+    const PUMP_NAMES: Record<string, string> = {
+      intakePump1:  'Intake Pump 1 (P-101)',
+      intakePump2:  'Intake Pump 2 (P-102)',
+      alumPump:     'Alum Pump',
+      rapidMixer:   'Rapid Mixer',
+      slowMixer:    'Slow Mixer',
+      sludgePump:   'Sludge Pump',
+      clarifierRake:'Clarifier Rake',
+      chlorinePump: 'Chlorine Pump',
+      fluoridePump: 'Fluoride Pump',
+      uvSystem:     'UV System',
+    };
+    const VALVE_NAMES: Record<string, string> = {
+      intakeValve: 'Intake Valve (XV-101)',
+    };
+
+    switch (type) {
+      case 'pump': {
+        const { pumpId, command, value } = payload as { pumpId: string; command: string; value?: number };
+        const name = PUMP_NAMES[pumpId] ?? pumpId;
+        const pump = this.getPumpById(pumpId);
+        if (command === 'start') {
+          const before = pump?.running ? 'running' : 'stopped';
+          return `${name}: ${before} → running`;
+        }
+        if (command === 'stop') {
+          const before = pump?.running ? 'running' : 'stopped';
+          return `${name}: ${before} → stopped`;
+        }
+        if (command === 'setSpeed') {
+          const before = pump?.speed ?? 0;
+          const after = Math.max(0, Math.min(100, value ?? before));
+          return `${name} speed: ${before}% → ${after}%`;
+        }
+        return `${name} ${command}`;
+      }
+      case 'valve': {
+        const { valveId, command, value } = payload as { valveId: string; command: string; value?: number };
+        const name = VALVE_NAMES[valveId] ?? valveId;
+        const valve = valveId === 'intakeValve' ? this.state.intake.intakeValve : null;
+        if (command === 'open') {
+          const before = valve?.open ? 'open' : 'closed';
+          return `${name}: ${before} → open`;
+        }
+        if (command === 'close') {
+          const before = valve?.open ? 'open' : 'closed';
+          return `${name}: ${before} → closed`;
+        }
+        if (command === 'setPosition') {
+          const before = valve?.position ?? 0;
+          const after = Math.max(0, Math.min(100, value ?? before));
+          return `${name} position: ${before}% → ${after}%`;
+        }
+        return `${name} ${command}`;
+      }
+      case 'setpoint': {
+        const { tagId, value } = payload as { tagId: string; value: number };
+        const s = this.state;
+        switch (tagId) {
+          case 'alumDoseSetpoint':
+            return `Alum dose setpoint: ${s.coagulation.alumDoseSetpoint.toFixed(1)} → ${Number(value).toFixed(1)} mg/L`;
+          case 'chlorineDoseSetpoint':
+            return `Chlorine dose: ${s.disinfection.chlorineDoseSetpoint.toFixed(1)} → ${Number(value).toFixed(1)} mg/L`;
+          case 'fluorideDoseSetpoint':
+            return `Fluoride dose: ${s.disinfection.fluorideDoseSetpoint.toFixed(2)} → ${Number(value).toFixed(2)} mg/L`;
+          case 'simSpeed':
+            return `Simulation speed: ${s.simSpeed}× → ${value}×`;
+          case 'sourceTurbidityBase':
+            return `Source turbidity: ${s.intake.sourceTurbidityBase.toFixed(1)} → ${Number(value).toFixed(1)} NTU`;
+          case 'clearScreen':
+            return 'Intake screen cleared';
+          case 'pHAdjustDoseRate':
+            return `pH adjust dose: ${s.coagulation.pHAdjustDoseRate.toFixed(1)} → ${Number(value).toFixed(1)} mg/L`;
+          case 'sourceTemperature':
+            return `Source temperature: ${s.intake.sourceTemperature.toFixed(1)} → ${Number(value).toFixed(1)} °C`;
+          case 'sourcePH':
+            return `Source pH: ${s.intake.sourcePH.toFixed(1)} → ${Number(value).toFixed(1)}`;
+          case 'sourceColor':
+            return `Source color: ${s.intake.sourceColor.toFixed(0)} → ${Number(value).toFixed(0)} CU`;
+          case 'naturalInflow':
+            return `Natural inflow: ${s.intake.naturalInflow.toFixed(2)} → ${Number(value).toFixed(2)}`;
+          default:
+            return `Setpoint ${tagId} → ${value}`;
+        }
+      }
+      case 'backwash': {
+        const { command } = payload as { command: string };
+        return command === 'start' ? 'Filter backwash started' : 'Filter backwash aborted';
+      }
+      case 'acknowledgeAlarm': return 'Alarm acknowledged';
+      case 'acknowledgeAll':   return 'All alarms acknowledged';
+      case 'clearScreen':      return 'Intake screen cleared';
+      default:                 return type;
+    }
   }
 
   private applyPumpControl(
@@ -266,6 +392,16 @@ export class SimulationEngine {
       default:
         return state;
     }
+  }
+
+  reset(): void {
+    this.state = createInitialState();
+    this.alarmManager = new AlarmManager();
+    this.historian.clear();
+    this.scenarioEngine = new ScenarioEngine();
+    this.simulatedTime = Date.now();
+    this.emit('simulation:reset');
+    this.emit('state:update', this.state);
   }
 
   injectScenario(modifications: (state: ProcessState) => ProcessState): void {

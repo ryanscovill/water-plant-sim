@@ -2,7 +2,7 @@
  * HMI Screenshot + Overlap Test Suite
  *
  * For each HMI screen this spec:
- *  1. Takes a named screenshot of the main content area (saved to tests/screenshots/)
+ *  1. Takes a named screenshot of the main content area (saved to screenshots/)
  *     for human review — not compared pixel-by-pixel since values are live/changing.
  *  2. Checks that every labeled SVG element fits within the SVG container
  *     (nothing rendered outside the SVG viewport / clipped by overflow:hidden).

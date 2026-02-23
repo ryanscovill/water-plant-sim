@@ -36,10 +36,11 @@ function getPriority(condition: 'HH' | 'H' | 'L' | 'LL'): 'CRITICAL' | 'HIGH' | 
 export class AlarmManager {
   private alarmHistory: Alarm[] = [];
 
-  evaluate(state: ProcessState): { newAlarms: Alarm[]; clearedAlarms: Alarm[] } {
+  evaluate(state: ProcessState): { newAlarms: Alarm[]; clearedAlarms: Alarm[]; valueUpdates: { id: string; value: number }[] } {
     const tagValues = getTagValues(state);
     const newAlarms: Alarm[] = [];
     const clearedAlarms: Alarm[] = [];
+    const valueUpdates: { id: string; value: number }[] = [];
 
     for (const { tag, value, description } of tagValues) {
       const thresholds = (config.alarmThresholds as Record<string, { ll?: number; l?: number; h?: number; hh?: number }>)[tag];
@@ -71,6 +72,8 @@ export class AlarmManager {
           };
           newAlarms.push(alarm);
           this.alarmHistory.push({ ...alarm });
+        } else if (check.active && existing && existing.active) {
+          valueUpdates.push({ id: alarmId, value });
         } else if (!check.active && existing && existing.active) {
           clearedAlarms.push({ ...existing, active: false, clearedAt: new Date().toISOString() });
           const histIdx = this.alarmHistory.findIndex(a => a.id === alarmId && a.active);
@@ -82,7 +85,7 @@ export class AlarmManager {
       }
     }
 
-    return { newAlarms, clearedAlarms };
+    return { newAlarms, clearedAlarms, valueUpdates };
   }
 
   getHistory(): Alarm[] {

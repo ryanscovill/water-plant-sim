@@ -1,7 +1,7 @@
 import { NavLink } from 'react-router-dom';
 import {
   LayoutDashboard, Droplets, FlaskConical, Layers, Waves,
-  Bell, TrendingUp, Play, BookOpen,
+  Bell, TrendingUp, Play, BookOpen, History,
 } from 'lucide-react';
 import { useAlarmStore } from '../../store/useAlarmStore';
 
@@ -14,6 +14,7 @@ const navItems = [
   null, // divider
   { to: '/alarms', label: 'Alarms', icon: Bell, id: 'nav-alarms' },
   { to: '/trends', label: 'Trends', icon: TrendingUp, id: 'nav-trends' },
+  { to: '/history', label: 'History', icon: History, id: 'nav-history' },
   { to: '/scenarios', label: 'Scenarios', icon: Play, id: 'nav-scenarios' },
   { to: '/tutorials', label: 'Tutorials', icon: BookOpen, id: 'nav-tutorials' },
 ];

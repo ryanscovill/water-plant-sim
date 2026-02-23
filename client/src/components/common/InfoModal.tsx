@@ -24,7 +24,6 @@ export function InfoModal({ infoKey, onClose }: InfoModalProps) {
     <div
       className="fixed inset-0 bg-black/80 flex items-start justify-center z-50 p-4 overflow-y-auto"
       style={{ paddingTop: '4rem' }}
-      onClick={onClose}
     >
       <div
         className="bg-gray-900 border border-gray-700 rounded-xl max-w-lg w-full shadow-2xl mb-8"

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import type React from 'react';
 import { useSimulationStore } from '../../store/useSimulationStore';
 import { useAlarmStore } from '../../store/useAlarmStore';
 import { Pump } from './svg/Pump';
@@ -37,16 +38,25 @@ export function IntakeHMI() {
 
   const clearScreen = () => getEngine().applyControl('setpoint', { tagId: 'clearScreen', value: 1 });
 
+  const handleSvgClick = (e: React.MouseEvent<SVGSVGElement>) => {
+    let el: Element | null = e.target as Element;
+    while (el && el !== e.currentTarget) {
+      if (el.getAttribute('data-interactive') === 'true') return;
+      el = el.parentElement;
+    }
+    setSelected(null);
+  };
+
   return (
     <div>
       <h2 className="text-gray-300 font-bold text-sm mb-3 font-mono">INTAKE — RAW WATER SUPPLY</h2>
       <div className="flex gap-3 items-start">
         <div className="flex-1 min-w-0">
-          <svg viewBox="0 0 720 320" width="100%" className="bg-gray-950 rounded border border-gray-800">
+          <svg viewBox="0 0 720 320" width="100%" className="bg-gray-950 rounded border border-gray-800" onClick={handleSvgClick}>
             <style>{`text[font-size="11"],tspan[font-size="11"]{font-size:11px}text[font-size="12"]{font-size:12px}text[font-size="13"]{font-size:13px}text[font-size="14"]{font-size:14px}`}</style>
             {/* Source — clickable to open source water quality panel */}
             <g data-interactive="true" data-selected={selected === 'source' ? 'true' : undefined} style={{ cursor: 'pointer' }} onClick={() => setSelected('source')}>
-              <rect x="8" y="140" width="62" height="36" rx="4" fill="none" stroke="#22d3ee"
+              <rect x="8" y="140" width="62" height="36" rx="4" fill="transparent" stroke="#22d3ee"
                 strokeWidth="1.5" strokeDasharray="5,3" className="interactive-ring" />
               <text x="39" y="155" textAnchor="middle" fill="#4b5563" fontSize="14" fontFamily="monospace">RIVER</text>
               <text x="39" y="169" textAnchor="middle" fill="#4b5563" fontSize="14" fontFamily="monospace">SOURCE</text>
@@ -54,18 +64,19 @@ export function IntakeHMI() {
             <SvgInfo x={67} y={143} onClick={() => setInfoKey('sourceWater')} />
 
             {/* Pipes */}
-            <Pipe x1="80" y1="160" x2="140" y2="160" flowing={intake.rawWaterFlow > 0.5} />
+            <Pipe x1="80" y1="160" x2="201" y2="160" flowing={intake.rawWaterFlow > 0.5} />
+            <Pipe x1="229" y1="160" x2="270" y2="160" flowing={intake.rawWaterFlow > 0.5} />
             {/* Split: up to P-101, down to P-102 */}
-            <Pipe x1="200" y1="160" x2="200" y2="100" flowing={intake.intakePump1.running} />
-            <Pipe x1="200" y1="160" x2="200" y2="220" flowing={intake.intakePump2.running} />
-            <Pipe x1="200" y1="100" x2="260" y2="100" flowing={intake.intakePump1.running} />
-            <Pipe x1="200" y1="220" x2="260" y2="220" flowing={intake.intakePump2.running} />
+            <Pipe x1="270" y1="160" x2="270" y2="100" flowing={intake.intakePump1.running} />
+            <Pipe x1="270" y1="160" x2="270" y2="220" flowing={intake.intakePump2.running} />
+            <Pipe x1="270" y1="100" x2="277" y2="100" flowing={intake.intakePump1.running} />
+            <Pipe x1="270" y1="220" x2="277" y2="220" flowing={intake.intakePump2.running} />
             {/* Rejoin after pumps */}
-            <Pipe x1="300" y1="100" x2="300" y2="160" flowing={intake.intakePump1.running} />
-            <Pipe x1="300" y1="220" x2="300" y2="160" flowing={intake.intakePump2.running} />
-            <Pipe x1="300" y1="160" x2="340" y2="160" flowing={intake.intakePump1.running || intake.intakePump2.running} />
-            <Pipe x1="380" y1="160" x2="470" y2="160" flowing={intake.rawWaterFlow > 0.5} />
-            <Pipe x1="520" y1="160" x2="620" y2="160" flowing={intake.rawWaterFlow > 0.5} />
+            <Pipe x1="313" y1="100" x2="313" y2="160" flowing={intake.intakePump1.running} />
+            <Pipe x1="313" y1="220" x2="313" y2="160" flowing={intake.intakePump2.running} />
+            <Pipe x1="313" y1="160" x2="397" y2="160" flowing={intake.intakePump1.running || intake.intakePump2.running} />
+            <Pipe x1="443" y1="160" x2="470" y2="160" flowing={intake.rawWaterFlow > 0.5} />
+            <Pipe x1="520" y1="160" x2="660" y2="160" flowing={intake.rawWaterFlow > 0.5} />
 
             {/* Wet well (source tank) */}
             <Tank
@@ -74,12 +85,12 @@ export function IntakeHMI() {
               currentLevel={intake.rawWaterLevel}
               unit="ft"
               label="WET WELL"
-              x={80}
+              x={110}
               y={100}
               width={55}
               height={80}
             />
-            <SvgInfo x={128} y={103} onClick={() => setInfoKey('wetWell')} />
+            <SvgInfo x={158} y={103} onClick={() => setInfoKey('wetWell')} />
 
             {/* Inlet valve */}
             <Valve
@@ -87,10 +98,11 @@ export function IntakeHMI() {
               label="XV-101"
               id="hmi-intakeValve"
               onClick={() => setSelected('intakeValve')}
-              x={160}
+              x={215}
               y={160}
               selected={selected === 'intakeValve'}
             />
+            <SvgInfo x={230} y={136} onClick={() => setInfoKey('intakeValve')} />
 
             {/* Pumps */}
             <Pump
@@ -98,30 +110,33 @@ export function IntakeHMI() {
               label="P-101"
               id="hmi-intakePump1"
               onClick={() => setSelected('pump1')}
-              x={275}
+              x={295}
               y={100}
               selected={selected === 'pump1'}
             />
+            <SvgInfo x={314} y={80} onClick={() => setInfoKey('intakePump1')} />
             <Pump
               status={intake.intakePump2}
               label="P-102"
               id="hmi-intakePump2"
               onClick={() => setSelected('pump2')}
-              x={275}
+              x={295}
               y={220}
               selected={selected === 'pump2'}
             />
+            <SvgInfo x={314} y={200} onClick={() => setInfoKey('intakePump2')} />
 
             {/* Screen diff pressure */}
             <g id="hmi-screenDP" onClick={() => setSelected('screen')} style={{ cursor: 'pointer' }} data-interactive="true" data-selected={selected === 'screen' ? 'true' : undefined}>
-              <rect x="337" y="127" width="46" height="34" rx="5" fill="none" stroke="#22d3ee"
+              <rect x="397" y="127" width="46" height="34" rx="5" fill="transparent" stroke="#22d3ee"
                 strokeWidth="1.5" strokeDasharray="5,3" className="interactive-ring" />
-              <rect x="340" y="130" width="40" height="28" rx="3" fill="#111827" stroke={intake.screenDiffPressure > 5 ? '#f59e0b' : '#374151'} strokeWidth="1.5" />
-              <text x="360" y="142" textAnchor="middle" fill="#6b7280" fontSize="11" fontFamily="monospace">SCR</text>
-              <text x="360" y="153" textAnchor="middle" fill={intake.screenDiffPressure > 5 ? '#f59e0b' : '#9ca3af'} fontSize="12" fontFamily="monospace">
+              <rect x="400" y="130" width="40" height="28" rx="3" fill="#111827" stroke={intake.screenDiffPressure > 5 ? '#f59e0b' : '#374151'} strokeWidth="1.5" />
+              <text x="420" y="142" textAnchor="middle" fill="#6b7280" fontSize="11" fontFamily="monospace">SCR</text>
+              <text x="420" y="153" textAnchor="middle" fill={intake.screenDiffPressure > 5 ? '#f59e0b' : '#9ca3af'} fontSize="12" fontFamily="monospace">
                 {intake.screenDiffPressure.toFixed(1)} PSI
               </text>
             </g>
+            <SvgInfo x={440} y={130} onClick={() => setInfoKey('intakeScreen')} />
 
             {/* Flow meter */}
             <FlowMeter
@@ -146,11 +161,11 @@ export function IntakeHMI() {
               y={115}
               alarm={getAlarm('INT-AIT-001')}
             />
-            <SvgInfo x={590} y={85} onClick={() => setInfoKey('rawTurbidity')} />
+            <SvgInfo x={647} y={97} onClick={() => setInfoKey('rawTurbidity')} />
 
             {/* To treatment label */}
-            <text x="640" y="163" fill="#4b5563" fontSize="14" fontFamily="monospace">TO</text>
-            <text x="640" y="174" fill="#4b5563" fontSize="14" fontFamily="monospace">COAG</text>
+            <text x="665" y="163" fill="#4b5563" fontSize="14" fontFamily="monospace">TO</text>
+            <text x="665" y="174" fill="#4b5563" fontSize="14" fontFamily="monospace">COAG</text>
           </svg>
         </div>
 

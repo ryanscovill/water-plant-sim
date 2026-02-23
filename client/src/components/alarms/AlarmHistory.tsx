@@ -1,6 +1,16 @@
 import { useAlarmStore } from '../../store/useAlarmStore';
+import { useNavigate } from 'react-router-dom';
+
+function tagToRoute(tag: string): string {
+  if (tag.startsWith('INT-')) return '/intake';
+  if (tag.startsWith('COG-')) return '/coagulation';
+  if (tag.startsWith('SED-') || tag.startsWith('FLT-')) return '/sedimentation';
+  if (tag.startsWith('DIS-')) return '/disinfection';
+  return '/';
+}
 
 export function AlarmHistory() {
+  const navigate = useNavigate();
   const history = useAlarmStore((s) => s.history);
 
   const exportCSV = () => {
@@ -42,22 +52,31 @@ export function AlarmHistory() {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-800">
-            {history.map((alarm, i) => (
-              <tr key={`${alarm.id}-${i}`} className="hover:bg-gray-800/50">
-                <td className="px-2 py-1 text-gray-400">{new Date(alarm.timestamp).toLocaleTimeString()}</td>
-                <td className="px-2 py-1 text-gray-300">{alarm.tag}</td>
-                <td className="px-2 py-1 text-gray-300 max-w-[200px] truncate">{alarm.description}</td>
-                <td className={`px-2 py-1 font-bold ${alarm.priority === 'CRITICAL' ? 'text-red-400' : alarm.priority === 'HIGH' ? 'text-amber-400' : 'text-yellow-300'}`}>
-                  {alarm.priority}
-                </td>
-                <td className="px-2 py-1 text-gray-300">{alarm.value.toFixed(2)}</td>
-                <td className="px-2 py-1">
-                  {alarm.active
-                    ? <span className="text-red-400">ACTIVE</span>
-                    : <span className="text-gray-500">CLEARED</span>}
-                </td>
-              </tr>
-            ))}
+            {history.map((alarm, i) => {
+              const isHigh = alarm.condition === 'H' || alarm.condition === 'HH';
+              const arrow = isHigh ? '↑' : '↓';
+              const op = isHigh ? '>' : '<';
+              return (
+                <tr
+                  key={`${alarm.id}-${i}`}
+                  className="hover:bg-gray-800/50 cursor-pointer"
+                  onClick={() => navigate(tagToRoute(alarm.tag))}
+                >
+                  <td className="px-2 py-1 text-gray-400">{new Date(alarm.timestamp).toLocaleTimeString()}</td>
+                  <td className="px-2 py-1 text-gray-300">{alarm.tag}</td>
+                  <td className="px-2 py-1 text-gray-300 max-w-[200px] truncate">{alarm.description}</td>
+                  <td className={`px-2 py-1 font-bold ${alarm.priority === 'CRITICAL' ? 'text-red-400' : alarm.priority === 'HIGH' ? 'text-amber-400' : 'text-yellow-300'}`}>
+                    {alarm.priority}
+                  </td>
+                  <td className="px-2 py-1 text-gray-300">{arrow} {alarm.value.toFixed(2)} {op} {alarm.setpoint.toFixed(2)}</td>
+                  <td className="px-2 py-1">
+                    {alarm.active
+                      ? <span className="text-red-400">ACTIVE</span>
+                      : <span className="text-gray-500">CLEARED</span>}
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
         {history.length === 0 && (

@@ -73,8 +73,8 @@ export function OverviewHMI() {
       color: 'border-cyan-700',
       headerBg: 'bg-cyan-900/30',
       values: [
-        { label: 'Cl₂ Dose', value: disinfection.chlorineDoseRate, unit: 'mg/L', alarm: null, decimals: 2 },
         { label: 'Plant Cl₂', value: disinfection.chlorineResidualPlant, unit: 'mg/L', alarm: getAlarm('DIS-AIT-001'), decimals: 2 },
+        { label: 'Dist Cl₂', value: disinfection.chlorineResidualDist, unit: 'mg/L', alarm: getAlarm('DIS-AIT-002'), decimals: 2 },
         { label: 'pH', value: disinfection.finishedWaterPH, unit: '', alarm: getAlarm('DIS-AIT-003'), decimals: 2 },
         { label: 'Clearwell', value: disinfection.clearwellLevel, unit: 'ft', alarm: null, decimals: 1 },
       ],
@@ -90,7 +90,7 @@ export function OverviewHMI() {
       <h2 className="text-gray-300 font-bold text-sm font-mono">PLANT OVERVIEW</h2>
 
       {/* Process flow arrow */}
-      <div className="flex items-center gap-2 text-xs text-gray-600 font-mono mb-2">
+      <div className="flex items-center gap-2 text-xs text-gray-400 font-mono mb-2">
         <span>RIVER</span>
         <span>→→→</span>
         <span>INTAKE</span>
