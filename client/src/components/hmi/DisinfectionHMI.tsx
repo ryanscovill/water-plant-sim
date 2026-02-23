@@ -68,14 +68,15 @@ export function DisinfectionHMI() {
 
             <Pipe x1="380" y1="170" x2="450" y2="170" flowing={flowing} />
 
-            {/* Cl2 residual at plant */}
+            {/* Cl2 residual at plant — positioned left of clearwell */}
             <AnalyzerTag tag="DIS-AIT-001" value={disinfection.chlorineResidualPlant} unit="mg/L"
-              label="Plant Cl2 Res." id="hmi-chlorineResidual" x={420} y={130}
+              label="Plant Cl2 Res." id="hmi-chlorineResidual" x={405} y={130}
               alarm={getAlarm('DIS-AIT-001')} />
-            <SvgInfo x={453} y={114} onClick={() => setInfoKey('plantChlorineResidual')} />
+            <SvgInfo x={438} y={114} onClick={() => setInfoKey('plantChlorineResidual')} />
 
             {/* Clearwell */}
             <Tank
+              id="hmi-clearwell"
               level={(disinfection.clearwellLevel / 20) * 100}
               maxLevel={20}
               currentLevel={disinfection.clearwellLevel}
@@ -88,17 +89,17 @@ export function DisinfectionHMI() {
             />
             <SvgInfo x={518} y={113} onClick={() => setInfoKey('clearwell')} />
 
-            {/* pH */}
+            {/* pH — positioned right of clearwell */}
             <AnalyzerTag tag="DIS-AIT-003" value={disinfection.finishedWaterPH} unit=""
-              label="Finished pH" id="hmi-finishedPH" x={530} y={130}
+              label="Finished pH" id="hmi-finishedPH" x={570} y={130}
               alarm={getAlarm('DIS-AIT-003')} decimals={2} />
-            <SvgInfo x={563} y={114} onClick={() => setInfoKey('finishedPH')} />
+            <SvgInfo x={603} y={114} onClick={() => setInfoKey('finishedPH')} />
 
-            {/* Fluoride */}
+            {/* Fluoride — positioned right of clearwell */}
             <AnalyzerTag tag="DIS-AIT-004" value={disinfection.fluorideResidual} unit="mg/L"
-              label="Fluoride Res." id="hmi-fluorideResidual" x={530} y={210}
+              label="Fluoride Res." id="hmi-fluorideResidual" x={570} y={210}
               alarm={getAlarm('DIS-AIT-004')} />
-            <SvgInfo x={563} y={194} onClick={() => setInfoKey('fluorideResidual')} />
+            <SvgInfo x={603} y={194} onClick={() => setInfoKey('fluorideResidual')} />
 
             {/* Distribution outlet */}
             <Pipe x1="520" y1="225" x2="625" y2="225" flowing={flowing} />
