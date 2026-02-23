@@ -2,6 +2,5 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "framework": "vite",
-  "rootDirectory": "client",
   "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
 }
