@@ -1,0 +1,43 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+build/
+
+# Vite
+.vite/
+
+# TypeScript
+*.tsbuildinfo
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+
+# Editor
+.vscode/
+*.swp
+*.swo
+
+# Test artifacts
+tests/playwright-report/
+tests/test-results/
+
+# Local screenshots
+screenshots/
+*.png
+
+# Claude local settings
+.claude/settings.local.json
+
+# MCP
+.playwright-mcp/
