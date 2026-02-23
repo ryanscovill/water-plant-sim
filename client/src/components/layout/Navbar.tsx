@@ -1,4 +1,4 @@
-import { Activity, Wifi, WifiOff } from 'lucide-react';
+import { Wifi, WifiOff } from 'lucide-react';
 import { useSimulationStore } from '../../store/useSimulationStore';
 import { useAlarmStore } from '../../store/useAlarmStore';
 import { getEngine } from '../../simulation/engine';
@@ -16,7 +16,13 @@ export function Navbar() {
   return (
     <header className="bg-gray-900 border-b border-gray-700 px-4 py-2 flex items-center gap-4">
       <div className="flex items-center gap-2">
-        <Activity size={20} className="text-blue-400" />
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="22" height="22">
+          <rect width="32" height="32" rx="6" fill="#1a1a2e"/>
+          <path d="M16 5 C16 5 8 14 8 19 a8 8 0 0 0 16 0 C24 14 16 5 16 5Z" fill="#38bdf8"/>
+          <ellipse cx="13" cy="17" rx="2" ry="3" fill="white" opacity="0.25" transform="rotate(-20 13 17)"/>
+          <path d="M22 10 a9 9 0 0 1 0 12" stroke="#60a5fa" stroke-width="1.5" fill="none" stroke-linecap="round" opacity="0.7"/>
+          <path d="M24 8 a12 12 0 0 1 0 16" stroke="#60a5fa" stroke-width="1.5" fill="none" stroke-linecap="round" opacity="0.4"/>
+        </svg>
         <span className="text-white font-bold text-sm tracking-wider">WATERWORKS SCADA TRAINER</span>
       </div>
 
