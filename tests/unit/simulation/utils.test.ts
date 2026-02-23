@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { clamp, firstOrderLag, accumulateRunHours, rampDoseRate } from '../utils';
+import { clamp, firstOrderLag, accumulateRunHours, rampDoseRate } from '../../../client/src/simulation/utils';
 
 describe('clamp', () => {
   it('returns value when within bounds', () => {

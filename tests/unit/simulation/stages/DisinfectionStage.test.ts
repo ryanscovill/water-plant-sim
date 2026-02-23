@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { DisinfectionStage } from '../../stages/DisinfectionStage';
-import { createInitialState } from '../../ProcessState';
-import type { DisinfectionState, SedimentationState, CoagulationState } from '../../ProcessState';
+import { DisinfectionStage } from '../../../../client/src/simulation/stages/DisinfectionStage';
+import { createInitialState } from '../../../../client/src/simulation/ProcessState';
+import type { DisinfectionState, SedimentationState, CoagulationState } from '../../../../client/src/simulation/ProcessState';
 
 function baseStates(): { dis: DisinfectionState; sed: SedimentationState; coag: CoagulationState } {
   const state = createInitialState();

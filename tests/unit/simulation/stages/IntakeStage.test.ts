@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { IntakeStage } from '../../stages/IntakeStage';
-import { createInitialState } from '../../ProcessState';
-import type { IntakeState } from '../../ProcessState';
+import { IntakeStage } from '../../../../client/src/simulation/stages/IntakeStage';
+import { createInitialState } from '../../../../client/src/simulation/ProcessState';
+import type { IntakeState } from '../../../../client/src/simulation/ProcessState';
 
 function baseIntake(): IntakeState {
   return createInitialState().intake;

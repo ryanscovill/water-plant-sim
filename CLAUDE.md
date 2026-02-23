@@ -11,24 +11,30 @@ npm run build     # tsc + vite build
 npm run lint      # ESLint
 ```
 
-**Tests** (`cd tests`) — Playwright auto-starts the client dev server
+**Tests** (`cd tests`)
+
+Integration tests — Playwright auto-starts the client dev server:
 ```bash
-npm test                              # all suites, headless
-npm test -- 03-intake.spec.ts         # single suite
-npm run test:headed -- 03-intake.spec.ts  # with browser visible
-npm run test:ui                       # interactive UI mode
-npm run test:report                   # open last HTML report
+npm test                                        # all suites, headless
+npm test -- integration/03-intake.spec.ts       # single suite
+npm run test:headed -- integration/03-intake.spec.ts  # with browser visible
+npm run test:ui                                 # interactive UI mode
+npm run test:report                             # open last HTML report
 ```
 
-## Unit Tests (Vitest)
-
-**Unit tests** (`cd client`)
+Unit tests — Vitest, no browser needed:
 ```bash
 npm run test:unit          # single pass, CI-safe
 npm run test:unit:watch    # watch mode during development
 ```
 
-Tests live in `client/src/simulation/__tests__/`. They cover the pure TypeScript simulation layer only — no DOM, no React, no browser environment.
+Tests are organized as:
+```
+tests/
+  integration/   Playwright e2e suites (browser, shared state)
+  unit/          Vitest unit tests (pure TS, no DOM)
+    simulation/  mirrors client/src/simulation/ layout
+```
 
 ## TDD Mandate
 

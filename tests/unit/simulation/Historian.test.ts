@@ -1,6 +1,6 @@
-import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
-import { Historian } from '../Historian';
-import { createInitialState } from '../ProcessState';
+import { describe, it, expect, beforeEach } from 'vitest';
+import { Historian } from '../../../client/src/simulation/Historian';
+import { createInitialState } from '../../../client/src/simulation/ProcessState';
 
 function makeState(tsOverride?: string) {
   const state = createInitialState();
@@ -66,17 +66,8 @@ describe('Historian', () => {
     expect(tags.length).toBeGreaterThan(0);
   });
 
-  it('ring buffer caps at maxPoints (172800)', () => {
-    // Record maxPoints + 10 entries; buffer should not grow beyond maxPoints
-    const max = 172800;
+  it('ring buffer records multiple points correctly', () => {
     const now = Date.now();
-    // Recording in bulk is slow; instead directly verify the cap with a smaller number
-    // by instantiating with a tiny buffer via monkey-patching after construction.
-    // We can't easily override maxPoints, so instead we verify the shift logic by
-    // recording many points and checking the buffer stays bounded.
-    // Use a small sample: record 5 points where cap would be 3 if we could set it.
-    // Since we can't set cap < 172800 without modifying source, just verify the
-    // buffer grows monotonically up to the point we recorded.
     const COUNT = 5;
     for (let i = 0; i < COUNT; i++) {
       const ts = new Date(now + i * 500).toISOString();

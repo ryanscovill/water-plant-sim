@@ -10,9 +10,7 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview",
-    "test:unit": "vitest run",
-    "test:unit:watch": "vitest"
+    "preview": "vite preview"
   },
   "dependencies": {
     "lucide-react": "^0.575.0",

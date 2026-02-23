@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { AlarmManager } from '../AlarmManager';
-import { createInitialState } from '../ProcessState';
-import type { ProcessState } from '../ProcessState';
+import { AlarmManager } from '../../../client/src/simulation/AlarmManager';
+import { createInitialState } from '../../../client/src/simulation/ProcessState';
+import type { ProcessState } from '../../../client/src/simulation/ProcessState';
 
 function makeState(overrides?: Partial<{
   chlorineResidualPlant: number;
