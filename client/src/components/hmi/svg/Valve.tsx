@@ -7,9 +7,10 @@ interface ValveProps {
   onClick?: () => void;
   x?: number;
   y?: number;
+  selected?: boolean;
 }
 
-export function Valve({ status, label, id, onClick, x = 0, y = 0 }: ValveProps) {
+export function Valve({ status, label, id, onClick, x = 0, y = 0, selected }: ValveProps) {
   const color = status.fault ? '#dc2626'
     : status.open ? '#16a34a'
     : '#6b7280';
@@ -21,6 +22,7 @@ export function Valve({ status, label, id, onClick, x = 0, y = 0 }: ValveProps) 
       onClick={onClick}
       style={{ cursor: onClick ? 'pointer' : 'default' }}
       data-interactive={onClick ? 'true' : undefined}
+      data-selected={selected ? 'true' : undefined}
     >
       {/* Clickable ring indicator */}
       {onClick && (

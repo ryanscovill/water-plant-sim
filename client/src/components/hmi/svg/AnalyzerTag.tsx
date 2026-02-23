@@ -21,7 +21,7 @@ export function AnalyzerTag({ tag, value, unit, label, id, x = 0, y = 0, alarm, 
 
   return (
     <g id={id} transform={`translate(${x}, ${y})`}>
-      <rect x="-35" y="-18" width="70" height="36" rx="4"
+      <rect x="-42" y="-18" width="84" height="50" rx="4"
         fill="#111827" stroke={borderColor} strokeWidth={alarm ? 2 : 1} />
       <text x="0" y="-6" textAnchor="middle" fill="#6b7280" fontSize="11" fontFamily="monospace">
         {tag}

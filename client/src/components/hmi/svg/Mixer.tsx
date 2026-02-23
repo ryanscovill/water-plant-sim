@@ -8,9 +8,10 @@ interface MixerProps {
   x?: number;
   y?: number;
   size?: number;
+  selected?: boolean;
 }
 
-export function Mixer({ status, label, id, onClick, x = 0, y = 0, size = 20 }: MixerProps) {
+export function Mixer({ status, label, id, onClick, x = 0, y = 0, size = 20, selected }: MixerProps) {
   const color = status.fault ? '#dc2626' : status.running ? '#16a34a' : '#6b7280';
   const animClass = status.running && !status.fault ? 'animate-rotate' : '';
 
@@ -21,6 +22,7 @@ export function Mixer({ status, label, id, onClick, x = 0, y = 0, size = 20 }: M
       onClick={onClick}
       style={{ cursor: onClick ? 'pointer' : 'default' }}
       data-interactive={onClick ? 'true' : undefined}
+      data-selected={selected ? 'true' : undefined}
     >
       {/* Clickable ring indicator */}
       {onClick && (

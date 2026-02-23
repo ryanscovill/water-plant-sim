@@ -49,3 +49,13 @@ body {
 [data-interactive="true"]:hover .interactive-ring {
   opacity: 1;
 }
+
+/* Selected state */
+[data-selected="true"] {
+  filter: drop-shadow(0 0 10px rgba(34, 211, 238, 0.9));
+}
+[data-selected="true"] .interactive-ring {
+  opacity: 1;
+  stroke-dasharray: none;
+  stroke-width: 2.5;
+}

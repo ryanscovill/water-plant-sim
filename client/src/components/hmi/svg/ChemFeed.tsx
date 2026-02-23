@@ -9,15 +9,17 @@ interface ChemFeedProps {
   onClick?: () => void;
   x?: number;
   y?: number;
+  selected?: boolean;
 }
 
-export function ChemFeed({ status, doseRate, unit, label, id, onClick, x = 0, y = 0 }: ChemFeedProps) {
+export function ChemFeed({ status, doseRate, unit, label, id, onClick, x = 0, y = 0, selected }: ChemFeedProps) {
   const color = status.fault ? '#dc2626' : status.running ? '#a855f7' : '#6b7280';
 
   return (
     <g id={id} transform={`translate(${x}, ${y})`} onClick={onClick}
       style={{ cursor: onClick ? 'pointer' : 'default' }}
-      data-interactive={onClick ? 'true' : undefined}>
+      data-interactive={onClick ? 'true' : undefined}
+      data-selected={selected ? 'true' : undefined}>
       {/* Clickable ring indicator */}
       {onClick && (
         <rect x="-19" y="-31" width="38" height="55" rx="4" fill="none" stroke="#22d3ee"

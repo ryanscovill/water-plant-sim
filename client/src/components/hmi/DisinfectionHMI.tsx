@@ -45,13 +45,15 @@ export function DisinfectionHMI() {
 
             {/* Chlorine feed */}
             <ChemFeed status={disinfection.chlorinePumpStatus} doseRate={disinfection.chlorineDoseRate}
-              unit="mg/L" label="CHLORINE" id="hmi-chlorineDose" onClick={() => setSelected('chlorine')} x={200} y={55} />
+              unit="mg/L" label="CHLORINE" id="hmi-chlorineDose" onClick={() => setSelected('chlorine')} x={200} y={55}
+              selected={selected === 'chlorine'} />
             <SvgInfo x={237} y={35} onClick={() => setInfoKey('chlorineFeed')} />
             <Pipe x1="200" y1="90" x2="200" y2="150" flowing={disinfection.chlorinePumpStatus.running} color="#6d28d9" strokeWidth={3} />
 
             {/* Fluoride feed */}
             <ChemFeed status={disinfection.fluoridePumpStatus} doseRate={disinfection.fluorideDoseRate}
-              unit="mg/L" label="FLUORIDE" id="hmi-fluorideDose" onClick={() => setSelected('fluoride')} x={300} y={55} />
+              unit="mg/L" label="FLUORIDE" id="hmi-fluorideDose" onClick={() => setSelected('fluoride')} x={300} y={55}
+              selected={selected === 'fluoride'} />
             <SvgInfo x={337} y={35} onClick={() => setInfoKey('fluorideFeed')} />
             <Pipe x1="300" y1="90" x2="300" y2="150" flowing={disinfection.fluoridePumpStatus.running} color="#6d28d9" strokeWidth={3} />
 
@@ -70,9 +72,9 @@ export function DisinfectionHMI() {
 
             {/* Cl2 residual at plant — positioned left of clearwell */}
             <AnalyzerTag tag="DIS-AIT-001" value={disinfection.chlorineResidualPlant} unit="mg/L"
-              label="Plant Cl2 Res." id="hmi-chlorineResidual" x={405} y={130}
+              label="Plant Cl2 Res." id="hmi-chlorineResidual" x={405} y={110}
               alarm={getAlarm('DIS-AIT-001')} />
-            <SvgInfo x={438} y={114} onClick={() => setInfoKey('plantChlorineResidual')} />
+            <SvgInfo x={405} y={80} onClick={() => setInfoKey('plantChlorineResidual')} />
 
             {/* Clearwell */}
             <Tank
@@ -93,13 +95,13 @@ export function DisinfectionHMI() {
             <AnalyzerTag tag="DIS-AIT-003" value={disinfection.finishedWaterPH} unit=""
               label="Finished pH" id="hmi-finishedPH" x={570} y={130}
               alarm={getAlarm('DIS-AIT-003')} decimals={2} />
-            <SvgInfo x={603} y={114} onClick={() => setInfoKey('finishedPH')} />
+            <SvgInfo x={570} y={100} onClick={() => setInfoKey('finishedPH')} />
 
             {/* Fluoride — positioned right of clearwell */}
             <AnalyzerTag tag="DIS-AIT-004" value={disinfection.fluorideResidual} unit="mg/L"
               label="Fluoride Res." id="hmi-fluorideResidual" x={570} y={210}
               alarm={getAlarm('DIS-AIT-004')} />
-            <SvgInfo x={603} y={194} onClick={() => setInfoKey('fluorideResidual')} />
+            <SvgInfo x={570} y={180} onClick={() => setInfoKey('fluorideResidual')} />
 
             {/* Distribution outlet */}
             <Pipe x1="520" y1="225" x2="625" y2="225" flowing={flowing} />
@@ -108,11 +110,11 @@ export function DisinfectionHMI() {
             <AnalyzerTag tag="DIS-AIT-002" value={disinfection.chlorineResidualDist} unit="mg/L"
               label="Dist Cl2 Res." id="hmi-distChlorine" x={665} y={210}
               alarm={getAlarm('DIS-AIT-002')} />
-            <SvgInfo x={698} y={194} onClick={() => setInfoKey('distChlorineResidual')} />
+            <SvgInfo x={665} y={180} onClick={() => setInfoKey('distChlorineResidual')} />
 
             {/* Distribution label */}
-            <text x="668" y="240" fill="#4b5563" fontSize="13" fontFamily="monospace">DIST.</text>
-            <text x="668" y="250" fill="#4b5563" fontSize="13" fontFamily="monospace">SYSTEM</text>
+            <text x="668" y="252" fill="#4b5563" fontSize="13" fontFamily="monospace">DIST.</text>
+            <text x="668" y="264" fill="#4b5563" fontSize="13" fontFamily="monospace">SYSTEM</text>
           </svg>
         </div>
 

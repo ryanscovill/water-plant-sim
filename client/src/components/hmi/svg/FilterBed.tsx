@@ -8,16 +8,18 @@ interface FilterBedProps {
   onClick?: () => void;
   x?: number;
   y?: number;
+  selected?: boolean;
 }
 
-export function FilterBed({ headLoss, maxHeadLoss = 10, runTime, backwashInProgress, backwashTimeRemaining, id, onClick, x = 0, y = 0 }: FilterBedProps) {
+export function FilterBed({ headLoss, maxHeadLoss = 10, runTime, backwashInProgress, backwashTimeRemaining, id, onClick, x = 0, y = 0, selected }: FilterBedProps) {
   const fillPct = Math.min(1, headLoss / maxHeadLoss);
   const color = headLoss >= 8 ? '#dc2626' : headLoss >= 6 ? '#f59e0b' : '#2563eb';
 
   return (
     <g id={id} transform={`translate(${x}, ${y})`} onClick={onClick}
       style={{ cursor: onClick ? 'pointer' : 'default' }}
-      data-interactive={onClick ? 'true' : undefined}>
+      data-interactive={onClick ? 'true' : undefined}
+      data-selected={selected ? 'true' : undefined}>
       {/* Filter bed outline */}
       <rect x="-30" y="-40" width="60" height="80" rx="3" fill="#111827"
         stroke={onClick ? '#22d3ee' : '#374151'} strokeWidth={onClick ? 1.5 : 2}

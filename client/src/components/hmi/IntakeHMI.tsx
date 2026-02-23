@@ -45,7 +45,7 @@ export function IntakeHMI() {
           <svg viewBox="0 0 720 320" width="100%" className="bg-gray-950 rounded border border-gray-800">
             <style>{`text[font-size="11"],tspan[font-size="11"]{font-size:11px}text[font-size="12"]{font-size:12px}text[font-size="13"]{font-size:13px}text[font-size="14"]{font-size:14px}`}</style>
             {/* Source — clickable to open source water quality panel */}
-            <g data-interactive="true" style={{ cursor: 'pointer' }} onClick={() => setSelected('source')}>
+            <g data-interactive="true" data-selected={selected === 'source' ? 'true' : undefined} style={{ cursor: 'pointer' }} onClick={() => setSelected('source')}>
               <rect x="8" y="140" width="62" height="36" rx="4" fill="none" stroke="#22d3ee"
                 strokeWidth="1.5" strokeDasharray="5,3" className="interactive-ring" />
               <text x="39" y="155" textAnchor="middle" fill="#4b5563" fontSize="14" fontFamily="monospace">RIVER</text>
@@ -89,6 +89,7 @@ export function IntakeHMI() {
               onClick={() => setSelected('intakeValve')}
               x={160}
               y={160}
+              selected={selected === 'intakeValve'}
             />
 
             {/* Pumps */}
@@ -99,6 +100,7 @@ export function IntakeHMI() {
               onClick={() => setSelected('pump1')}
               x={275}
               y={100}
+              selected={selected === 'pump1'}
             />
             <Pump
               status={intake.intakePump2}
@@ -107,10 +109,11 @@ export function IntakeHMI() {
               onClick={() => setSelected('pump2')}
               x={275}
               y={220}
+              selected={selected === 'pump2'}
             />
 
             {/* Screen diff pressure */}
-            <g id="hmi-screenDP" onClick={() => setSelected('screen')} style={{ cursor: 'pointer' }} data-interactive="true">
+            <g id="hmi-screenDP" onClick={() => setSelected('screen')} style={{ cursor: 'pointer' }} data-interactive="true" data-selected={selected === 'screen' ? 'true' : undefined}>
               <rect x="337" y="127" width="46" height="34" rx="5" fill="none" stroke="#22d3ee"
                 strokeWidth="1.5" strokeDasharray="5,3" className="interactive-ring" />
               <rect x="340" y="130" width="40" height="28" rx="3" fill="#111827" stroke={intake.screenDiffPressure > 5 ? '#f59e0b' : '#374151'} strokeWidth="1.5" />
@@ -143,7 +146,7 @@ export function IntakeHMI() {
               y={115}
               alarm={getAlarm('INT-AIT-001')}
             />
-            <SvgInfo x={623} y={99} onClick={() => setInfoKey('rawTurbidity')} />
+            <SvgInfo x={590} y={85} onClick={() => setInfoKey('rawTurbidity')} />
 
             {/* To treatment label */}
             <text x="640" y="163" fill="#4b5563" fontSize="14" fontFamily="monospace">TO</text>

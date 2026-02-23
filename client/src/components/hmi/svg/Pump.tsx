@@ -7,9 +7,10 @@ interface PumpProps {
   onClick?: () => void;
   x?: number;
   y?: number;
+  selected?: boolean;
 }
 
-export function Pump({ status, label, id, onClick, x = 0, y = 0 }: PumpProps) {
+export function Pump({ status, label, id, onClick, x = 0, y = 0, selected }: PumpProps) {
   const color = status.fault ? '#dc2626'
     : status.running ? '#2563eb'
     : '#6b7280';
@@ -23,6 +24,7 @@ export function Pump({ status, label, id, onClick, x = 0, y = 0 }: PumpProps) {
       onClick={onClick}
       style={{ cursor: onClick ? 'pointer' : 'default' }}
       data-interactive={onClick ? 'true' : undefined}
+      data-selected={selected ? 'true' : undefined}
     >
       {/* Clickable ring indicator */}
       {onClick && (
