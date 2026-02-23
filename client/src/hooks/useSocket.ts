@@ -25,6 +25,10 @@ export function useSocket() {
       addEvent(evt as OperatorEvent);
     };
 
+    const onSimulationEvent = (evt: unknown) => {
+      addEvent(evt as OperatorEvent);
+    };
+
     const onStateUpdate = (state: unknown) => {
       const s = state as ProcessState;
       setState(s);
@@ -49,6 +53,7 @@ export function useSocket() {
     engine.on('alarm:cleared', onAlarmCleared);
     engine.on('simulation:reset', onReset);
     engine.on('operator:event', onOperatorEvent);
+    engine.on('simulation:event', onSimulationEvent);
 
     return () => {
       engine.off('state:update', onStateUpdate);
@@ -56,6 +61,7 @@ export function useSocket() {
       engine.off('alarm:cleared', onAlarmCleared);
       engine.off('simulation:reset', onReset);
       engine.off('operator:event', onOperatorEvent);
+      engine.off('simulation:event', onSimulationEvent);
     };
   }, [setState, setConnected, setAlarms, addAlarm, clearAlarm, resetAlarms, setActiveScenario, addEvent]);
 }

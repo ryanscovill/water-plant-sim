@@ -6,6 +6,7 @@ interface EngineInterface {
   injectScenario(modifications: (state: ProcessState) => ProcessState): void;
   setActiveScenario(id: string | null): void;
   applyControl(type: string, payload: Record<string, unknown>): void;
+  emitSimulationEvent(description: string): void;
 }
 
 export class ScenarioEngine {
@@ -20,6 +21,7 @@ export class ScenarioEngine {
     this.startTime = Date.now();
     this.executedSteps = new Set();
     engine.setActiveScenario(scenario.id);
+    engine.emitSimulationEvent(`Scenario started: ${scenario.name}`);
 
     for (const step of scenario.steps) {
       if (step.triggerAt === 0) {
@@ -30,9 +32,11 @@ export class ScenarioEngine {
   }
 
   stop(engine: EngineInterface): void {
+    const name = this.activeScenario?.name;
     this.activeScenario = null;
     this.turbidityTarget = null;
     engine.setActiveScenario(null);
+    if (name) engine.emitSimulationEvent(`Scenario stopped: ${name}`);
   }
 
   tick(engine: EngineInterface): void {
@@ -54,15 +58,19 @@ export class ScenarioEngine {
         ...state,
         intake: {
           ...state.intake,
-          rawTurbidity: state.intake.rawTurbidity + (target - state.intake.rawTurbidity) * (0.5 / dur),
+          sourceTurbidityBase: Math.max(1, Math.min(300,
+            state.intake.sourceTurbidityBase + (target - state.intake.sourceTurbidityBase) * (0.5 / dur)
+          )),
         },
       }));
     }
 
     if (this.activeScenario.duration > 0 && elapsed >= this.activeScenario.duration) {
+      const name = this.activeScenario.name;
       engine.setActiveScenario(null);
       this.activeScenario = null;
       this.turbidityTarget = null;
+      engine.emitSimulationEvent(`Scenario completed: ${name}`);
     }
   }
 
@@ -70,6 +78,13 @@ export class ScenarioEngine {
     step: { action: string; params: Record<string, unknown> },
     engine: EngineInterface
   ): void {
+    const PUMP_NAMES: Record<string, string> = {
+      intakePump1: 'Intake Pump 1 (P-101)',
+      intakePump2: 'Intake Pump 2 (P-102)',
+      sludgePump:  'Sludge Pump',
+      chlorinePump:'Chlorine Pump',
+    };
+
     switch (step.action) {
       case 'faultPump': {
         const pumpId = step.params.pumpId as string;
@@ -89,11 +104,15 @@ export class ScenarioEngine {
               return state;
           }
         });
+        engine.emitSimulationEvent(`FAULT: ${PUMP_NAMES[pumpId] ?? pumpId} tripped`);
         break;
       }
       case 'setTurbidity': {
-        this.turbidityTarget = step.params.target as number;
-        this.turbidityDuration = step.params.duration as number;
+        const target = step.params.target as number;
+        const duration = step.params.duration as number;
+        this.turbidityTarget = target;
+        this.turbidityDuration = duration;
+        engine.emitSimulationEvent(`Source turbidity ramping to ${target} NTU (over ${duration}s)`);
         break;
       }
       case 'preloadFilter': {
@@ -105,6 +124,9 @@ export class ScenarioEngine {
             filterRunTime: step.params.filterRunTime as number,
           },
         }));
+        engine.emitSimulationEvent(
+          `Filter pre-loaded: head loss ${step.params.headLoss} ft, run time ${step.params.filterRunTime} hr`
+        );
         break;
       }
       case 'setAlumDose': {
@@ -116,6 +138,7 @@ export class ScenarioEngine {
             alumDoseRate: step.params.value as number,
           },
         }));
+        engine.emitSimulationEvent(`Alum dose forced to ${step.params.value} mg/L`);
         break;
       }
     }

@@ -412,6 +412,15 @@ export class SimulationEngine {
     this.state = { ...this.state, activeScenario: id };
   }
 
+  emitSimulationEvent(description: string): void {
+    this.emit('simulation:event', {
+      id: crypto.randomUUID(),
+      timestamp: new Date().toISOString(),
+      type: 'simulation',
+      description,
+    });
+  }
+
   getAlarmHistory(): Alarm[] {
     return this.alarmManager.getHistory();
   }

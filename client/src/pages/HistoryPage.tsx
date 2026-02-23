@@ -8,6 +8,7 @@ const TYPE_BADGE: Record<string, string> = {
   acknowledgeAlarm: 'bg-gray-600 text-gray-100',
   acknowledgeAll:   'bg-gray-600 text-gray-100',
   clearScreen:      'bg-green-700 text-green-100',
+  simulation:       'bg-orange-700 text-orange-100',
 };
 
 export function HistoryPage() {
@@ -17,7 +18,7 @@ export function HistoryPage() {
   return (
     <div className="flex flex-col h-full gap-3">
       <div className="flex items-center justify-between">
-        <h2 className="text-gray-300 font-bold text-sm font-mono">OPERATOR HISTORY</h2>
+        <h2 className="text-gray-300 font-bold text-sm font-mono">EVENT HISTORY</h2>
         <button
           onClick={clearEvents}
           className="px-3 py-1 text-xs font-mono bg-gray-700 hover:bg-gray-600 text-gray-200 rounded border border-gray-600"
@@ -29,7 +30,7 @@ export function HistoryPage() {
       <div className="flex-1 bg-gray-900 border border-gray-700 rounded-lg overflow-hidden flex flex-col">
         {events.length === 0 ? (
           <div className="flex-1 flex items-center justify-center text-gray-500 text-sm font-mono">
-            No operator actions recorded yet.
+            No events recorded yet.
           </div>
         ) : (
           <div className="overflow-y-auto divide-y divide-gray-800">
