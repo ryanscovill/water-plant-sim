@@ -1,8 +1,8 @@
 interface PipeProps {
-  x1: number;
-  y1: number;
-  x2: number;
-  y2: number;
+  x1: number | string;
+  y1: number | string;
+  x2: number | string;
+  y2: number | string;
   flowing?: boolean;
   color?: string;
   strokeWidth?: number;
