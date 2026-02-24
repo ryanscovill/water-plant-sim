@@ -76,10 +76,11 @@ describe('DisinfectionStage', () => {
     expect(cleanResult.chlorineResidualPlant).toBeGreaterThan(dirtyResult.chlorineResidualPlant);
   });
 
-  it('pH converges to 7.4 at default operating point (sourcePH 7.2, alum 18 mg/L, caustic 2.8 mg/L)', () => {
+  it('pH converges to 7.4 at sourcePH 7.2, alum 18 mg/L, caustic 2.8 mg/L', () => {
     const { dis, sed, coag, intake } = baseStates();
     // sourcePH (7.2) − 18 × ALUM_PH_DEPRESSION (0.02) + 2.8 × PH_ADJUST_FACTOR (0.2) = 7.40
-    const result = runTicks(stage, dis, sed, 500, 0.5, coag, intake);
+    const fixedCoag = { ...coag, alumDoseRate: 18, pHAdjustDoseRate: 2.8 };
+    const result = runTicks(stage, dis, sed, 500, 0.5, fixedCoag, intake);
     expect(result.finishedWaterPH).toBeCloseTo(7.4, 1);
   });
 
@@ -204,6 +205,18 @@ describe('DisinfectionStage', () => {
     const highResult = runTicks(new DisinfectionStage(), highDis, sed, 500, 0.5, coag, intake);
 
     expect(highResult.chlorineResidualDist).toBeGreaterThan(lowResult.chlorineResidualDist);
+  });
+
+  it('distribution Cl₂ steady-state value is the same at dt=0.5 and dt=30 (simSpeed-independent)', () => {
+    const { sed, coag, intake } = baseStates();
+
+    const dis1x  = { ...createInitialState().disinfection };
+    const dis60x = { ...createInitialState().disinfection };
+
+    const result1x  = runTicks(new DisinfectionStage(), dis1x,  sed, 500, 0.5,  coag, intake);
+    const result60x = runTicks(new DisinfectionStage(), dis60x, sed, 20,  30.0, coag, intake);
+
+    expect(result60x.chlorineResidualDist).toBeCloseTo(result1x.chlorineResidualDist, 1);
   });
 
   it('higher distribution demand drains clearwell faster than lower demand', () => {

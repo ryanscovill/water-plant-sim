@@ -7,9 +7,11 @@ const CL_DOSE_EFFICIENCY = 0.85;
 // Chlorine demand per NTU of filter effluent turbidity (mg/L per NTU)
 const CL_TURBIDITY_DEMAND = 0.1;
 
-// First-order chlorine decay constant through distribution system (1/simulated-second).
-// Yields ≈ 2.5% loss over a standard 0.5 s tick; scales correctly with any dt.
+// Chlorine decay constant for pipe transit from plant to distribution analyser (1/simulated-second).
 const CL_DIST_DECAY_K = 0.05;
+// Nominal pipe transit time (simulated seconds). This is a fixed spatial property —
+// the pipe length doesn't change with simSpeed — so dt must NOT be used here.
+const CL_DIST_TRANSIT_S = 0.5;
 
 // pH adjustment: 1 mg/L of caustic raises finished-water pH by this many S.U.
 const PH_ADJUST_FACTOR = 0.2;
@@ -39,8 +41,9 @@ export class DisinfectionStage {
     // τ = 10 s — chlorine analyser response / contactor mixing
     next.chlorineResidualPlant = clamp(firstOrderLag(next.chlorineResidualPlant, targetClResidual, lagFactor(dt, 10)), 0, 5);
 
-    // Distribution residual: first-order decay from plant (scales with dt so simSpeed-independent).
-    const targetDistResidual = next.chlorineResidualPlant * Math.exp(-CL_DIST_DECAY_K * dt);
+    // Distribution residual: fixed spatial decay from plant through pipe network to analyser.
+    // Uses CL_DIST_TRANSIT_S (not dt) so the steady-state reading is simSpeed-independent.
+    const targetDistResidual = next.chlorineResidualPlant * Math.exp(-CL_DIST_DECAY_K * CL_DIST_TRANSIT_S);
     // τ = 16 s — distribution analyser response / pipe transit lag
     next.chlorineResidualDist = clamp(firstOrderLag(next.chlorineResidualDist, targetDistResidual, lagFactor(dt, 16)), 0, 4);
 
