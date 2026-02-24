@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import type React from 'react';
+import { Info } from 'lucide-react';
 import { useSimulationStore } from '../../store/useSimulationStore';
 import { useAlarmStore } from '../../store/useAlarmStore';
 import { Clarifier } from './svg/Clarifier';
@@ -48,7 +49,12 @@ export function SedimentationHMI() {
 
   return (
     <div>
-      <h2 className="text-gray-300 font-bold text-sm mb-3 font-mono">SEDIMENTATION / FILTRATION</h2>
+      <div className="flex items-center gap-2 mb-3">
+        <h2 className="text-gray-300 font-bold text-sm font-mono">SEDIMENTATION / FILTRATION</h2>
+        <button onClick={() => setInfoKey('sedimentationPage')} className="text-blue-400 hover:text-blue-300 p-0.5 rounded hover:bg-gray-800" title="About this screen">
+          <Info size={14} />
+        </button>
+      </div>
       <div className="flex gap-3 items-start">
         <div className="flex-1 min-w-0">
           <svg viewBox="0 0 720 340" width="100%" className="bg-gray-950 rounded border border-gray-800" onClick={handleSvgClick}>
@@ -125,27 +131,27 @@ export function SedimentationHMI() {
             <text x="685" y="85" fill="#4b5563" fontSize="13" fontFamily="monospace">TO</text>
             <text x="685" y="95" fill="#4b5563" fontSize="13" fontFamily="monospace">DIS.</text>
 
-            {/* Backwash controls */}
+            {/* Backwash controls — centered under filter, below HL/RT labels */}
             {!sedimentation.backwashInProgress ? (
               <g id="ctrl-backwash-start" data-interactive="true" style={{ cursor: 'pointer' }} onClick={() => setSelected('filter')}>
-                <rect x="387" y="280" width="76" height="28" rx="5" fill="transparent" stroke="#2563eb"
+                <rect x="432" y="172" width="76" height="28" rx="5" fill="transparent" stroke="#2563eb"
                   strokeWidth="1.5" strokeDasharray="5,3" className="interactive-ring" />
-                <rect x="390" y="283" width="70" height="22" rx="3" fill="#1e3a5f" stroke="#2563eb" strokeWidth="1.5" />
-                <text x="425" y="298" textAnchor="middle" fill="#60a5fa" fontSize="12" fontFamily="monospace">
+                <rect x="435" y="175" width="70" height="22" rx="3" fill="#1e3a5f" stroke="#2563eb" strokeWidth="1.5" />
+                <text x="470" y="190" textAnchor="middle" fill="#60a5fa" fontSize="12" fontFamily="monospace">
                   BACKWASH
                 </text>
               </g>
             ) : (
               <g data-interactive="true" style={{ cursor: 'pointer' }} onClick={abortBackwash}>
-                <rect x="387" y="280" width="76" height="28" rx="5" fill="transparent" stroke="#dc2626"
+                <rect x="432" y="172" width="76" height="28" rx="5" fill="transparent" stroke="#dc2626"
                   strokeWidth="1.5" strokeDasharray="5,3" className="interactive-ring" />
-                <rect x="390" y="283" width="70" height="22" rx="3" fill="#7f1d1d" stroke="#dc2626" strokeWidth="1.5" />
-                <text x="425" y="298" textAnchor="middle" fill="#fca5a5" fontSize="12" fontFamily="monospace">
+                <rect x="435" y="175" width="70" height="22" rx="3" fill="#7f1d1d" stroke="#dc2626" strokeWidth="1.5" />
+                <text x="470" y="190" textAnchor="middle" fill="#fca5a5" fontSize="12" fontFamily="monospace">
                   ABORT BW
                 </text>
               </g>
             )}
-            <SvgInfo x={460} y={284} onClick={() => setInfoKey('backwash')} />
+            <SvgInfo x={510} y={176} onClick={() => setInfoKey('backwash')} />
           </svg>
         </div>
 

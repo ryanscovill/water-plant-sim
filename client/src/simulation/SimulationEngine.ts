@@ -65,7 +65,7 @@ export class SimulationEngine {
     const nextIntake = this.intakeStage.update(this.state.intake, dt);
     const nextCoag = this.coagStage.update(this.state.coagulation, nextIntake, dt);
     const nextSed = this.sedStage.update(this.state.sedimentation, nextCoag, dt);
-    const nextDis = this.disStage.update(this.state.disinfection, nextSed, dt, nextCoag);
+    const nextDis = this.disStage.update(this.state.disinfection, nextSed, dt, nextCoag, nextIntake);
 
     const preAlarmState: ProcessState = {
       ...this.state,
@@ -184,12 +184,12 @@ export class SimulationEngine {
       case 'intakePump1':   return s.intake.intakePump1;
       case 'intakePump2':   return s.intake.intakePump2;
       case 'alumPump':      return s.coagulation.alumPumpStatus;
+      case 'pHAdjustPump':  return s.coagulation.pHAdjustPumpStatus;
       case 'rapidMixer':    return s.coagulation.rapidMixerStatus;
       case 'slowMixer':     return s.coagulation.slowMixerStatus;
       case 'sludgePump':    return s.sedimentation.sludgePumpStatus;
       case 'clarifierRake': return s.sedimentation.clarifierRakeStatus;
       case 'chlorinePump':  return s.disinfection.chlorinePumpStatus;
-      case 'fluoridePump':  return s.disinfection.fluoridePumpStatus;
       case 'uvSystem':      return s.disinfection.uvSystemStatus;
       default:              return null;
     }
@@ -200,12 +200,12 @@ export class SimulationEngine {
       intakePump1:  'Intake Pump 1 (P-101)',
       intakePump2:  'Intake Pump 2 (P-102)',
       alumPump:     'Alum Pump',
+      pHAdjustPump: 'pH Adjust Pump',
       rapidMixer:   'Rapid Mixer',
       slowMixer:    'Slow Mixer',
       sludgePump:   'Sludge Pump',
       clarifierRake:'Clarifier Rake',
       chlorinePump: 'Chlorine Pump',
-      fluoridePump: 'Fluoride Pump',
       uvSystem:     'UV System',
     };
     const VALVE_NAMES: Record<string, string> = {
@@ -259,16 +259,14 @@ export class SimulationEngine {
             return `Alum dose setpoint: ${s.coagulation.alumDoseSetpoint.toFixed(1)} → ${Number(value).toFixed(1)} mg/L`;
           case 'chlorineDoseSetpoint':
             return `Chlorine dose: ${s.disinfection.chlorineDoseSetpoint.toFixed(1)} → ${Number(value).toFixed(1)} mg/L`;
-          case 'fluorideDoseSetpoint':
-            return `Fluoride dose: ${s.disinfection.fluorideDoseSetpoint.toFixed(2)} → ${Number(value).toFixed(2)} mg/L`;
           case 'simSpeed':
             return `Simulation speed: ${s.simSpeed}× → ${value}×`;
           case 'sourceTurbidityBase':
             return `Source turbidity: ${s.intake.sourceTurbidityBase.toFixed(1)} → ${Number(value).toFixed(1)} NTU`;
           case 'clearScreen':
             return 'Intake screen cleared';
-          case 'pHAdjustDoseRate':
-            return `pH adjust dose: ${s.coagulation.pHAdjustDoseRate.toFixed(1)} → ${Number(value).toFixed(1)} mg/L`;
+          case 'pHAdjustDoseSetpoint':
+            return `pH adjust dose setpoint: ${s.coagulation.pHAdjustDoseSetpoint.toFixed(1)} → ${Number(value).toFixed(1)} mg/L`;
           case 'sourceTemperature':
             return `Source temperature: ${s.intake.sourceTemperature.toFixed(1)} → ${Number(value).toFixed(1)} °C`;
           case 'sourcePH':
@@ -319,6 +317,9 @@ export class SimulationEngine {
       case 'alumPump':
         next.coagulation = { ...state.coagulation, alumPumpStatus: setPump(state.coagulation.alumPumpStatus) };
         break;
+      case 'pHAdjustPump':
+        next.coagulation = { ...state.coagulation, pHAdjustPumpStatus: setPump(state.coagulation.pHAdjustPumpStatus) };
+        break;
       case 'rapidMixer':
         next.coagulation = { ...state.coagulation, rapidMixerStatus: setPump(state.coagulation.rapidMixerStatus) };
         break;
@@ -333,9 +334,6 @@ export class SimulationEngine {
         break;
       case 'chlorinePump':
         next.disinfection = { ...state.disinfection, chlorinePumpStatus: setPump(state.disinfection.chlorinePumpStatus) };
-        break;
-      case 'fluoridePump':
-        next.disinfection = { ...state.disinfection, fluoridePumpStatus: setPump(state.disinfection.fluoridePumpStatus) };
         break;
       case 'uvSystem':
         next.disinfection = { ...state.disinfection, uvSystemStatus: setPump(state.disinfection.uvSystemStatus) };
@@ -371,10 +369,8 @@ export class SimulationEngine {
         return { ...state, coagulation: { ...state.coagulation, alumDoseSetpoint: Math.max(0, Math.min(80, value)) } };
       case 'chlorineDoseSetpoint':
         return { ...state, disinfection: { ...state.disinfection, chlorineDoseSetpoint: Math.max(0, Math.min(10, value)) } };
-      case 'fluorideDoseSetpoint':
-        return { ...state, disinfection: { ...state.disinfection, fluorideDoseSetpoint: Math.max(0, Math.min(2, value)) } };
-      case 'pHAdjustDoseRate':
-        return { ...state, coagulation: { ...state.coagulation, pHAdjustDoseRate: Math.max(0, Math.min(10, value)) } };
+      case 'pHAdjustDoseSetpoint':
+        return { ...state, coagulation: { ...state.coagulation, pHAdjustDoseSetpoint: Math.max(0, Math.min(10, value)) } };
       case 'simSpeed':
         return { ...state, simSpeed: Math.max(0.5, Math.min(10, value)) };
       case 'clearScreen':

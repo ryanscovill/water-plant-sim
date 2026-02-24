@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Wifi, WifiOff, RotateCcw } from 'lucide-react';
 import { useSimulationStore } from '../../store/useSimulationStore';
 import { useAlarmStore } from '../../store/useAlarmStore';
@@ -8,16 +9,44 @@ export function Navbar() {
   const state = useSimulationStore((s) => s.state);
   const alarms = useAlarmStore((s) => s.alarms);
   const activeUnacked = alarms.filter((a) => a.active && !a.acknowledged).length;
+  const [showResetConfirm, setShowResetConfirm] = useState(false);
 
   const changeSpeed = (speed: number) => {
     getEngine().applyControl('setpoint', { tagId: 'simSpeed', value: speed });
   };
 
-  const resetSim = () => {
+  const confirmReset = () => {
     getEngine().reset();
+    setShowResetConfirm(false);
   };
 
   return (
+    <>
+    {showResetConfirm && (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
+        <div className="bg-gray-900 border border-red-700 rounded-lg p-6 w-80 shadow-xl">
+          <h2 className="text-red-400 font-bold text-sm tracking-wider mb-2">RESET SIMULATION?</h2>
+          <p className="text-gray-300 text-xs mb-5">
+            All process state, alarm history, trend data, and operator events will be cleared. This cannot be undone.
+          </p>
+          <div className="flex gap-3 justify-end">
+            <button
+              onClick={() => setShowResetConfirm(false)}
+              className="px-3 py-1.5 rounded text-xs font-mono bg-gray-700 text-gray-300 hover:bg-gray-600"
+            >
+              CANCEL
+            </button>
+            <button
+              onClick={confirmReset}
+              className="px-3 py-1.5 rounded text-xs font-mono bg-red-800 text-red-200 hover:bg-red-700 flex items-center gap-1"
+            >
+              <RotateCcw size={11} />
+              RESET
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
     <header className="bg-gray-900 border-b border-gray-700 px-4 py-2 flex items-center gap-4">
       <div className="flex items-center gap-2">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="22" height="22">
@@ -45,7 +74,7 @@ export function Navbar() {
           </button>
         ))}
         <button
-          onClick={resetSim}
+          onClick={() => setShowResetConfirm(true)}
           title="Reset simulation"
           className="ml-1 flex items-center gap-1 px-2 py-0.5 rounded text-xs font-mono bg-gray-800 text-gray-400 hover:bg-red-900 hover:text-red-300"
         >
@@ -83,5 +112,6 @@ export function Navbar() {
         </span>
       )}
     </header>
+    </>
   );
 }

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import type React from 'react';
+import { Info } from 'lucide-react';
 import { useSimulationStore } from '../../store/useSimulationStore';
 import { useAlarmStore } from '../../store/useAlarmStore';
 import { Mixer } from './svg/Mixer';
@@ -54,7 +55,12 @@ export function CoagFloccHMI() {
 
   return (
     <div>
-      <h2 className="text-gray-300 font-bold text-sm mb-3 font-mono">COAGULATION / FLOCCULATION</h2>
+      <div className="flex items-center gap-2 mb-3">
+        <h2 className="text-gray-300 font-bold text-sm font-mono">COAGULATION / FLOCCULATION</h2>
+        <button onClick={() => setInfoKey('coagFloccPage')} className="text-blue-400 hover:text-blue-300 p-0.5 rounded hover:bg-gray-800" title="About this screen">
+          <Info size={14} />
+        </button>
+      </div>
       <div className="flex gap-3 items-start">
         <div className="flex-1 min-w-0">
           <svg viewBox="0 0 720 320" width="100%" className="bg-gray-950 rounded border border-gray-800" onClick={handleSvgClick}>
@@ -88,7 +94,7 @@ export function CoagFloccHMI() {
               alarm={getAlarm('COG-AIT-001')} />
             <SvgInfo x={457} y={237} onClick={() => setInfoKey('flocTurbidity')} />
 
-            <Pipe x1="480" y1="170" x2="550" y2="170" flowing={flowing} />
+            <Pipe x1="480" y1="170" x2="640" y2="170" flowing={flowing} />
 
             {/* Alum feed */}
             <ChemFeed status={coagulation.alumPumpStatus} doseRate={coagulation.alumDoseRate}
@@ -99,14 +105,15 @@ export function CoagFloccHMI() {
             <Pipe x1="200" y1="75" x2="200" y2="110" flowing={coagulation.alumPumpStatus.running} color="#7c3aed" strokeWidth={3} />
 
             {/* pH adjust */}
-            <ChemFeed status={coagulation.alumPumpStatus} doseRate={coagulation.pHAdjustDoseRate}
-              unit="mg/L" label="pH ADJ" x={400} y={55} />
+            <ChemFeed status={coagulation.pHAdjustPumpStatus} doseRate={coagulation.pHAdjustDoseRate}
+              unit="mg/L" label="pH ADJ" id="hmi-pHAdjust" onClick={() => requestSelect('pHAdjust')} x={400} y={55}
+              selected={selected === 'pHAdjust'} />
             <SvgInfo x={416} y={27} onClick={() => setInfoKey('pHAdjust')} />
-            <Pipe x1="400" y1="75" x2="400" y2="110" flowing={coagulation.alumPumpStatus.running} color="#7c3aed" strokeWidth={3} />
+            <Pipe x1="400" y1="75" x2="400" y2="110" flowing={coagulation.pHAdjustPumpStatus.running} color="#7c3aed" strokeWidth={3} />
 
             {/* Outlet */}
-            <text x="570" y="165" fill="#4b5563" fontSize="13" fontFamily="monospace">TO</text>
-            <text x="570" y="175" fill="#4b5563" fontSize="13" fontFamily="monospace">SEDIM.</text>
+            <text x="650" y="165" fill="#4b5563" fontSize="13" fontFamily="monospace">TO</text>
+            <text x="650" y="175" fill="#4b5563" fontSize="13" fontFamily="monospace">SEDIM.</text>
           </svg>
         </div>
 
@@ -128,6 +135,16 @@ export function CoagFloccHMI() {
               <div className="mt-4 border-t border-gray-700 pt-4">
                 <ChemDoseControl tagId="alumDoseSetpoint" currentSetpoint={coagulation.alumDoseSetpoint}
                   currentActual={coagulation.alumDoseRate} label="Alum Dose" unit="mg/L" min={0} max={80} step={0.5}
+                  onDirtyChange={setIsDirty} />
+              </div>
+            </EquipmentPanel>
+          )}
+          {selected === 'pHAdjust' && (
+            <EquipmentPanel title="pH Adjust Chemical Feed" tag="COG-FIT-002" onClose={() => requestSelect(null)} onInfo={() => setInfoKey('pHAdjust')}>
+              <PumpControl pumpId="pHAdjustPump" status={coagulation.pHAdjustPumpStatus} label="COG-P-202" />
+              <div className="mt-4 border-t border-gray-700 pt-4">
+                <ChemDoseControl tagId="pHAdjustDoseSetpoint" currentSetpoint={coagulation.pHAdjustDoseSetpoint}
+                  currentActual={coagulation.pHAdjustDoseRate} label="pH Adjust Dose" unit="mg/L" min={0} max={10} step={0.1}
                   onDirtyChange={setIsDirty} />
               </div>
             </EquipmentPanel>

@@ -369,11 +369,9 @@ test.describe('Disinfection HMI screenshot + overlaps', () => {
   test('HMI elements do not overlap each other', async ({ page }) => {
     const elements = [
       { name: 'chlorine-dose',     locator: page.locator('#hmi-chlorineDose') },
-      { name: 'fluoride-dose',     locator: page.locator('#hmi-fluorideDose') },
       { name: 'chlorine-residual', locator: page.locator('#hmi-chlorineResidual') },
       { name: 'clearwell',         locator: page.locator('#hmi-clearwell') },
       { name: 'finished-ph',       locator: page.locator('#hmi-finishedPH') },
-      { name: 'fluoride-residual', locator: page.locator('#hmi-fluorideResidual') },
       { name: 'dist-chlorine',     locator: page.locator('#hmi-distChlorine') },
     ];
     await assertNoOverlaps(page, elements);
@@ -383,11 +381,9 @@ test.describe('Disinfection HMI screenshot + overlaps', () => {
     const svg = page.locator('main svg').first();
     const elements = [
       { name: 'chlorine-dose',     locator: page.locator('#hmi-chlorineDose') },
-      { name: 'fluoride-dose',     locator: page.locator('#hmi-fluorideDose') },
       { name: 'chlorine-residual', locator: page.locator('#hmi-chlorineResidual') },
       { name: 'clearwell',         locator: page.locator('#hmi-clearwell') },
       { name: 'finished-ph',       locator: page.locator('#hmi-finishedPH') },
-      { name: 'fluoride-residual', locator: page.locator('#hmi-fluorideResidual') },
       { name: 'dist-chlorine',     locator: page.locator('#hmi-distChlorine') },
     ];
     await assertElementsWithinContainer(svg, elements);
@@ -413,15 +409,5 @@ test.describe('Disinfection HMI screenshot + overlaps', () => {
     // Panel closes automatically on next navigation (beforeEach navigates fresh)
   });
 
-  test('fluoride panel does not shift or clip the SVG heading when open', async ({ page }) => {
-    await page.locator('#hmi-fluorideDose').click();
-    await expect(page.getByText('Fluoride Feed System')).toBeVisible();
-
-    await assertNoOverlaps(page, [
-      { name: 'h2 heading', locator: page.locator('h2').first() },
-      { name: 'HMI svg',    locator: page.locator('main svg').first() },
-    ]);
-
-    // Panel closes automatically on next navigation (beforeEach navigates fresh)
-  });
 });
+

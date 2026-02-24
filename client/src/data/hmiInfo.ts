@@ -8,6 +8,85 @@ export interface HmiInfo {
 }
 
 export const hmiInfo: Record<string, HmiInfo> = {
+  // ── PAGE-LEVEL OVERVIEWS ────────────────────────────────────────────────
+  intakePage: {
+    title: 'Intake — Raw Water Supply',
+    category: 'Process',
+    description:
+      'The intake stage is the entry point of a surface water treatment plant. Raw water is drawn from a river, lake, or reservoir through a screening structure, pumped into a wet well, and metered before being sent forward to coagulation. The quality of raw water (turbidity, pH, temperature, color) varies with weather, seasons, and upstream land use.',
+    whyItMatters:
+      'Reliable intake flow is the foundation of the entire treatment process. If intake pumps fail or the screen plugs, the plant loses production capacity. Raw-water quality measurements here set the baseline for chemical dosing decisions downstream — operators must respond to rapid quality changes (e.g., a turbidity spike after rain) before the upset reaches the filters.',
+    keyParameters: [
+      { name: 'Raw flow', range: '0 – 9 MGD', note: 'Sum of active pump outputs' },
+      { name: 'Wet well level', range: '4 – 13 ft normal', note: 'LL/HH alarms at 1 ft / 14 ft' },
+      { name: 'Screen DP', range: '< 5 PSI', note: 'H alarm at 5 PSI — screen may be plugged' },
+      { name: 'Raw turbidity', range: '< 200 NTU typical', note: 'Storm events can exceed 500 NTU' },
+    ],
+    operatorTips: [
+      'Check intake flow and wet-well level first thing every shift — changes here propagate through the entire plant within minutes.',
+      'A sudden drop in raw flow with pumps running suggests a partially closed valve, cavitating pump, or plugged screen.',
+      'Raw turbidity above 100 NTU typically requires an increase in alum dose; consult your jar-test results or dosing curve.',
+    ],
+  },
+  coagFloccPage: {
+    title: 'Coagulation / Flocculation',
+    category: 'Process',
+    description:
+      'Coagulation and flocculation are the first chemical treatment stages. Alum (aluminium sulfate) is injected into the rapid-mix basin to destabilise the colloidal particles that make water turbid. The slow-mix (flocculation) basins then gently agitate the water so that the destabilised particles collide and grow into larger, settleable floc.',
+    whyItMatters:
+      'Poor coagulation is the most common cause of filter breakthrough and finished-water turbidity violations. If alum dose is too low, colloids pass through to the filters; if too high, residual aluminium and depressed pH become concerns. Optimal coagulation must track changes in raw turbidity, temperature, and organic load in real time.',
+    keyParameters: [
+      { name: 'Alum dose', range: '10 – 30 mg/L typical', note: 'Optimised by jar test' },
+      { name: 'Floc basin turbidity', range: '< 20 NTU steady-state', note: 'H/HH at 50/100 NTU' },
+      { name: 'pH adjust dose', range: '1 – 5 mg/L', note: 'Maintains finished-water pH 7.0 – 7.8' },
+      { name: 'Rapid-mix speed', range: '80 – 150 RPM', note: 'G-value ~300–900 s⁻¹' },
+    ],
+    operatorTips: [
+      'Floc basin turbidity rising above 20 NTU without a raw-water change usually means alum dose is insufficient — increase by 2–3 mg/L and observe.',
+      'Cold water (< 10 °C) reduces coagulation efficiency; you may need to increase the alum dose by 10–20%.',
+      'Always adjust alum dose gradually — large step changes can shock the floc and push turbidity downstream.',
+    ],
+  },
+  sedimentationPage: {
+    title: 'Sedimentation / Filtration',
+    category: 'Process',
+    description:
+      'Settled water from the flocculation basins enters the clarifier where gravity separates floc from the water. The clarified effluent then passes through dual-media (anthracite over sand) filters that capture remaining particles. As filters accumulate solids, head loss builds until a backwash cycle is triggered to restore capacity.',
+    whyItMatters:
+      'The filter is the last physical barrier before disinfection. Filter effluent turbidity must stay below 0.3 NTU (95th percentile, LT2ESWTR) to ensure adequate disinfection and prevent pathogen passage. Sludge blanket management in the clarifier prevents carryover into the filters, which would shorten filter runs and risk breakthrough.',
+    keyParameters: [
+      { name: 'Clarifier turbidity', range: '< 5 NTU', note: 'H/HH alarms at 5/10 NTU' },
+      { name: 'Sludge blanket', range: '< 4 ft', note: 'H/HH alarms at 4/6 ft' },
+      { name: 'Filter head loss', range: '< 7 ft', note: 'H/HH triggers backwash at 7/9 ft' },
+      { name: 'Filter effluent NTU', range: '< 0.3 NTU', note: 'HH action level at 0.5 NTU (LT2ESWTR)' },
+    ],
+    operatorTips: [
+      'Initiate backwash before head loss hits the HH alarm — waiting too long risks premature breakthrough.',
+      'A rising sludge blanket with the sludge pump running at full speed suggests increased solids loading; check alum dose and raw turbidity.',
+      'Filter effluent turbidity above 0.1 NTU after a long run is a warning sign to initiate backwash soon.',
+    ],
+  },
+  disinfectionPage: {
+    title: 'Disinfection / Clearwell',
+    category: 'Process',
+    description:
+      'Filtered water receives chlorine (and optionally UV) to inactivate pathogens before entering the clearwell storage and distribution system. Chlorine residual is measured at the plant outlet and at a representative distribution point. Fluoride may also be added at this stage. The clearwell provides hydraulic buffer capacity between the plant and the distribution system.',
+    whyItMatters:
+      'Disinfection is the final and most critical public health barrier. The EPA MRDL (Maximum Residual Disinfectant Level) caps free chlorine at 4.0 mg/L plant-wide; the SWTR requires a detectable residual (≥ 0.2 mg/L) throughout distribution at all times. Maintaining residual within the regulatory band protects consumers from both under-disinfection and disinfection by-product formation.',
+    keyParameters: [
+      { name: 'Chlorine dose', range: '1 – 3 mg/L typical', note: 'Adjusted to achieve target residual' },
+      { name: 'Plant Cl₂ residual', range: '0.5 – 3.0 mg/L', note: 'HH at 4.0 mg/L (EPA MRDL)' },
+      { name: 'Dist. Cl₂ residual', range: '0.2 – 2.0 mg/L', note: 'LL at 0.2 mg/L (SWTR minimum)' },
+      { name: 'Finished-water pH', range: '7.0 – 7.8 target', note: 'Regulatory bounds 6.5 – 8.5' },
+      { name: 'Clearwell level', range: '5 – 18 ft normal', note: 'Provides storage buffer' },
+    ],
+    operatorTips: [
+      'Distribution residual is always lower than plant residual — plan your dose to keep both within their respective alarm bands.',
+      'Finished-water pH above 7.8 significantly reduces free chlorine effectiveness; monitor pH when increasing chlorine dose.',
+      'A dropping clearwell level during a backwash cycle is normal; a continuously draining clearwell with no backwash indicates a demand or valve issue.',
+    ],
+  },
+
   // ── INTAKE ──────────────────────────────────────────────────────────────
   sourceWater: {
     title: 'Raw Source Water',
@@ -446,27 +525,6 @@ export const hmiInfo: Record<string, HmiInfo> = {
     ],
   },
 
-  fluorideFeed: {
-    title: 'Fluoride Feed System (DIS-P-402)',
-    category: 'Chemical',
-    description:
-      'A metering pump system delivering fluorosilicic acid (H₂SiF₆) or sodium fluoride (NaF) to the finished water to achieve the EPA-recommended fluoride concentration for public health benefit. Fluoridation prevents dental caries (tooth decay) in the community.',
-    whyItMatters:
-      'Community water fluoridation is a public health mandate at many utilities, endorsed by the CDC as one of the ten great public health achievements of the 20th century. Operators must maintain the concentration within a tight band: too low loses the health benefit; exceeding 4 mg/L (MCL) can cause dental and skeletal fluorosis and is a regulatory violation.',
-    keyParameters: [
-      { name: 'EPA recommended level', range: '0.7 mg/L' },
-      { name: 'Acceptable operating range', range: '0.6 – 0.8 mg/L' },
-      { name: 'Maximum Contaminant Level (MCL)', range: '4.0 mg/L', note: 'Never exceed this level' },
-      { name: 'Secondary MCL (cosmetic/taste)', range: '2.0 mg/L', note: 'Above this is reportable' },
-    ],
-    operatorTips: [
-      'Verify fluoride residual with a grab sample and ion meter or colorimetric test every shift — do not rely solely on the online analyzer.',
-      'Fluorosilicic acid is highly corrosive and dangerous; always wear full PPE and have an eyewash station immediately accessible.',
-      'If fluoride drops below 0.6 mg/L, increase dose immediately and record the deviation in your operations log.',
-      'Fluoride pumps should have a redundant (backup) pump that automatically engages if the primary fails.',
-    ],
-  },
-
   contactChamber: {
     title: 'Chlorine Contact Chamber',
     category: 'Process',
@@ -564,26 +622,6 @@ export const hmiInfo: Record<string, HmiInfo> = {
       'Verify pH analyzer with a calibrated bench meter and fresh buffer standards at least weekly.',
       'If pH drops below 7.0, increase caustic or lime addition; investigate the cause — a coagulant overdose is common.',
       'Track pH trend over your shift; slow drift often means a chemical feed pump is drifting or a reagent is depleted.',
-    ],
-  },
-
-  fluorideResidual: {
-    title: 'Fluoride Residual Analyzer (DIS-AIT-004)',
-    category: 'Instrument',
-    description:
-      'An online or grab-sample analyzer measuring the fluoride concentration in finished water leaving the plant. Fluoride is intentionally added to water to prevent dental cavities, but must be maintained within a precise regulatory range.',
-    whyItMatters:
-      'Fluoride must be maintained at or near 0.7 mg/L per EPA recommendations. Chronic exposure above 4 mg/L (the MCL) can cause dental and skeletal fluorosis, making this measurement safety-critical. Under-fluoridation wastes the public health benefit and may expose the utility to community concerns.',
-    keyParameters: [
-      { name: 'EPA recommended level', range: '0.7 mg/L' },
-      { name: 'Acceptable range', range: '0.6 – 0.8 mg/L' },
-      { name: 'MCL (Maximum Contaminant Level)', range: '4.0 mg/L', note: 'Violation if exceeded at entry point' },
-      { name: 'SMCL (Secondary / cosmetic)', range: '2.0 mg/L' },
-    ],
-    operatorTips: [
-      'Take a daily grab sample and verify with a calibrated ion-selective electrode (ISE) meter — online analyzers can drift.',
-      'Document every daily reading in the fluoride log as required by your operating permit.',
-      'High fluoride can be diluted by lowering the pump rate; do not shut off the pump entirely without supervisor approval.',
     ],
   },
 

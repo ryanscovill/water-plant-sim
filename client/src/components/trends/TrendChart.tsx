@@ -14,10 +14,44 @@ interface TrendChartProps {
   unit?: string;
   highLimit?: number;
   lowLimit?: number;
+  yMin?: number;
+  yMax?: number;
   height?: number;
   activeAlarms?: Alarm[];
-  events?: Array<{ time: string; description: string }>;
+  events?: Array<{ ts: number; type: string; description: string }>;
 }
+
+const EVENT_LINE_COLOR: Record<string, string> = {
+  pump:             '#1d4ed8',
+  valve:            '#0e7490',
+  setpoint:         '#7e22ce',
+  backwash:         '#b45309',
+  acknowledgeAlarm: '#4b5563',
+  acknowledgeAll:   '#4b5563',
+  clearScreen:      '#15803d',
+  simulation:       '#c2410c',
+  'alarm-CRITICAL': '#ef4444',
+  'alarm-HIGH':     '#f59e0b',
+  'alarm-MEDIUM':   '#eab308',
+  'alarm-LOW':      '#60a5fa',
+  'alarm-cleared':  '#6b7280',
+};
+
+const EVENT_LABEL: Record<string, string> = {
+  pump:             'Pump',
+  valve:            'Valve',
+  setpoint:         'Setpoint',
+  backwash:         'Backwash',
+  acknowledgeAlarm: 'Ack Alarm',
+  acknowledgeAll:   'Ack All',
+  clearScreen:      'Clear Screen',
+  simulation:       'Simulation',
+  'alarm-CRITICAL': 'Alarm Critical',
+  'alarm-HIGH':     'Alarm High',
+  'alarm-MEDIUM':   'Alarm Medium',
+  'alarm-LOW':      'Alarm Low',
+  'alarm-cleared':  'Alarm Cleared',
+};
 
 const ALARM_LINE_COLOR: Record<string, string> = {
   CRITICAL: '#ef4444',
@@ -33,8 +67,9 @@ const ALARM_BORDER: Record<string, string> = {
   LOW:      'border-blue-400',
 };
 
-export function TrendChart({ data, tag, unit = '', highLimit, lowLimit, height = 200, activeAlarms = [], events = [] }: TrendChartProps) {
+export function TrendChart({ data, tag, unit = '', highLimit, lowLimit, yMin, yMax, height = 200, activeAlarms = [], events = [] }: TrendChartProps) {
   const formatted = data.map((p) => ({
+    ts: new Date(p.timestamp).getTime(),
     time: new Date(p.timestamp).toLocaleTimeString(),
     value: Number(p.value.toFixed(3)),
   }));
@@ -48,19 +83,49 @@ export function TrendChart({ data, tag, unit = '', highLimit, lowLimit, height =
   const lineColor = topAlarm ? ALARM_LINE_COLOR[topAlarm.priority] : '#60a5fa';
   const borderClass = topAlarm ? ALARM_BORDER[topAlarm.priority] : 'border-gray-700';
 
+  // Threshold for snapping tooltip to a nearby event: 2% of the visible time range
+  const tsRange = formatted.length >= 2 ? formatted[formatted.length - 1].ts - formatted[0].ts : 60_000;
+  const eventSnapThreshold = tsRange * 0.02;
+
+  const CustomTooltip = ({ active, label, payload }: { active?: boolean; label?: number; payload?: Array<{ value: number }> }) => {
+    if (!active || label == null) return null;
+    const nearbyEvents = events.filter((ev) => Math.abs(ev.ts - label) <= eventSnapThreshold);
+    const borderColor = nearbyEvents.length ? (EVENT_LINE_COLOR[nearbyEvents[0].type] ?? '#6b7280') : '#374151';
+    return (
+      <div style={{ backgroundColor: '#1f2937', border: `1px solid ${borderColor}`, borderRadius: 4, padding: '6px 10px', fontSize: 13, fontFamily: 'monospace' }}>
+        <div style={{ color: '#9ca3af', marginBottom: 2 }}>{new Date(label).toLocaleTimeString()}</div>
+        {payload?.[0] != null && (
+          <div style={{ color: lineColor }}>{payload[0].value} {unit}</div>
+        )}
+        {nearbyEvents.map((ev, i) => {
+          const evColor = EVENT_LINE_COLOR[ev.type] ?? '#6b7280';
+          return (
+            <div key={i} style={{ color: evColor, marginTop: 4, borderTop: `1px solid ${evColor}40`, paddingTop: 4 }}>
+              ▲ {ev.description}
+            </div>
+          );
+        })}
+      </div>
+    );
+  };
+
   return (
     <div className={`bg-gray-900 border rounded-lg p-3 ${borderClass}`}>
       <div className="text-sm text-gray-400 font-mono mb-2">{tag} {unit && `(${unit})`}</div>
       <ResponsiveContainer width="100%" height={height}>
         <LineChart data={formatted} margin={{ top: 5, right: 10, bottom: 5, left: 10 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-          <XAxis dataKey="time" tick={{ fill: '#6b7280', fontSize: 13 }} interval="preserveStartEnd" />
-          <YAxis tick={{ fill: '#6b7280', fontSize: 13 }} />
-          <Tooltip
-            contentStyle={{ backgroundColor: '#1f2937', border: '1px solid #374151', fontSize: 14 }}
-            labelStyle={{ color: '#9ca3af' }}
-            itemStyle={{ color: lineColor }}
+          <XAxis
+            dataKey="ts"
+            type="number"
+            scale="time"
+            domain={['dataMin', 'dataMax']}
+            tickFormatter={(v) => new Date(v).toLocaleTimeString()}
+            tick={{ fill: '#6b7280', fontSize: 13 }}
+            interval="preserveStartEnd"
           />
+          <YAxis tick={{ fill: '#6b7280', fontSize: 13 }} domain={yMin !== undefined && yMax !== undefined ? [yMin, yMax] : ['auto', 'auto']} />
+          <Tooltip content={<CustomTooltip />} />
           {highLimit !== undefined && (
             <ReferenceLine y={highLimit} stroke="#f59e0b" strokeDasharray="4 2" label={{ value: `H: ${highLimit}`, fill: '#f59e0b', fontSize: 12 }} />
           )}
@@ -82,16 +147,19 @@ export function TrendChart({ data, tag, unit = '', highLimit, lowLimit, height =
               />
             );
           })}
-          {events.map((ev, i) => (
-            <ReferenceLine
-              key={i}
-              x={ev.time}
-              stroke="#a855f7"
-              strokeWidth={1}
-              strokeDasharray="3 3"
-              label={{ value: '▲', fill: '#a855f7', fontSize: 10, position: 'insideTopLeft' }}
-            />
-          ))}
+          {events.map((ev, i) => {
+            const evColor = EVENT_LINE_COLOR[ev.type] ?? '#6b7280';
+            return (
+              <ReferenceLine
+                key={i}
+                x={ev.ts}
+                stroke={evColor}
+                strokeWidth={1.5}
+                strokeDasharray="4 2"
+                label={{ value: '▲', fill: evColor, fontSize: 10, position: 'insideTopLeft' }}
+              />
+            );
+          })}
           <Line
             type="monotone" dataKey="value" stroke={lineColor} strokeWidth={1.5}
             dot={false} activeDot={{ r: 4, fill: lineColor }}
@@ -99,6 +167,27 @@ export function TrendChart({ data, tag, unit = '', highLimit, lowLimit, height =
           />
         </LineChart>
       </ResponsiveContainer>
+
+      {events.length > 0 && (() => {
+        const presentTypes = [...new Set(events.map((ev) => ev.type))];
+        return (
+          <div className="flex flex-wrap gap-x-4 gap-y-1 mt-2 pt-2 border-t border-gray-800">
+            {presentTypes.map((type) => {
+              const color = EVENT_LINE_COLOR[type] ?? '#6b7280';
+              const label = EVENT_LABEL[type] ?? type;
+              return (
+                <div key={type} className="flex items-center gap-1.5 text-xs font-mono">
+                  <svg width="18" height="10">
+                    <line x1="0" y1="5" x2="18" y2="5" stroke={color} strokeWidth="1.5" strokeDasharray="4 2" />
+                    <text x="9" y="9" textAnchor="middle" fill={color} fontSize="7">▲</text>
+                  </svg>
+                  <span style={{ color }}>{label}</span>
+                </div>
+              );
+            })}
+          </div>
+        );
+      })()}
     </div>
   );
 }

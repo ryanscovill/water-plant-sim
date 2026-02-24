@@ -3,10 +3,11 @@ import type { ScenarioDefinition } from './index';
 export const chlorineDosingFault: ScenarioDefinition = {
   id: 'chlorine-dosing-fault',
   name: 'Chlorine Pump Fault',
-  description: 'Chlorine pump fails. Residual decays below 0.5 mg/L regulatory minimum. Restore dosing before violation.',
+  description: 'Chlorine dose signal is lost at T+5s and the pump trips at T+15s. Residual decays toward zero. Restore dosing before a distribution violation occurs.',
   difficulty: 'Advanced',
   duration: 0,
   steps: [
-    { triggerAt: 60, action: 'faultPump', params: { pumpId: 'chlorinePump' } },
+    { triggerAt: 5,  action: 'setChlorineDoseSetpoint', params: { value: 0 } },
+    { triggerAt: 15, action: 'faultPump',               params: { pumpId: 'chlorinePump' } },
   ],
 };

@@ -1,4 +1,4 @@
-import type { DisinfectionState, SedimentationState, CoagulationState } from '../ProcessState';
+import type { DisinfectionState, SedimentationState, CoagulationState, IntakeState } from '../ProcessState';
 import { clamp, firstOrderLag, accumulateRunHours, rampDoseRate } from '../utils';
 
 // Chlorine utilisation efficiency (fraction of applied dose becoming residual)
@@ -11,23 +11,23 @@ const CL_TURBIDITY_DEMAND = 0.1;
 // Yields ≈ 2.5% loss over a standard 0.5 s tick; scales correctly with any dt.
 const CL_DIST_DECAY_K = 0.05;
 
-// Fluoride dose-to-residual transfer efficiency (90%)
-const F_DOSE_EFFICIENCY = 0.9;
-
 // pH adjustment: 1 mg/L of caustic raises finished-water pH by this many S.U.
-// Calibrated so that the default 2.0 mg/L dose yields target pH 7.4.
 const PH_ADJUST_FACTOR = 0.2;
-const PH_BASE = 7.0;
+
+// Alum (aluminium sulfate) hydrolyses to release H⁺, depressing finished-water pH.
+// Calibrated at 0.02 S.U. per mg/L; 18 mg/L default dose depresses pH by 0.36 S.U.
+const ALUM_PH_DEPRESSION = 0.02;
+
+// Fallback source pH used when IntakeState is not passed (tests, edge cases).
+const DEFAULT_SOURCE_PH = 7.2;
 
 export class DisinfectionStage {
-  update(dis: DisinfectionState, sed: SedimentationState, dt: number, coag?: CoagulationState): DisinfectionState {
+  update(dis: DisinfectionState, sed: SedimentationState, dt: number, coag?: CoagulationState, intake?: IntakeState): DisinfectionState {
     const next = { ...dis };
     next.chlorinePumpStatus = { ...dis.chlorinePumpStatus };
-    next.fluoridePumpStatus = { ...dis.fluoridePumpStatus };
     next.uvSystemStatus = { ...dis.uvSystemStatus };
 
     next.chlorinePumpStatus.runHours = accumulateRunHours(next.chlorinePumpStatus.runHours, next.chlorinePumpStatus.running, next.chlorinePumpStatus.fault, dt);
-    next.fluoridePumpStatus.runHours = accumulateRunHours(next.fluoridePumpStatus.runHours, next.fluoridePumpStatus.running, next.fluoridePumpStatus.fault, dt);
     next.uvSystemStatus.runHours = accumulateRunHours(next.uvSystemStatus.runHours, next.uvSystemStatus.running, next.uvSystemStatus.fault, dt);
 
     // Chlorine dose rate ramps toward setpoint when pump runs; decays slowly when off.
@@ -42,14 +42,11 @@ export class DisinfectionStage {
     const targetDistResidual = next.chlorineResidualPlant * Math.exp(-CL_DIST_DECAY_K * dt);
     next.chlorineResidualDist = clamp(firstOrderLag(next.chlorineResidualDist, targetDistResidual, 0.03), 0, 4);
 
-    // Fluoride dose rate ramps toward setpoint; decays slowly when off.
-    next.fluorideDoseRate = rampDoseRate(next.fluorideDoseRate, next.fluorideDoseSetpoint, next.fluoridePumpStatus.running, next.fluoridePumpStatus.fault, 0.1, 0.95, 0, 2);
-    const targetFluoride = next.fluorideDoseRate * F_DOSE_EFFICIENCY;
-    next.fluorideResidual = clamp(firstOrderLag(next.fluorideResidual, targetFluoride, 0.05), 0, 2);
-
-    // Finished-water pH: base 7.0 plus contribution from caustic/lime dose.
-    // Default 2.0 mg/L × 0.2 S.U./(mg/L) → target 7.4 S.U.
-    const targetPH = PH_BASE + (coag?.pHAdjustDoseRate ?? 2.0) * PH_ADJUST_FACTOR;
+    // Finished-water pH: starts from source water pH, alum depresses it, caustic/lime raises it.
+    // Default: 7.2 (sourcePH) − 18×0.02 + 2.8×0.2 = 7.2 − 0.36 + 0.56 = 7.40 S.U.
+    const sourcePH = intake?.sourcePH ?? DEFAULT_SOURCE_PH;
+    const alumDose = coag?.alumDoseRate ?? 18;
+    const targetPH = sourcePH - alumDose * ALUM_PH_DEPRESSION + (coag?.pHAdjustDoseRate ?? 2.8) * PH_ADJUST_FACTOR;
     next.finishedWaterPH = clamp(firstOrderLag(next.finishedWaterPH, targetPH, 0.02), 6.0, 9.0);
 
     // Clearwell level: inflow stops during backwash (filter not producing filtered water).

@@ -16,6 +16,7 @@ export function useSocket() {
   const resetAlarms = useAlarmStore((s) => s.resetAlarms);
   const setActiveScenario = useScenarioStore((s) => s.setActiveScenario);
   const addEvent = useEventStore((s) => s.addEvent);
+  const clearEvents = useEventStore((s) => s.clearEvents);
 
   useEffect(() => {
     const engine = getEngine();
@@ -46,6 +47,7 @@ export function useSocket() {
 
     const onReset = () => {
       resetAlarms();
+      clearEvents();
     };
 
     engine.on('state:update', onStateUpdate);
@@ -63,5 +65,5 @@ export function useSocket() {
       engine.off('operator:event', onOperatorEvent);
       engine.off('simulation:event', onSimulationEvent);
     };
-  }, [setState, setConnected, setAlarms, addAlarm, clearAlarm, resetAlarms, setActiveScenario, addEvent]);
+  }, [setState, setConnected, setAlarms, addAlarm, clearAlarm, resetAlarms, setActiveScenario, addEvent, clearEvents]);
 }

@@ -36,6 +36,8 @@ export interface CoagulationState {
   rapidMixerStatus: EquipmentStatus;
   slowMixerStatus: EquipmentStatus;
   pHAdjustDoseRate: number;
+  pHAdjustDoseSetpoint: number;
+  pHAdjustPumpStatus: EquipmentStatus;
 }
 
 export interface SedimentationState {
@@ -55,13 +57,9 @@ export interface DisinfectionState {
   chlorineDoseSetpoint: number;
   chlorineResidualPlant: number;
   chlorineResidualDist: number;
-  fluorideDoseRate: number;
-  fluorideDoseSetpoint: number;
-  fluorideResidual: number;
   finishedWaterPH: number;
   clearwellLevel: number;
   chlorinePumpStatus: EquipmentStatus;
-  fluoridePumpStatus: EquipmentStatus;
   uvSystemStatus: EquipmentStatus;
 }
 

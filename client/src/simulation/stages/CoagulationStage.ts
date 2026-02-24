@@ -17,13 +17,18 @@ export class CoagulationStage {
     next.alumPumpStatus = { ...coag.alumPumpStatus };
     next.rapidMixerStatus = { ...coag.rapidMixerStatus };
     next.slowMixerStatus = { ...coag.slowMixerStatus };
+    next.pHAdjustPumpStatus = { ...coag.pHAdjustPumpStatus };
 
     next.alumPumpStatus.runHours = accumulateRunHours(next.alumPumpStatus.runHours, next.alumPumpStatus.running, next.alumPumpStatus.fault, dt);
     next.rapidMixerStatus.runHours = accumulateRunHours(next.rapidMixerStatus.runHours, next.rapidMixerStatus.running, next.rapidMixerStatus.fault, dt);
     next.slowMixerStatus.runHours = accumulateRunHours(next.slowMixerStatus.runHours, next.slowMixerStatus.running, next.slowMixerStatus.fault, dt);
+    next.pHAdjustPumpStatus.runHours = accumulateRunHours(next.pHAdjustPumpStatus.runHours, next.pHAdjustPumpStatus.running, next.pHAdjustPumpStatus.fault, dt);
 
     // Alum dose ramps toward setpoint when pump runs; decays when off (τ_decay = 10 ticks).
     next.alumDoseRate = rampDoseRate(next.alumDoseRate, next.alumDoseSetpoint, next.alumPumpStatus.running, next.alumPumpStatus.fault, 0.1, 0.9, 0, 80);
+
+    // pH adjust (caustic/lime) dose ramps toward setpoint; decays slowly when pump is off.
+    next.pHAdjustDoseRate = rampDoseRate(next.pHAdjustDoseRate, next.pHAdjustDoseSetpoint, next.pHAdjustPumpStatus.running, next.pHAdjustPumpStatus.fault, 0.1, 0.95, 0, 10);
 
     // Mixing energy boosts coagulation (rapid mix has larger effect than slow mix).
     const mixingFactor =

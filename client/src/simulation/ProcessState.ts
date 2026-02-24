@@ -37,6 +37,8 @@ export interface CoagulationState {
   rapidMixerStatus: EquipmentStatus;
   slowMixerStatus: EquipmentStatus;
   pHAdjustDoseRate: number;    // mg/L
+  pHAdjustDoseSetpoint: number; // mg/L
+  pHAdjustPumpStatus: EquipmentStatus;
 }
 
 export interface SedimentationState {
@@ -56,13 +58,9 @@ export interface DisinfectionState {
   chlorineDoseSetpoint: number; // mg/L
   chlorineResidualPlant: number; // mg/L
   chlorineResidualDist: number;  // mg/L
-  fluorideDoseRate: number;    // mg/L
-  fluorideDoseSetpoint: number; // mg/L
-  fluorideResidual: number;    // mg/L
   finishedWaterPH: number;
   clearwellLevel: number;      // feet (0-20)
   chlorinePumpStatus: EquipmentStatus;
-  fluoridePumpStatus: EquipmentStatus;
   uvSystemStatus: EquipmentStatus;
 }
 
@@ -121,7 +119,9 @@ export function createInitialState(): ProcessState {
       alumPumpStatus: { running: true, fault: false, speed: 60, runHours: 2100 },
       rapidMixerStatus: { running: true, fault: false, speed: 100, runHours: 5200 },
       slowMixerStatus: { running: true, fault: false, speed: 100, runHours: 5200 },
-      pHAdjustDoseRate: 2.0,
+      pHAdjustDoseRate: 2.8,
+      pHAdjustDoseSetpoint: 2.8,
+      pHAdjustPumpStatus: { running: true, fault: false, speed: 40, runHours: 1800 },
     },
     sedimentation: {
       clarifierTurbidity: 2.1,
@@ -135,17 +135,13 @@ export function createInitialState(): ProcessState {
       clarifierRakeStatus: { running: true, fault: false, speed: 100, runHours: 8900 },
     },
     disinfection: {
-      chlorineDoseRate: 2.5,
-      chlorineDoseSetpoint: 2.5,
-      chlorineResidualPlant: 1.8,
-      chlorineResidualDist: 1.2,
-      fluorideDoseRate: 0.8,
-      fluorideDoseSetpoint: 0.8,
-      fluorideResidual: 0.75,
+      chlorineDoseRate: 2.0,
+      chlorineDoseSetpoint: 2.0,
+      chlorineResidualPlant: 1.7,
+      chlorineResidualDist: 1.5,
       finishedWaterPH: 7.4,
       clearwellLevel: 14.0,
       chlorinePumpStatus: { running: true, fault: false, speed: 65, runHours: 4200 },
-      fluoridePumpStatus: { running: true, fault: false, speed: 40, runHours: 4200 },
       uvSystemStatus: { running: true, fault: false, speed: 100, runHours: 6100 },
     },
     alarms: [],

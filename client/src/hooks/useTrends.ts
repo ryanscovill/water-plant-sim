@@ -21,5 +21,11 @@ export function useTrends(tag: string, durationSeconds: number = 3600) {
     return () => clearInterval(interval);
   }, [refresh]);
 
+  useEffect(() => {
+    const engine = getEngine();
+    engine.on('simulation:reset', refresh);
+    return () => engine.off('simulation:reset', refresh);
+  }, [refresh]);
+
   return { data, loading: false, error: null, refetch: refresh };
 }

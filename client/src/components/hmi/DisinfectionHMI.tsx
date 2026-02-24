@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import type React from 'react';
+import { Info } from 'lucide-react';
 import { useSimulationStore } from '../../store/useSimulationStore';
 import { useAlarmStore } from '../../store/useAlarmStore';
 import { Tank } from './svg/Tank';
@@ -54,7 +55,12 @@ export function DisinfectionHMI() {
 
   return (
     <div>
-      <h2 className="text-gray-300 font-bold text-sm mb-3 font-mono">DISINFECTION / CLEARWELL</h2>
+      <div className="flex items-center gap-2 mb-3">
+        <h2 className="text-gray-300 font-bold text-sm font-mono">DISINFECTION / CLEARWELL</h2>
+        <button onClick={() => setInfoKey('disinfectionPage')} className="text-blue-400 hover:text-blue-300 p-0.5 rounded hover:bg-gray-800" title="About this screen">
+          <Info size={14} />
+        </button>
+      </div>
       <div className="flex gap-3 items-start">
         <div className="flex-1 min-w-0">
           <svg viewBox="0 0 720 380" width="100%" className="bg-gray-950 rounded border border-gray-800" onClick={handleSvgClick}>
@@ -70,13 +76,6 @@ export function DisinfectionHMI() {
               selected={selected === 'chlorine'} />
             <SvgInfo x={216} y={27} onClick={() => setInfoKey('chlorineFeed')} />
             <Pipe x1="200" y1="75" x2="200" y2="150" flowing={disinfection.chlorinePumpStatus.running} color="#6d28d9" strokeWidth={3} />
-
-            {/* Fluoride feed */}
-            <ChemFeed status={disinfection.fluoridePumpStatus} doseRate={disinfection.fluorideDoseRate}
-              unit="mg/L" label="FLUORIDE" id="hmi-fluorideDose" onClick={() => requestSelect('fluoride')} x={300} y={55}
-              selected={selected === 'fluoride'} />
-            <SvgInfo x={316} y={27} onClick={() => setInfoKey('fluorideFeed')} />
-            <Pipe x1="300" y1="75" x2="300" y2="150" flowing={disinfection.fluoridePumpStatus.running} color="#6d28d9" strokeWidth={3} />
 
             {/* Contact chamber */}
             <rect x="140" y="150" width="240" height="60" rx="4" fill="#0c1a2e" stroke="#1d4ed8" strokeWidth="2" />
@@ -118,12 +117,6 @@ export function DisinfectionHMI() {
               alarm={getAlarm('DIS-AIT-003')} decimals={2} />
             <SvgInfo x={640} y={112} onClick={() => setInfoKey('finishedPH')} />
 
-            {/* Fluoride — positioned right of clearwell */}
-            <AnalyzerTag tag="DIS-AIT-004" value={disinfection.fluorideResidual} unit="mg/L"
-              label="Fluoride Res." id="hmi-fluorideResidual" x={583} y={210}
-              alarm={getAlarm('DIS-AIT-004')} />
-            <SvgInfo x={640} y={192} onClick={() => setInfoKey('fluorideResidual')} />
-
             {/* Distribution outlet */}
             <Pipe x1="490" y1="170" x2="660" y2="170" flowing={flowing} />
             <text x="665" y="165" fill="#4b5563" fontSize="13" fontFamily="monospace">DIST.</text>
@@ -145,16 +138,6 @@ export function DisinfectionHMI() {
               <div className="mt-4 border-t border-gray-700 pt-4">
                 <ChemDoseControl tagId="chlorineDoseSetpoint" currentSetpoint={disinfection.chlorineDoseSetpoint}
                   currentActual={disinfection.chlorineDoseRate} label="Chlorine Dose" unit="mg/L" min={0} max={10} step={0.1}
-                  onDirtyChange={setIsDirty} />
-              </div>
-            </EquipmentPanel>
-          )}
-          {selected === 'fluoride' && (
-            <EquipmentPanel title="Fluoride Feed System" tag="DIS-AIT-004" onClose={() => requestSelect(null)} onInfo={() => setInfoKey('fluorideFeed')}>
-              <PumpControl pumpId="fluoridePump" status={disinfection.fluoridePumpStatus} label="DIS-P-402" />
-              <div className="mt-4 border-t border-gray-700 pt-4">
-                <ChemDoseControl tagId="fluorideDoseSetpoint" currentSetpoint={disinfection.fluorideDoseSetpoint}
-                  currentActual={disinfection.fluorideDoseRate} label="Fluoride Dose" unit="mg/L" min={0} max={2} step={0.05}
                   onDirtyChange={setIsDirty} />
               </div>
             </EquipmentPanel>

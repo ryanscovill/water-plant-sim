@@ -3,10 +3,10 @@ import type { ScenarioDefinition } from './index';
 export const alumOverdose: ScenarioDefinition = {
   id: 'alum-overdose',
   name: 'Stuck Alum Valve',
-  description: 'Alum dose doubles due to stuck valve. Monitor and correct pH drop.',
+  description: 'Alum valve sticks open at T+15s, driving the setpoint to 50 mg/L — nearly triple normal. Floc basin pH will crash. Reduce dosing before filter performance is impacted.',
   difficulty: 'Intermediate',
   duration: 0,
   steps: [
-    { triggerAt: 30, action: 'setAlumDose', params: { value: 36 } },
+    { triggerAt: 15, action: 'setAlumDose', params: { value: 50 } },
   ],
 };

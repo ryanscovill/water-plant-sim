@@ -135,10 +135,31 @@ export class ScenarioEngine {
           coagulation: {
             ...state.coagulation,
             alumDoseSetpoint: step.params.value as number,
-            alumDoseRate: step.params.value as number,
           },
         }));
-        engine.emitSimulationEvent(`Alum dose forced to ${step.params.value} mg/L`);
+        engine.emitSimulationEvent(`Alum dose setpoint forced to ${step.params.value} mg/L`);
+        break;
+      }
+      case 'setChlorineDoseSetpoint': {
+        engine.injectScenario((state: ProcessState) => ({
+          ...state,
+          disinfection: {
+            ...state.disinfection,
+            chlorineDoseSetpoint: step.params.value as number,
+          },
+        }));
+        engine.emitSimulationEvent(`Chlorine dose setpoint set to ${step.params.value} mg/L`);
+        break;
+      }
+      case 'setSludgeLevel': {
+        engine.injectScenario((state: ProcessState) => ({
+          ...state,
+          sedimentation: {
+            ...state.sedimentation,
+            sludgeBlanketLevel: step.params.value as number,
+          },
+        }));
+        engine.emitSimulationEvent(`Sludge blanket pre-set to ${step.params.value} ft`);
         break;
       }
     }

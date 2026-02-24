@@ -23,7 +23,6 @@ function extractTagValues(state: ProcessState): Record<string, number> {
     'DIS-AIT-001': state.disinfection.chlorineResidualPlant,
     'DIS-AIT-002': state.disinfection.chlorineResidualDist,
     'DIS-AIT-003': state.disinfection.finishedWaterPH,
-    'DIS-AIT-004': state.disinfection.fluorideResidual,
     'DIS-LIT-001': state.disinfection.clearwellLevel,
     'DIS-FIT-001': state.disinfection.chlorineDoseRate,
   };

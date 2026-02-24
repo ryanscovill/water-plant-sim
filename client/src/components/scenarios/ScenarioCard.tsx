@@ -30,14 +30,14 @@ export function ScenarioCard({ scenario, onStart, onStop }: ScenarioCardProps) {
         {scenario.active ? (
           <button
             onClick={onStop}
-            className="flex items-center gap-2 px-4 py-2 bg-red-700 hover:bg-red-600 text-white text-sm rounded w-full justify-center font-semibold"
+            className="flex items-center gap-2 px-4 py-2 bg-red-700 hover:bg-red-600 text-white text-sm rounded w-full justify-center font-semibold cursor-pointer"
           >
             <Square size={14} /> STOP SCENARIO
           </button>
         ) : (
           <button
             onClick={onStart}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-700 hover:bg-blue-600 text-white text-sm rounded w-full justify-center font-semibold"
+            className="flex items-center gap-2 px-4 py-2 bg-blue-700 hover:bg-blue-600 text-white text-sm rounded w-full justify-center font-semibold cursor-pointer"
           >
             <Play size={14} /> START SCENARIO
           </button>

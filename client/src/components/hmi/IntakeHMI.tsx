@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import type React from 'react';
+import { Info } from 'lucide-react';
 import { useSimulationStore } from '../../store/useSimulationStore';
 import { useAlarmStore } from '../../store/useAlarmStore';
 import { Pump } from './svg/Pump';
@@ -49,7 +50,12 @@ export function IntakeHMI() {
 
   return (
     <div>
-      <h2 className="text-gray-300 font-bold text-sm mb-3 font-mono">INTAKE — RAW WATER SUPPLY</h2>
+      <div className="flex items-center gap-2 mb-3">
+        <h2 className="text-gray-300 font-bold text-sm font-mono">INTAKE — RAW WATER SUPPLY</h2>
+        <button onClick={() => setInfoKey('intakePage')} className="text-blue-400 hover:text-blue-300 p-0.5 rounded hover:bg-gray-800" title="About this screen">
+          <Info size={14} />
+        </button>
+      </div>
       <div className="flex gap-3 items-start">
         <div className="flex-1 min-w-0">
           <svg viewBox="0 0 720 320" width="100%" className="bg-gray-950 rounded border border-gray-800" onClick={handleSvgClick}>
