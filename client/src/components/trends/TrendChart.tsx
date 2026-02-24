@@ -2,6 +2,7 @@ import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine,
 } from 'recharts';
 import type { Alarm } from '../../types/process';
+import { formatTPlus } from '../../utils/formatTPlus';
 
 interface TrendPoint {
   timestamp: string;
@@ -20,7 +21,9 @@ interface TrendChartProps {
   height?: number;
   activeAlarms?: Alarm[];
   events?: Array<{ ts: number; type: string; description: string }>;
+  simStartTime?: number;
 }
+
 
 const EVENT_LINE_COLOR: Record<string, string> = {
   pump:             '#1d4ed8',
@@ -64,12 +67,14 @@ const ALARM_BORDER: Record<string, string> = {
   LOW:      'border-blue-400',
 };
 
-export function TrendChart({ data, tag, unit = '', decimals = 2, highLimit, lowLimit, yMin, yMax, height = 200, activeAlarms = [], events = [] }: TrendChartProps) {
+export function TrendChart({ data, tag, unit = '', decimals = 2, highLimit, lowLimit, yMin, yMax, height = 200, activeAlarms = [], events = [], simStartTime }: TrendChartProps) {
   const formatted = data.map((p) => ({
     ts: new Date(p.timestamp).getTime(),
-    time: new Date(p.timestamp).toLocaleTimeString(),
     value: Number(p.value.toFixed(3)),
   }));
+
+  const tPlus = (ts: number) =>
+    simStartTime != null ? formatTPlus(ts, simStartTime) : new Date(ts).toLocaleTimeString();
 
   // Highest-priority alarm for this tag drives line color
   const priorityOrder = ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW'];
@@ -90,7 +95,7 @@ export function TrendChart({ data, tag, unit = '', decimals = 2, highLimit, lowL
     const borderColor = nearbyEvents.length ? (EVENT_LINE_COLOR[nearbyEvents[0].type] ?? '#6b7280') : '#374151';
     return (
       <div style={{ backgroundColor: '#1f2937', border: `1px solid ${borderColor}`, borderRadius: 4, padding: '6px 10px', fontSize: 13, fontFamily: 'monospace' }}>
-        <div style={{ color: '#9ca3af', marginBottom: 2 }}>{new Date(label).toLocaleTimeString()}</div>
+        <div style={{ color: '#9ca3af', marginBottom: 2 }}>{tPlus(label)}</div>
         {payload?.[0] != null && (
           <div style={{ color: lineColor }}>{payload[0].value} {unit}</div>
         )}
@@ -122,7 +127,7 @@ export function TrendChart({ data, tag, unit = '', decimals = 2, highLimit, lowL
             type="number"
             scale="time"
             domain={['dataMin', 'dataMax']}
-            tickFormatter={(v) => new Date(v).toLocaleTimeString()}
+            tickFormatter={(v) => tPlus(v)}
             tick={{ fill: '#6b7280', fontSize: 13 }}
             interval="preserveStartEnd"
           />

@@ -5,6 +5,7 @@ import { useAlarmStore } from '../../store/useAlarmStore';
 import { useEventStore } from '../../store/useEventStore';
 import { useSimulationStore } from '../../store/useSimulationStore';
 import { TrendChart } from './TrendChart';
+import { getEngine } from '../../simulation/engine';
 import type { Alarm } from '../../types/process';
 
 const AVAILABLE_TAGS = [
@@ -167,6 +168,7 @@ export function TrendPanel() {
             height={300}
             activeAlarms={tagAlarms}
             events={chartEvents}
+            simStartTime={getEngine().getSimulationStartTime()}
           />
         )}
 

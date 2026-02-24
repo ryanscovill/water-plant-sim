@@ -3,6 +3,7 @@ import { Wifi, WifiOff, RotateCcw, Pause, Play } from 'lucide-react';
 import { useSimulationStore } from '../../store/useSimulationStore';
 import { useAlarmStore } from '../../store/useAlarmStore';
 import { getEngine } from '../../simulation/engine';
+import { formatTPlus } from '../../utils/formatTPlus';
 
 export function Navbar() {
   const connected = useSimulationStore((s) => s.connected);
@@ -117,7 +118,7 @@ export function Navbar() {
       {/* Timestamp */}
       {state && (
         <span className="text-gray-500 text-xs font-mono">
-          {new Date(state.timestamp).toLocaleTimeString()}
+          {formatTPlus(new Date(state.timestamp).getTime(), getEngine().getSimulationStartTime())}
         </span>
       )}
     </header>

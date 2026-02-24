@@ -81,3 +81,4 @@ At 2.5 MGD demand: outflow ≈ 0.000210 m/s → net fill rate ≈ 0.0000733 m/s 
 | 1× | 1 sim-minute | ~25 real minutes | ~3 real days | ~8 real hours |
 | 10× | 10 sim-minutes | ~2.5 real minutes | ~7.2 real hours | ~48 real minutes |
 | 60× | 1 sim-hour | ~25 real seconds | ~72 real minutes | ~8 real minutes |
+| 600× | 10 sim-hours | ~2.5 real seconds | ~7.2 real minutes | ~48 real seconds |

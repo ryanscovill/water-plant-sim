@@ -20,6 +20,7 @@ export class SimulationEngine {
   public scenarioEngine: ScenarioEngine;
   private intervalId: ReturnType<typeof setInterval> | null = null;
   private simulatedTime: number = Date.now();
+  private simulationStartTime: number = this.simulatedTime;
   private listeners: Map<string, Set<(arg: unknown) => void>> = new Map();
 
   constructor() {
@@ -141,6 +142,10 @@ export class SimulationEngine {
 
   getSimulatedTime(): number {
     return this.simulatedTime;
+  }
+
+  getSimulationStartTime(): number {
+    return this.simulationStartTime;
   }
 
   applyControl(type: string, payload: Record<string, unknown>): void {
@@ -404,6 +409,7 @@ export class SimulationEngine {
     this.historian.clear();
     this.scenarioEngine = new ScenarioEngine();
     this.simulatedTime = Date.now();
+    this.simulationStartTime = this.simulatedTime;
     this.emit('simulation:reset');
     this.emit('state:update', this.state);
   }
