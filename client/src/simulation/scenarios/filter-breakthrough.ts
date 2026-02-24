@@ -6,6 +6,7 @@ export const filterBreakthrough: ScenarioDefinition = {
   description: 'Filter is pre-loaded at 71 hours run time with 8.5 ft head loss — well past the 6 ft breakthrough onset. Effluent turbidity is rising. Initiate backwash immediately.',
   difficulty: 'Advanced',
   duration: 0,
+  completionTime: 120,
   steps: [
     { triggerAt: 0, action: 'preloadFilter', params: { headLoss: 8.5, filterRunTime: 71 } },
   ],

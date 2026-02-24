@@ -6,5 +6,6 @@ export const normalOperations: ScenarioDefinition = {
   description: 'Steady-state operations. All equipment running normally. Practice navigation and monitoring.',
   difficulty: 'Beginner',
   duration: 0,
+  completionTime: 120,
   steps: [],
 };

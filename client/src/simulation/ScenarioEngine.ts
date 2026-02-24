@@ -7,6 +7,8 @@ interface EngineInterface {
   setActiveScenario(id: string | null): void;
   applyControl(type: string, payload: Record<string, unknown>): void;
   emitSimulationEvent(description: string): void;
+  emitScenarioComplete(name: string): void;
+  getState(): ProcessState;
 }
 
 export class ScenarioEngine {
@@ -65,12 +67,16 @@ export class ScenarioEngine {
       }));
     }
 
-    if (this.activeScenario.duration > 0 && elapsed >= this.activeScenario.duration) {
-      const name = this.activeScenario.name;
-      engine.setActiveScenario(null);
-      this.activeScenario = null;
-      this.turbidityTarget = null;
-      engine.emitSimulationEvent(`Scenario completed: ${name}`);
+    if (elapsed >= this.activeScenario.completionTime) {
+      const activeAlarms = engine.getState().alarms.filter((a) => a.active);
+      if (activeAlarms.length === 0) {
+        const name = this.activeScenario.name;
+        engine.setActiveScenario(null);
+        this.activeScenario = null;
+        this.turbidityTarget = null;
+        engine.emitSimulationEvent(`Scenario completed: ${name}`);
+        engine.emitScenarioComplete(name);
+      }
     }
   }
 

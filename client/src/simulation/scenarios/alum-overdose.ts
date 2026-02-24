@@ -6,6 +6,7 @@ export const alumOverdose: ScenarioDefinition = {
   description: 'Alum valve sticks open at T+15s, driving the setpoint to 50 mg/L — nearly triple normal. Floc basin pH will crash. Reduce dosing before filter performance is impacted.',
   difficulty: 'Intermediate',
   duration: 0,
+  completionTime: 600,
   steps: [
     { triggerAt: 15, action: 'setAlumDose', params: { value: 50 } },
   ],

@@ -1,3 +1,4 @@
+import { CheckCircle } from 'lucide-react';
 import { Outlet } from 'react-router-dom';
 import { Navbar } from './Navbar';
 import { Sidebar } from './Sidebar';
@@ -7,6 +8,7 @@ import { useSocket } from '../../hooks/useSocket';
 import { useAlarmSound } from '../../hooks/useAlarmSound';
 import { useTutorialStore } from '../../store/useTutorialStore';
 import { useSimulationStore } from '../../store/useSimulationStore';
+import { useScenarioStore } from '../../store/useScenarioStore';
 import { TutorialOverlay } from '../tutorials/TutorialOverlay';
 
 export function AppShell() {
@@ -15,6 +17,8 @@ export function AppShell() {
 
   const activeTutorial = useTutorialStore((s) => s.activeTutorial);
   const running = useSimulationStore((s) => s.state?.running ?? true);
+  const completedScenarioName = useScenarioStore((s) => s.completedScenarioName);
+  const setCompletedScenario = useScenarioStore((s) => s.setCompletedScenario);
 
   return (
     <div className={`flex flex-col h-screen bg-gray-950 text-gray-100 overflow-hidden${running ? '' : ' sim-paused'}`}>
@@ -28,6 +32,25 @@ export function AppShell() {
       </div>
       <StatusBar />
       {activeTutorial && <TutorialOverlay />}
+
+      {completedScenarioName && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
+          <div className="bg-gray-900 border border-green-600 rounded-lg p-8 w-96 shadow-xl text-center">
+            <CheckCircle size={40} className="text-green-400 mx-auto mb-4" />
+            <h2 className="text-green-400 font-bold text-sm tracking-widest mb-2">SCENARIO COMPLETE</h2>
+            <p className="text-white font-semibold text-base mb-3">{completedScenarioName}</p>
+            <p className="text-gray-400 text-xs mb-6">
+              All alarms cleared. The plant is operating within normal parameters.
+            </p>
+            <button
+              onClick={() => setCompletedScenario(null)}
+              className="px-6 py-2 rounded text-sm font-mono bg-green-700 text-green-100 hover:bg-green-600 cursor-pointer"
+            >
+              CLOSE
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

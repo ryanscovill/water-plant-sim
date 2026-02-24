@@ -6,6 +6,7 @@ export const highTurbidityStorm: ScenarioDefinition = {
   description: 'Heavy rainfall rapidly drives source turbidity from 15 to 300 NTU. Increase alum dosing aggressively to protect the filter.',
   difficulty: 'Intermediate',
   duration: 300,
+  completionTime: 250,
   steps: [
     { triggerAt: 10,  action: 'setTurbidity', params: { target: 80,  duration: 10 } },
     { triggerAt: 30,  action: 'setTurbidity', params: { target: 180, duration: 10 } },

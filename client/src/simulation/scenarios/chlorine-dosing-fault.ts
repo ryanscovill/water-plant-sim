@@ -6,6 +6,7 @@ export const chlorineDosingFault: ScenarioDefinition = {
   description: 'Chlorine dose signal is lost at T+5s and the pump trips at T+15s. Residual decays toward zero. Restore dosing before a distribution violation occurs.',
   difficulty: 'Advanced',
   duration: 0,
+  completionTime: 180,
   steps: [
     { triggerAt: 5,  action: 'setChlorineDoseSetpoint', params: { value: 0 } },
     { triggerAt: 15, action: 'faultPump',               params: { pumpId: 'chlorinePump' } },

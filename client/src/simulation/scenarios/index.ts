@@ -3,7 +3,8 @@ export interface ScenarioDefinition {
   name: string;
   description: string;
   difficulty: 'Beginner' | 'Intermediate' | 'Advanced';
-  duration: number; // seconds, 0 = indefinite
+  duration: number; // seconds, displayed in UI only
+  completionTime: number; // simulated seconds; scenario passes if no active alarms at/after this time
   steps: ScenarioStep[];
 }
 

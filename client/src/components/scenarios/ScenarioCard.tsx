@@ -24,9 +24,10 @@ export function ScenarioCard({ scenario, onStart, onStop }: ScenarioCardProps) {
           </span>
         </div>
         <p className="text-gray-400 text-xs leading-relaxed mb-4">{scenario.description}</p>
-        {scenario.duration > 0 && (
-          <p className="text-gray-500 text-xs mb-3">Duration: {Math.floor(scenario.duration / 60)} min</p>
-        )}
+        <p className="text-gray-500 text-xs mb-3">
+          {scenario.duration > 0 && `Duration: ${Math.floor(scenario.duration / 60)} min · `}
+          Complete after T+{scenario.completionTime}s with no alarms
+        </p>
         {scenario.active ? (
           <button
             onClick={onStop}

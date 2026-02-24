@@ -15,6 +15,7 @@ export function useSocket() {
   const clearAlarm = useAlarmStore((s) => s.clearAlarm);
   const resetAlarms = useAlarmStore((s) => s.resetAlarms);
   const setActiveScenario = useScenarioStore((s) => s.setActiveScenario);
+  const setCompletedScenario = useScenarioStore((s) => s.setCompletedScenario);
   const addEvent = useEventStore((s) => s.addEvent);
   const clearEvents = useEventStore((s) => s.clearEvents);
 
@@ -48,6 +49,12 @@ export function useSocket() {
     const onReset = () => {
       resetAlarms();
       clearEvents();
+      setCompletedScenario(null);
+    };
+
+    const onScenarioComplete = (evt: unknown) => {
+      const { name } = evt as { name: string };
+      setCompletedScenario(name);
     };
 
     engine.on('state:update', onStateUpdate);
@@ -56,6 +63,7 @@ export function useSocket() {
     engine.on('simulation:reset', onReset);
     engine.on('operator:event', onOperatorEvent);
     engine.on('simulation:event', onSimulationEvent);
+    engine.on('scenario:complete', onScenarioComplete);
 
     return () => {
       engine.off('state:update', onStateUpdate);
@@ -64,6 +72,7 @@ export function useSocket() {
       engine.off('simulation:reset', onReset);
       engine.off('operator:event', onOperatorEvent);
       engine.off('simulation:event', onSimulationEvent);
+      engine.off('scenario:complete', onScenarioComplete);
     };
-  }, [setState, setConnected, setAlarms, addAlarm, clearAlarm, resetAlarms, setActiveScenario, addEvent, clearEvents]);
+  }, [setState, setConnected, setAlarms, addAlarm, clearAlarm, resetAlarms, setActiveScenario, addEvent, clearEvents, setCompletedScenario]);
 }
