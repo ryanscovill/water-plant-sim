@@ -16,8 +16,6 @@
  *
  *   Plant Startup – step 3:  intake.intakePump1.running === true  (pump is on)
  *   Plant Startup – step 6:  disinfection.chlorinePumpStatus.running === true (pump is on)
- *   Chlorination  – step 4:  disinfection.chlorineDoseSetpoint !== 2.5 (initial = 2.0)
- *
  * These steps are invisible to the user; the overlay jumps over them instantly.
  * Tests that target steps at or after those positions account for this by using
  * the effective click counts listed below:
@@ -33,8 +31,9 @@
  *   Chlorine Dose Adjustment effective Next-clicks:
  *     step 2 → 1 click
  *     step 3 → 2 clicks
- *     step 5 → 3 clicks  (step 4 auto-advances)
- *     Complete → 4 clicks
+ *     step 4 → 3 clicks  (onStart sets setpoint to 2.5; step 4 waitFor NOT pre-satisfied)
+ *     step 5 → 4 clicks  (user must change setpoint to advance)
+ *     Complete → 5 clicks
  */
 
 import { test, expect, type Page } from '@playwright/test';
@@ -54,18 +53,24 @@ async function startTutorialByTitle(page: Page, title: string) {
 }
 
 /**
- * Advance the tutorial by clicking Next `n` times.
+ * Advance the tutorial by `n` steps.
  *
- * After each click we wait for the overlay content to change (React rendered
- * the new step), then pause an additional 400 ms to let any chained
- * auto-advance effects (waitFor conditions already met, nav-spotlight matches)
- * fire and settle before the next interaction.
+ * For normal steps the Next button is clicked.  For waitFor steps Next is
+ * hidden (by design), so the step is advanced via the dev-mode window helper
+ * `__tutorialNextStep` instead.  After each advance we wait for the overlay
+ * content to change, then pause 400 ms for chained auto-advances to settle.
  */
 async function advanceSteps(page: Page, n: number) {
   for (let i = 0; i < n; i++) {
     const before = await overlay(page).textContent();
-    await nextBtn(page).click();
-    // Wait until the overlay content differs from what it was pre-click
+    const next = nextBtn(page);
+    if (await next.isVisible()) {
+      await next.click();
+    } else {
+      // waitFor step — Next is hidden; advance via the exposed store helper
+      await page.evaluate(() => (window as any).__tutorialNextStep?.());
+    }
+    // Wait until the overlay content differs from what it was pre-advance
     await page.waitForFunction(
       ([sel, prev]: [string, string | null]) => {
         const el = document.querySelector(sel);
@@ -567,44 +572,51 @@ test.describe('Tutorial: Chlorine Dose Adjustment', () => {
     expect(await spotlightTargets(page, 'nav-disinfection')).toBe(true);
   });
 
-  // Step 4 waitFor: disinfection.chlorineDoseSetpoint !== 2.5 — the initial
-  // setpoint is 2.0, which already satisfies the condition, so step 4
-  // auto-advances immediately.  Three clicks therefore land on step 5.
-  test('step 4 auto-advances to step 5 (setpoint already ≠ 2.5)', async ({ page }) => {
+  // Step 4 waitFor: disinfection.chlorineDoseSetpoint !== 2.5 — onStart sets
+  // the setpoint to exactly 2.5, so the condition is NOT pre-satisfied.
+  // Three clicks land on step 4 and the "Waiting for action" indicator shows.
+  test('step 4 shows "Waiting for action" indicator (has waitFor)', async ({ page }) => {
     await startTutorialByTitle(page, 'Chlorine Dose Adjustment');
-    await advanceSteps(page, 3); // 1→2→3→[4 auto→5]
-    await expect(overlay(page)).toContainText('STEP 5 OF 5');
+    await advanceSteps(page, 3); // 1→2→3→4
+    await expect(overlay(page)).toContainText('STEP 4 OF 5');
+    await expect(overlay(page)).toContainText('Waiting for action');
+  });
+
+  test('step 4 spotlights hmi-chlorineDose', async ({ page }) => {
+    await startTutorialByTitle(page, 'Chlorine Dose Adjustment');
+    await advanceSteps(page, 3);
+    expect(await spotlightTargets(page, 'hmi-chlorineDose')).toBe(true);
   });
 
   test('step 5 instruction mentions residual monitoring', async ({ page }) => {
     await startTutorialByTitle(page, 'Chlorine Dose Adjustment');
-    await advanceSteps(page, 3);
+    await advanceSteps(page, 4); // 1→2→3→4→5 (Next skips waitFor)
     await expect(overlay(page)).toContainText('residual');
   });
 
   test('step 5 spotlights hmi-chlorineResidual', async ({ page }) => {
     await startTutorialByTitle(page, 'Chlorine Dose Adjustment');
-    await advanceSteps(page, 3);
+    await advanceSteps(page, 4);
     expect(await spotlightTargets(page, 'hmi-chlorineResidual')).toBe(true);
   });
 
   test('final step (step 5) shows "Finish" button', async ({ page }) => {
     await startTutorialByTitle(page, 'Chlorine Dose Adjustment');
-    await advanceSteps(page, 3);
+    await advanceSteps(page, 4);
     await expect(overlay(page)).toContainText('STEP 5 OF 5');
     await expect(page.getByRole('button', { name: 'Finish' })).toBeVisible();
   });
 
   test('completing all steps shows Tutorial Complete screen', async ({ page }) => {
     await startTutorialByTitle(page, 'Chlorine Dose Adjustment');
-    await advanceSteps(page, 4); // step 5 → Finish → Complete
+    await advanceSteps(page, 5); // step 5 → Finish → Complete
     await expect(overlay(page)).toContainText('Tutorial Complete!');
     await expect(overlay(page)).toContainText('Chlorine Dose Adjustment');
   });
 
   test('FINISH button exits the tutorial overlay', async ({ page }) => {
     await startTutorialByTitle(page, 'Chlorine Dose Adjustment');
-    await advanceSteps(page, 4);
+    await advanceSteps(page, 5);
     await page.getByRole('button', { name: 'FINISH' }).click();
     await expect(overlay(page)).not.toBeVisible({ timeout: 5_000 });
   });

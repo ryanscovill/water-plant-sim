@@ -12,6 +12,7 @@ interface TrendChartProps {
   data: TrendPoint[];
   tag: string;
   unit?: string;
+  decimals?: number;
   highLimit?: number;
   lowLimit?: number;
   yMin?: number;
@@ -67,7 +68,7 @@ const ALARM_BORDER: Record<string, string> = {
   LOW:      'border-blue-400',
 };
 
-export function TrendChart({ data, tag, unit = '', highLimit, lowLimit, yMin, yMax, height = 200, activeAlarms = [], events = [] }: TrendChartProps) {
+export function TrendChart({ data, tag, unit = '', decimals = 2, highLimit, lowLimit, yMin, yMax, height = 200, activeAlarms = [], events = [] }: TrendChartProps) {
   const formatted = data.map((p) => ({
     ts: new Date(p.timestamp).getTime(),
     time: new Date(p.timestamp).toLocaleTimeString(),
@@ -111,7 +112,12 @@ export function TrendChart({ data, tag, unit = '', highLimit, lowLimit, yMin, yM
 
   return (
     <div className={`bg-gray-900 border rounded-lg p-3 ${borderClass}`}>
-      <div className="text-sm text-gray-400 font-mono mb-2">{tag} {unit && `(${unit})`}</div>
+      <div className="text-sm text-gray-400 font-mono mb-2">
+        {tag} {unit && `(${unit})`}
+        {data.length > 0 && (
+          <span className="ml-3 text-gray-200">{data[data.length - 1].value.toFixed(decimals)} {unit}</span>
+        )}
+      </div>
       <ResponsiveContainer width="100%" height={height}>
         <LineChart data={formatted} margin={{ top: 5, right: 10, bottom: 5, left: 10 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#374151" />

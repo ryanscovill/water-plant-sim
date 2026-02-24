@@ -3,6 +3,7 @@ export interface TutorialStep {
   instruction: string;
   spotlight: string;
   waitFor?: string;
+  clickToAdvance?: boolean;
   hint?: string;
 }
 

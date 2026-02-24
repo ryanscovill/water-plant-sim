@@ -4,21 +4,16 @@ import { useAlarmStore } from '../../store/useAlarmStore';
 import { ValueDisplay } from '../common/ValueDisplay';
 import { StatusIndicator } from '../common/StatusIndicator';
 
-export function OverviewHMI({ activeStage }: { activeStage?: string }) {
+function useStages() {
   const state = useSimulationStore((s) => s.state);
   const alarms = useAlarmStore((s) => s.alarms);
-  const navigate = useNavigate();
 
-  if (!state) return (
-    <div className="flex items-center justify-center h-64 text-gray-500">
-      Connecting to simulation...
-    </div>
-  );
+  if (!state) return null;
 
   const getAlarm = (tag: string) => alarms.find((a) => a.tag === tag && a.active)?.priority ?? null;
   const { intake, coagulation, sedimentation, disinfection } = state;
 
-  const stages = [
+  return [
     {
       title: 'INTAKE',
       path: '/intake',
@@ -83,14 +78,72 @@ export function OverviewHMI({ activeStage }: { activeStage?: string }) {
         { label: 'UV System', ...disinfection.uvSystemStatus },
       ],
     },
-  ];
+  ] as const;
+}
+
+// ── Shared child component ────────────────────────────────────────────────────
+
+export function PlantStagesGrid({ activeStage }: { activeStage?: string }) {
+  const stages = useStages();
+  const navigate = useNavigate();
+
+  if (!stages) return (
+    <div className="flex items-center justify-center h-32 text-gray-500 text-sm">
+      Connecting to simulation...
+    </div>
+  );
+
+  return (
+    <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
+      {stages.map((stage) => (
+        <div
+          key={stage.title}
+          className={`border rounded-lg overflow-hidden cursor-pointer transition-all ${
+            activeStage === stage.title
+              ? `${stage.color} ring-2 ring-offset-1 ring-offset-gray-950 brightness-125`
+              : `${stage.color} hover:brightness-110`
+          }`}
+          onClick={() => navigate(stage.path)}
+        >
+          <div className={`${stage.headerBg} px-3 py-2 border-b ${stage.color}`}>
+            <span className="text-xs font-bold text-gray-200 font-mono">{stage.title}</span>
+          </div>
+          <div className="p-3 space-y-2 bg-gray-900/60">
+            <div className="grid grid-cols-2 gap-1.5">
+              {stage.values.map((v) => (
+                <ValueDisplay
+                  key={v.label}
+                  label={v.label}
+                  value={v.value}
+                  unit={v.unit}
+                  decimals={v.decimals}
+                  alarm={v.alarm}
+                />
+              ))}
+            </div>
+            <div className="space-y-1 pt-1 border-t border-gray-800">
+              {stage.equipment.map((eq) => (
+                <StatusIndicator key={eq.label} running={eq.running} fault={eq.fault} label={eq.label} size="sm" />
+              ))}
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ── Full overview page (dashboard) ───────────────────────────────────────────
+
+export function OverviewHMI() {
+  const alarms = useAlarmStore((s) => s.alarms);
+  const activeAlarms = alarms.filter((a) => a.active);
 
   return (
     <div className="space-y-4">
       <h2 className="text-gray-300 font-bold text-sm font-mono">PLANT OVERVIEW</h2>
 
-      {/* Process flow arrow */}
-      <div className="flex items-center gap-2 text-xs text-gray-400 font-mono mb-2">
+      <div className="flex items-center gap-2 text-xs text-gray-400 font-mono">
         <span>RIVER</span>
         <span>→→→</span>
         <span>INTAKE</span>
@@ -104,49 +157,13 @@ export function OverviewHMI({ activeStage }: { activeStage?: string }) {
         <span>DISTRIBUTION</span>
       </div>
 
-      <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
-        {stages.map((stage) => (
-          <div
-            key={stage.title}
-            className={`border rounded-lg overflow-hidden cursor-pointer transition-all ${
-              activeStage === stage.title
-                ? `${stage.color} ring-2 ring-offset-1 ring-offset-gray-950 brightness-125`
-                : `${stage.color} hover:brightness-110`
-            }`}
-            onClick={() => navigate(stage.path)}
-          >
-            <div className={`${stage.headerBg} px-3 py-2 border-b ${stage.color}`}>
-              <span className="text-xs font-bold text-gray-200 font-mono">{stage.title}</span>
-            </div>
-            <div className="p-3 space-y-2 bg-gray-900/60">
-              <div className="grid grid-cols-2 gap-1.5">
-                {stage.values.map((v) => (
-                  <ValueDisplay
-                    key={v.label}
-                    label={v.label}
-                    value={v.value}
-                    unit={v.unit}
-                    decimals={v.decimals}
-                    alarm={v.alarm}
-                  />
-                ))}
-              </div>
-              <div className="space-y-1 pt-1 border-t border-gray-800">
-                {stage.equipment.map((eq) => (
-                  <StatusIndicator key={eq.label} running={eq.running} fault={eq.fault} label={eq.label} size="sm" />
-                ))}
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
+      <PlantStagesGrid />
 
-      {/* Active alarms summary */}
-      {alarms.filter(a => a.active).length > 0 && (
+      {activeAlarms.length > 0 && (
         <div className="bg-red-950/30 border border-red-800 rounded-lg p-3">
           <div className="text-red-400 font-bold text-xs mb-2 font-mono">ACTIVE ALARMS</div>
           <div className="space-y-1">
-            {alarms.filter(a => a.active).slice(0, 5).map(alarm => (
+            {activeAlarms.slice(0, 5).map((alarm) => (
               <div key={alarm.id} className="flex items-center gap-2 text-xs font-mono">
                 <span className={`font-bold ${alarm.priority === 'CRITICAL' ? 'text-red-400' : alarm.priority === 'HIGH' ? 'text-amber-400' : 'text-yellow-300'}`}>
                   [{alarm.condition}]

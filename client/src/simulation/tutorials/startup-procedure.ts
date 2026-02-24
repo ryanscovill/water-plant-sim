@@ -15,6 +15,7 @@ export const startupProcedure: TutorialDefinition = {
       id: 'step-2',
       instruction: 'You are on the Intake screen. Click on Intake Pump 1 to open the control panel.',
       spotlight: 'hmi-intakePump1',
+      clickToAdvance: true,
       hint: 'Click the pump symbol labeled "P-101" on the HMI.',
     },
     {
@@ -34,6 +35,7 @@ export const startupProcedure: TutorialDefinition = {
       id: 'step-5',
       instruction: 'Verify that the alum pump and mixers are running. Check the alum dose setpoint is set to 18 mg/L.',
       spotlight: 'hmi-alumDose',
+      clickToAdvance: true,
       hint: 'Look at the chemical feed display showing alum dose rate.',
     },
     {

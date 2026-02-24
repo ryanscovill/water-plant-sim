@@ -33,11 +33,11 @@ test.describe('Tutorials Page', () => {
   test('starting a tutorial opens the TutorialOverlay', async ({ page }) => {
     await page.waitForTimeout(2_000);
 
-    // Click first START TUTORIAL button
     await page.getByRole('button', { name: 'START TUTORIAL' }).first().click();
 
-    // TutorialOverlay renders at bottom-right with Next/Back navigation buttons
-    await expect(page.getByRole('button', { name: /Next/ })).toBeVisible({ timeout: 5_000 });
+    // Overlay card is visible and Back button is always present
+    const overlay = page.locator('.fixed.bottom-12.right-4');
+    await expect(overlay).toBeVisible({ timeout: 5_000 });
     await expect(page.getByRole('button', { name: 'Back' })).toBeVisible({ timeout: 5_000 });
   });
 
@@ -46,22 +46,19 @@ test.describe('Tutorials Page', () => {
 
     await page.getByRole('button', { name: 'START TUTORIAL' }).first().click();
 
-    // The overlay has an X close button (lucide X icon)
-    await expect(page.getByRole('button', { name: /Next/ })).toBeVisible({ timeout: 5_000 });
-
-    // Find and click the X exit button in the overlay header
     const overlay = page.locator('.fixed.bottom-12.right-4');
-    await expect(overlay).toBeVisible();
+    await expect(overlay).toBeVisible({ timeout: 5_000 });
   });
 
   test('closing tutorial overlay via X button exits tutorial', async ({ page }) => {
     await page.waitForTimeout(2_000);
 
     await page.getByRole('button', { name: 'START TUTORIAL' }).first().click();
-    await expect(page.getByRole('button', { name: /Next/ })).toBeVisible({ timeout: 5_000 });
+
+    const overlay = page.locator('.fixed.bottom-12.right-4');
+    await expect(overlay).toBeVisible({ timeout: 5_000 });
 
     // Click X button in overlay header (it's in the fixed bottom-right card)
-    const overlay = page.locator('.fixed.bottom-12.right-4');
     const xButton = overlay.getByRole('button').first();
     await xButton.click();
 
@@ -69,10 +66,14 @@ test.describe('Tutorials Page', () => {
     await expect(page.locator('.fixed.bottom-12.right-4')).not.toBeVisible({ timeout: 5_000 });
   });
 
+  // Alarm Response step 1 spotlights 'alarm-banner' (not a nav element, no waitFor)
+  // so the Next button is visible — use it to verify Next advances the step.
   test('Next button advances to next step', async ({ page }) => {
     await page.waitForTimeout(2_000);
 
-    await page.getByRole('button', { name: 'START TUTORIAL' }).first().click();
+    const card = page.locator('div.bg-gray-900').filter({ hasText: 'Responding to Process Alarms' });
+    await card.getByRole('button', { name: 'START TUTORIAL' }).click();
+
     await expect(page.getByRole('button', { name: /Next/ })).toBeVisible({ timeout: 5_000 });
 
     // Click Next to advance
@@ -87,7 +88,9 @@ test.describe('Tutorials Page', () => {
     await page.waitForTimeout(2_000);
 
     await page.getByRole('button', { name: 'START TUTORIAL' }).first().click();
-    await expect(page.getByRole('button', { name: /Next/ })).toBeVisible({ timeout: 5_000 });
+
+    const overlay = page.locator('.fixed.bottom-12.right-4');
+    await expect(overlay).toBeVisible({ timeout: 5_000 });
 
     // The TutorialsPage shows an active tutorial banner
     await page.goto('/tutorials');

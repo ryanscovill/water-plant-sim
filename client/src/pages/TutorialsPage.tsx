@@ -37,6 +37,7 @@ export function TutorialsPage() {
       steps: def.steps,
     };
     startTutorial(tutorial);
+    def.onStart?.();
   };
 
   return (

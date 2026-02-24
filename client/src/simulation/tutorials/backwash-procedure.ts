@@ -27,6 +27,7 @@ export const backwashProcedure: TutorialDefinition = {
       id: 'step-4',
       instruction: 'Click the Filter Bed symbol to open the filter control panel.',
       spotlight: 'hmi-filterBed',
+      clickToAdvance: true,
       hint: 'Click on the filter bed symbol on the HMI.',
     },
     {

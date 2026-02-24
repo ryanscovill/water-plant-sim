@@ -1,9 +1,23 @@
 import type { TutorialDefinition } from './index';
+import { getEngine } from '../engine';
 
 export const alarmResponse: TutorialDefinition = {
   id: 'alarm-response',
   title: 'Responding to Process Alarms',
   description: 'Learn the proper procedure for acknowledging and responding to process alarms.',
+  onStart() {
+    // Inject elevated raw turbidity so INT-AIT-001 H alarm fires immediately.
+    // sourceTurbidityBase keeps it elevated; rawTurbidity seeds the lag filter
+    // so the alarm appears on the first engine tick rather than after ~100 s.
+    getEngine().injectScenario((state) => ({
+      ...state,
+      intake: {
+        ...state.intake,
+        sourceTurbidityBase: 250,
+        rawTurbidity: 250,
+      },
+    }));
+  },
   steps: [
     {
       id: 'step-1',

@@ -9,22 +9,22 @@ import { Check, CheckCheck } from 'lucide-react';
 import type { Alarm } from '../../types/process';
 
 const AVAILABLE_TAGS = [
-  { tag: 'INT-FIT-001', label: 'Raw Water Flow', unit: 'MGD' },
-  { tag: 'INT-AIT-001', label: 'Raw Turbidity', unit: 'NTU' },
-  { tag: 'INT-PDT-001', label: 'Screen Diff Press', unit: 'PSI' },
-  { tag: 'INT-LIT-001', label: 'Raw Water Level', unit: 'ft' },
-  { tag: 'COG-FIT-001', label: 'Alum Dose Rate', unit: 'mg/L' },
-  { tag: 'COG-AIT-001', label: 'Floc Basin Turbidity', unit: 'NTU' },
-  { tag: 'SED-AIT-001', label: 'Clarifier Turbidity', unit: 'NTU' },
-  { tag: 'SED-LIT-001', label: 'Sludge Blanket', unit: 'ft' },
-  { tag: 'FLT-PDT-001', label: 'Filter Head Loss', unit: 'ft' },
-  { tag: 'FLT-AIT-001', label: 'Filter Effluent Turb', unit: 'NTU' },
-  { tag: 'FLT-RUN-001', label: 'Filter Run Time', unit: 'hr' },
-  { tag: 'DIS-FIT-001', label: 'Chlorine Dose Rate', unit: 'mg/L' },
-  { tag: 'DIS-AIT-001', label: 'Plant Cl2 Residual', unit: 'mg/L', highLimit: 3.0, lowLimit: 0.5 },
-  { tag: 'DIS-AIT-002', label: 'Dist Cl2 Residual', unit: 'mg/L', highLimit: 2.0, lowLimit: 0.3 },
-  { tag: 'DIS-AIT-003', label: 'Finished Water pH', unit: '', highLimit: 8.0, lowLimit: 6.8, yMin: 6, yMax: 8 },
-  { tag: 'DIS-LIT-001', label: 'Clearwell Level', unit: 'ft' },
+  { tag: 'INT-FIT-001', label: 'Raw Water Flow', unit: 'MGD', decimals: 2 },
+  { tag: 'INT-AIT-001', label: 'Raw Turbidity', unit: 'NTU', decimals: 1 },
+  { tag: 'INT-PDT-001', label: 'Screen Diff Press', unit: 'PSI', decimals: 1 },
+  { tag: 'INT-LIT-001', label: 'Raw Water Level', unit: 'ft', decimals: 1 },
+  { tag: 'COG-FIT-001', label: 'Alum Dose Rate', unit: 'mg/L', decimals: 1 },
+  { tag: 'COG-AIT-001', label: 'Floc Basin Turbidity', unit: 'NTU', decimals: 1 },
+  { tag: 'SED-AIT-001', label: 'Clarifier Turbidity', unit: 'NTU', decimals: 2 },
+  { tag: 'SED-LIT-001', label: 'Sludge Blanket', unit: 'ft', decimals: 1 },
+  { tag: 'FLT-PDT-001', label: 'Filter Head Loss', unit: 'ft', decimals: 1 },
+  { tag: 'FLT-AIT-001', label: 'Filter Effluent Turb', unit: 'NTU', decimals: 3 },
+  { tag: 'FLT-RUN-001', label: 'Filter Run Time', unit: 'hr', decimals: 1 },
+  { tag: 'DIS-FIT-001', label: 'Chlorine Dose Rate', unit: 'mg/L', decimals: 1 },
+  { tag: 'DIS-AIT-001', label: 'Plant Cl2 Residual', unit: 'mg/L', decimals: 2, highLimit: 3.0, lowLimit: 0.5 },
+  { tag: 'DIS-AIT-002', label: 'Dist Cl2 Residual', unit: 'mg/L', decimals: 2, highLimit: 2.0, lowLimit: 0.3 },
+  { tag: 'DIS-AIT-003', label: 'Finished Water pH', unit: '', decimals: 2, highLimit: 8.0, lowLimit: 6.8, yMin: 6, yMax: 8 },
+  { tag: 'DIS-LIT-001', label: 'Clearwell Level', unit: 'm', decimals: 2 },
 ];
 
 const DURATIONS = [
@@ -71,7 +71,7 @@ export function TrendPanel() {
 
   const allEvents = useEventStore((s) => s.events);
   const alarmHistory = useAlarmStore((s) => s.history);
-  const simNow = useSimulationStore((s) => new Date(s.state.timestamp).getTime());
+  const simNow = useSimulationStore((s) => new Date(s.state!.timestamp).getTime());
   const cutoff = simNow - duration * 1000;
 
   const chartEvents = [
@@ -158,6 +158,7 @@ export function TrendPanel() {
             data={data}
             tag={selectedTag}
             unit={tagInfo?.unit}
+            decimals={tagInfo?.decimals}
             highLimit={tagInfo?.highLimit}
             lowLimit={tagInfo?.lowLimit}
             yMin={tagInfo?.yMin}

@@ -3,6 +3,7 @@ export interface TutorialStep {
   instruction: string;
   spotlight: string;
   waitFor?: string;
+  clickToAdvance?: boolean;
   hint?: string;
 }
 
@@ -11,6 +12,7 @@ export interface TutorialDefinition {
   title: string;
   description: string;
   steps: TutorialStep[];
+  onStart?: () => void;
 }
 
 export { startupProcedure } from './startup-procedure';

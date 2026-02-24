@@ -144,23 +144,30 @@ export function TutorialOverlay() {
                 <button
                   onClick={prevStep}
                   disabled={currentStep === 0}
-                  className="flex items-center gap-1 px-3 py-1.5 bg-gray-700 hover:bg-gray-600 disabled:opacity-40 text-gray-200 text-xs rounded"
+                  className="flex items-center gap-1 px-3 py-1.5 bg-gray-700 hover:bg-gray-600 disabled:opacity-40 text-gray-200 text-xs rounded cursor-pointer"
                 >
                   <ChevronLeft size={14} /> Back
                 </button>
-                <button
-                  onClick={nextStep}
-                  className="flex-1 flex items-center justify-center gap-1 px-3 py-1.5 bg-blue-700 hover:bg-blue-600 text-white text-xs rounded font-semibold"
-                >
-                  {currentStep === activeTutorial.steps.length - 1 ? 'Finish' : 'Next'} <ChevronRight size={14} />
-                </button>
+                {(() => {
+                  const isLast = currentStep === activeTutorial.steps.length - 1;
+                  const autoAdvances = !!step.waitFor || !!step.clickToAdvance || !!navSpotlightToPath(step.spotlight);
+                  if (autoAdvances && !isLast) return null;
+                  return (
+                    <button
+                      onClick={nextStep}
+                      className="flex-1 flex items-center justify-center gap-1 px-3 py-1.5 bg-blue-700 hover:bg-blue-600 text-white text-xs rounded font-semibold cursor-pointer"
+                    >
+                      {isLast ? 'Finish' : 'Next'} <ChevronRight size={14} />
+                    </button>
+                  );
+                })()}
               </div>
             </>
           ) : null}
         </div>
       </div>
 
-      {/* Spotlight highlight */}
+      {/* Spotlight highlight — filter: drop-shadow works on both HTML and SVG elements */}
       {step?.spotlight && (
         <style>{`
           #${step.spotlight} {
@@ -170,8 +177,14 @@ export function TutorialOverlay() {
             animation: spotlight-pulse 1.5s ease-in-out infinite;
           }
           @keyframes spotlight-pulse {
-            0%, 100% { outline-color: #3b82f6; }
-            50% { outline-color: #93c5fd; }
+            0%, 100% {
+              outline-color: #3b82f6;
+              filter: drop-shadow(0 0 4px rgba(59, 130, 246, 0.7));
+            }
+            50% {
+              outline-color: #93c5fd;
+              filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.6)) drop-shadow(0 0 14px rgba(147, 197, 253, 0.8));
+            }
           }
         `}</style>
       )}

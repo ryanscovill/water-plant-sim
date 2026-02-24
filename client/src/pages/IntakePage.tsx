@@ -1,11 +1,11 @@
 import { IntakeHMI } from '../components/hmi/IntakeHMI';
-import { OverviewHMI } from '../components/hmi/OverviewHMI';
+import { PlantStagesGrid } from '../components/hmi/OverviewHMI';
 
 export function IntakePage() {
   return (
     <div className="space-y-4">
       <IntakeHMI />
-      <OverviewHMI activeStage="INTAKE" />
+      <PlantStagesGrid activeStage="INTAKE" />
     </div>
   );
 }
