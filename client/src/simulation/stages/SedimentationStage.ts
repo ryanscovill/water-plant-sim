@@ -31,14 +31,15 @@ export class SedimentationStage {
     const sludgeImpact = clamp(next.sludgeBlanketLevel / 6, 0, 0.5);
     const clarifierEfficiency = CLARIFIER_BASE_EFFICIENCY * (1 - sludgeImpact);
     const targetClarTurb = coag.flocBasinTurbidity * (1 - clarifierEfficiency);
-    // τ = 10 s — clarifier turbidimeter response
-    next.clarifierTurbidity = clamp(firstOrderLag(next.clarifierTurbidity, targetClarTurb, lagFactor(dt, 10)), 0.1, 200);
+    // τ = 300 s — clarifier turbidimeter response (2–5 min instrument lag + basin mixing)
+    next.clarifierTurbidity = clamp(firstOrderLag(next.clarifierTurbidity, targetClarTurb, lagFactor(dt, 300)), 0.1, 200);
 
-    // Sludge blanket: constant accumulation vs. pump removal (normalized to standard 500 ms tick).
-    const tickNorm = dt / 0.5;
-    const sludgeAccumulation = 0.001 * tickNorm;
+    // Sludge blanket: accumulation rate calibrated so blanket rises from 0 to 6 ft (danger) in ~24 h
+    // at simSpeed=1 without pump running: 6 ft / 86400 s ≈ 0.0000694 ft/s.
+    // Removal at 100% pump speed is 5× accumulation rate (0.000347 ft/s) for effective control.
+    const sludgeAccumulation = 0.0000694 * dt;
     const sludgeRemoval = (next.sludgePumpStatus.running && !next.sludgePumpStatus.fault)
-      ? 0.005 * (next.sludgePumpStatus.speed / 100) * tickNorm
+      ? 0.000347 * (next.sludgePumpStatus.speed / 100) * dt
       : 0;
     next.sludgeBlanketLevel = clamp(next.sludgeBlanketLevel + sludgeAccumulation - sludgeRemoval, 0, 10);
 
@@ -52,8 +53,10 @@ export class SedimentationStage {
       }
     } else {
       if (next.filterRunTime < FILTER_RUNTIME_TRIGGER) {
-        // Head loss accumulates faster at high clarifier turbidity (fouling model).
-        next.filterHeadLoss += 0.0001 * tickNorm * (1 + next.clarifierTurbidity / 5);
+        // Head loss calibrated so filter accumulates ~11.5 ft over the 72-hour runtime trigger
+        // at clean water: 11.5 ft / 259200 s ≈ 0.0000444 ft/s base rate.
+        // Fouling multiplier (1 + clarifierTurbidity/5) accelerates head loss at high turbidity.
+        next.filterHeadLoss += 0.0000444 * dt * (1 + next.clarifierTurbidity / 5);
         next.filterRunTime += dt / 3600;
       }
       next.filterHeadLoss = clamp(next.filterHeadLoss, 0, 12);
@@ -65,8 +68,8 @@ export class SedimentationStage {
       0, 1,
     );
     const targetEfflTurb = next.clarifierTurbidity * FILTER_NORMAL_REMOVAL + filterBreakthrough * 2;
-    // τ = 16 s — filter effluent turbidimeter response
-    next.filterEffluentTurbidity = clamp(firstOrderLag(next.filterEffluentTurbidity, targetEfflTurb, lagFactor(dt, 16)), 0.01, 10);
+    // τ = 120 s — filter effluent turbidimeter response (2-min instrument lag)
+    next.filterEffluentTurbidity = clamp(firstOrderLag(next.filterEffluentTurbidity, targetEfflTurb, lagFactor(dt, 120)), 0.01, 10);
 
     return next;
   }

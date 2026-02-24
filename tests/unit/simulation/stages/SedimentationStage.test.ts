@@ -31,12 +31,13 @@ describe('SedimentationStage', () => {
 
   it('clarifierTurbidity converges to ~10% of flocBasinTurbidity with zero sludge blanket', () => {
     // 90% base removal, 0 blanket → target = flocBasin × 0.10
+    // τ = 300 s → need ~5τ = 1500 s = 3000 ticks to converge.
     const { sed, coag } = baseStates();
     sed.sludgeBlanketLevel = 0;
     sed.clarifierTurbidity = 0;
     const inputTurb = 20;
     const fixedCoag = { ...coag, flocBasinTurbidity: inputTurb };
-    const result = runTicks(stage, sed, fixedCoag, 500);
+    const result = runTicks(stage, sed, fixedCoag, 3000);
     expect(result.clarifierTurbidity).toBeCloseTo(inputTurb * 0.10, 1);
   });
 

@@ -1,8 +1,10 @@
 import type { IntakeState } from '../ProcessState';
 import { clamp, firstOrderLag, lagFactor, accumulateRunHours } from '../utils';
 
-// PSI drift per simulated second (screen clogging rate)
-const SCREEN_DRIFT_RATE = 0.0005;
+// PSI drift per simulated second (screen clogging rate).
+// Calibrated so a clean screen (0.5 PSI) reaches action level (~8 PSI) in ~3 days at simSpeed=1.
+// (8 - 0.5) / (3 × 86400) ≈ 0.000029 PSI/s; rounded up slightly for margin.
+const SCREEN_DRIFT_RATE = 0.000037;
 
 // Max flow per intake pump at 100% speed (MGD)
 const PUMP_MAX_FLOW_MGD = 4.5;
@@ -39,13 +41,14 @@ export class IntakeStage {
     next.screenDiffPressure = clamp(next.screenDiffPressure + SCREEN_DRIFT_RATE * dt, 0.5, 12);
 
     // Raw turbidity: sinusoidal modulation around source base with slow first-order lag.
-    this.turbidityPhase += 0.001 * dt;
+    // Angular frequency = 2π / 86400 s ≈ 0.0000727 rad/sim-s → 24-hour diurnal cycle at simSpeed=1.
+    this.turbidityPhase += 0.0000727 * dt;
     const amplitude = Math.max(2, next.sourceTurbidityBase * 0.3);
     const baseTurbidity = next.sourceTurbidityBase
       + Math.sin(this.turbidityPhase) * amplitude * 0.6
       + Math.cos(this.turbidityPhase * 0.3) * amplitude * 0.4;
-    // τ = 100 s — slow turbidimeter response / river mixing inertia
-    next.rawTurbidity = clamp(firstOrderLag(next.rawTurbidity, baseTurbidity, lagFactor(dt, 100)), 1, 600);
+    // τ = 300 s — turbidimeter response (2–5 min) + river mixing inertia at the intake
+    next.rawTurbidity = clamp(firstOrderLag(next.rawTurbidity, baseTurbidity, lagFactor(dt, 300)), 1, 600);
 
     return next;
   }

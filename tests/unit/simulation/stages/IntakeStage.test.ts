@@ -99,7 +99,8 @@ describe('IntakeStage', () => {
   it('screen diff pressure increases over time and clamps at 12 PSI', () => {
     let s = baseIntake();
     s.screenDiffPressure = 11.9;
-    s = runTicks(stage, s, 1000, 0.5);
+    // At 0.000037 PSI/s, closing 0.1 PSI gap takes ~2703 s = 5406 ticks; use 6000 to ensure clamp.
+    s = runTicks(stage, s, 6000, 0.5);
     expect(s.screenDiffPressure).toBe(12);
   });
 

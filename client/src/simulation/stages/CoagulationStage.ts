@@ -46,8 +46,8 @@ export class CoagulationStage {
       0, 1,
     );
     const targetFlocTurb = (intake.rawTurbidity * (1 - MAX_COAG_REMOVAL * alumEffectiveness)) / mixingFactor;
-    // τ = 25 s — flocculation basin hydraulic retention / mixing inertia
-    next.flocBasinTurbidity = clamp(firstOrderLag(next.flocBasinTurbidity, targetFlocTurb, lagFactor(dt, 25)), 0.5, 600);
+    // τ = 1500 s — AWWA flocculation basin HRT (20–30 min); dose changes take ~25 min to propagate
+    next.flocBasinTurbidity = clamp(firstOrderLag(next.flocBasinTurbidity, targetFlocTurb, lagFactor(dt, 1500)), 0.5, 600);
 
     // Mixer speeds: spin-up τ = 5 s, coast-down τ = 5 s.
     next.rapidMixerSpeed = next.rapidMixerStatus.running

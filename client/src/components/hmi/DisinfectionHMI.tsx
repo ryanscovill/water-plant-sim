@@ -134,9 +134,9 @@ export function DisinfectionHMI() {
 
             {/* Dist Cl2 — vertically aligned with Finished pH */}
             <AnalyzerTag tag="DIS-AIT-002" value={disinfection.chlorineResidualDist} unit="mg/L"
-              label="Dist Cl2 Res." id="hmi-distChlorine" x={523} y={235}
+              label="Dist Cl2 Res." id="hmi-distChlorine" x={583} y={245}
               alarm={getAlarm('DIS-AIT-002')} />
-            <SvgInfo x={580} y={217} onClick={() => setInfoKey('distChlorineResidual')} />
+            <SvgInfo x={640} y={227} onClick={() => setInfoKey('distChlorineResidual')} />
           </svg>
         </div>
 

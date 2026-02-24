@@ -98,9 +98,10 @@ describe('DisinfectionStage', () => {
   it('high alum dose depresses pH below normal', () => {
     const { dis, sed, coag, intake } = baseStates();
     const highAlumCoag = { ...coag, alumDoseRate: 50, alumDoseSetpoint: 50 };
-    const normalResult   = runTicks(new DisinfectionStage(), { ...dis }, sed, 500, 0.5, coag, intake);
-    const highAlumResult = runTicks(new DisinfectionStage(), { ...dis }, sed, 500, 0.5, highAlumCoag, intake);
+    // τ = 420 s → need ~5τ = 2100 s = 4200 ticks; use 5000 for reliable convergence.
     // 7.2 + 2.8×0.2 − 50×0.02 = 7.2 + 0.56 − 1.00 = 6.76 → below L alarm (6.8)
+    const normalResult   = runTicks(new DisinfectionStage(), { ...dis }, sed, 5000, 0.5, coag, intake);
+    const highAlumResult = runTicks(new DisinfectionStage(), { ...dis }, sed, 5000, 0.5, highAlumCoag, intake);
     expect(highAlumResult.finishedWaterPH).toBeLessThan(normalResult.finishedWaterPH);
     expect(highAlumResult.finishedWaterPH).toBeLessThan(6.8);
   });
