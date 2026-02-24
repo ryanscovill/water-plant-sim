@@ -242,6 +242,8 @@ export class SimulationEngine {
             return `Alum dose setpoint: ${s.coagulation.alumDoseSetpoint.toFixed(1)} → ${Number(value).toFixed(1)} mg/L`;
           case 'chlorineDoseSetpoint':
             return `Chlorine dose: ${s.disinfection.chlorineDoseSetpoint.toFixed(1)} → ${Number(value).toFixed(1)} mg/L`;
+          case 'distributionDemand':
+            return `Distribution demand: ${s.disinfection.distributionDemand.toFixed(1)} → ${Number(value).toFixed(1)} MGD`;
           case 'simSpeed':
             return `Simulation speed: ${s.simSpeed}× → ${value}×`;
           case 'sourceTurbidityBase':
@@ -350,6 +352,8 @@ export class SimulationEngine {
         return { ...state, coagulation: { ...state.coagulation, alumDoseSetpoint: Math.max(0, Math.min(80, value)) } };
       case 'chlorineDoseSetpoint':
         return { ...state, disinfection: { ...state.disinfection, chlorineDoseSetpoint: Math.max(0, Math.min(10, value)) } };
+      case 'distributionDemand':
+        return { ...state, disinfection: { ...state.disinfection, distributionDemand: Math.max(0, Math.min(6, value)) } };
       case 'pHAdjustDoseSetpoint':
         return { ...state, coagulation: { ...state.coagulation, pHAdjustDoseSetpoint: Math.max(0, Math.min(10, value)) } };
       case 'simSpeed':

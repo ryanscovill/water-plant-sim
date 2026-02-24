@@ -15,6 +15,12 @@ export function FilterBed({ headLoss, maxHeadLoss = 10, runTime, backwashInProgr
   const fillPct = Math.min(1, headLoss / maxHeadLoss);
   const color = headLoss >= 8 ? '#dc2626' : headLoss >= 6 ? '#f59e0b' : '#2563eb';
 
+  // Solids accumulation layer grows upward from media surface as filter plugs.
+  // Headspace above media is 40px (y=-40 to y=0); leave at least 6px of clear water.
+  const plugHeight = fillPct * 34;
+  const plugColor = headLoss >= 8 ? '#7f1d1d' : headLoss >= 6 ? '#92400e' : '#a16207';
+  const plugOpacity = 0.35 + fillPct * 0.55;
+
   return (
     <g id={id} transform={`translate(${x}, ${y})`} onClick={onClick}
       style={{ cursor: onClick ? 'pointer' : 'default' }}
@@ -28,11 +34,14 @@ export function FilterBed({ headLoss, maxHeadLoss = 10, runTime, backwashInProgr
       <rect x="-28" y="0" width="56" height="12" fill="#78716c" opacity="0.6" />
       <rect x="-28" y="12" width="56" height="10" fill="#a8a29e" opacity="0.6" />
       <rect x="-28" y="22" width="56" height="16" fill="#d4d4d8" opacity="0.4" />
-      {/* Head loss indicator */}
-      <rect x="-28" y={-40 + (1 - fillPct) * 40} width="8" height={fillPct * 40} fill={color} opacity="0.8" rx="2" />
+      {/* Accumulated solids — grows up from media surface as head loss increases */}
+      {plugHeight > 0.5 && (
+        <rect x="-28" y={-plugHeight} width="56" height={plugHeight}
+          fill={plugColor} opacity={plugOpacity} rx="1" />
+      )}
       {/* Backwash indicator */}
       {backwashInProgress && (
-        <text x="0" y="-15" textAnchor="middle" fill="#22d3ee" fontSize="11" className="animate-slow-flash">
+        <text x="0" y="-26" textAnchor="middle" fill="#22d3ee" fontSize="11" className="animate-slow-flash">
           BACKWASH
         </text>
       )}

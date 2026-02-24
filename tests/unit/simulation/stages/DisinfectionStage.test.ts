@@ -206,6 +206,29 @@ describe('DisinfectionStage', () => {
     expect(highResult.chlorineResidualDist).toBeGreaterThan(lowResult.chlorineResidualDist);
   });
 
+  it('higher distribution demand drains clearwell faster than lower demand', () => {
+    const { dis, sed, coag, intake } = baseStates();
+    dis.clearwellLevel = 3.0;
+    const normalSed = { ...sed, backwashInProgress: false };
+
+    const lowDemand  = { ...dis, distributionDemand: 1.0 };
+    const highDemand = { ...dis, distributionDemand: 5.0 };
+
+    const lowResult  = runTicks(new DisinfectionStage(), lowDemand,  normalSed, 100, 0.5, coag, intake);
+    const highResult = runTicks(new DisinfectionStage(), highDemand, normalSed, 100, 0.5, coag, intake);
+
+    expect(highResult.clearwellLevel).toBeLessThan(lowResult.clearwellLevel);
+  });
+
+  it('zero distribution demand causes clearwell to fill (inflow only)', () => {
+    const { dis, sed, coag, intake } = baseStates();
+    dis.clearwellLevel = 3.0;
+    dis.distributionDemand = 0;
+    const normalSed = { ...sed, backwashInProgress: false };
+    const result = stage.update(dis, normalSed, 0.5, coag, intake);
+    expect(result.clearwellLevel).toBeGreaterThan(3.0);
+  });
+
   it('chlorine pump fault causes dose rate to decay even when running=true', () => {
     const { dis, sed, coag, intake } = baseStates();
     dis.chlorineDoseRate = 2.0;

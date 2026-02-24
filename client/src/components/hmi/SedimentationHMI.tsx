@@ -10,6 +10,7 @@ import { AnalyzerTag } from './svg/AnalyzerTag';
 import { EquipmentPanel, EmptyPanel } from '../equipment/EquipmentPanel';
 import { PumpControl } from '../equipment/PumpControl';
 import { InfoModal } from '../common/InfoModal';
+import { PlantStagesGrid } from './OverviewHMI';
 import { getEngine } from '../../simulation/engine';
 
 function SvgInfo({ x, y, onClick }: { x: number; y: number; onClick: () => void }) {
@@ -49,6 +50,9 @@ export function SedimentationHMI() {
 
   return (
     <div>
+      <div className="mb-3">
+        <PlantStagesGrid activeStage="SEDIMENTATION" />
+      </div>
       <div className="flex items-center gap-2 mb-3">
         <h2 className="text-gray-300 font-bold text-sm font-mono">SEDIMENTATION / FILTRATION</h2>
         <button onClick={() => setInfoKey('sedimentationPage')} className="text-blue-400 hover:text-blue-300 p-0.5 rounded hover:bg-gray-800 cursor-pointer" title="About this screen">

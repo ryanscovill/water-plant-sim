@@ -66,32 +66,7 @@ interface SourceWaterControlProps {
 export function SourceWaterControl({ intake }: SourceWaterControlProps) {
   return (
     <div className="space-y-5">
-      {/* Live readings */}
-      <div>
-        <div className="text-xs text-gray-400 font-mono uppercase mb-2">Current Readings</div>
-        <div className="grid grid-cols-2 gap-2">
-          <div className="bg-gray-900 rounded p-2">
-            <div className="text-gray-400 text-xs font-mono">TURBIDITY</div>
-            <div className="text-cyan-300 font-bold text-sm font-mono">{intake.rawTurbidity.toFixed(1)} NTU</div>
-          </div>
-          <div className="bg-gray-900 rounded p-2">
-            <div className="text-gray-400 text-xs font-mono">FLOW</div>
-            <div className="text-cyan-300 font-bold text-sm font-mono">{intake.rawWaterFlow.toFixed(2)} MGD</div>
-          </div>
-          <div className="bg-gray-900 rounded p-2">
-            <div className="text-gray-400 text-xs font-mono">WET WELL</div>
-            <div className="text-cyan-300 font-bold text-sm font-mono">{intake.rawWaterLevel.toFixed(1)} ft</div>
-          </div>
-          <div className="bg-gray-900 rounded p-2">
-            <div className="text-gray-400 text-xs font-mono">SCREEN ΔP</div>
-            <div className={`font-bold text-sm font-mono ${intake.screenDiffPressure > 5 ? 'text-amber-400' : 'text-cyan-300'}`}>
-              {intake.screenDiffPressure.toFixed(1)} PSI
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="border-t border-gray-700 pt-4 space-y-4">
+      <div className="space-y-4">
         <div className="text-xs text-gray-400 font-mono uppercase">Source Water Parameters</div>
 
         <ParamRow

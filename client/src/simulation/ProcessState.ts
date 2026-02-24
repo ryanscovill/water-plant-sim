@@ -60,6 +60,7 @@ export interface DisinfectionState {
   chlorineResidualDist: number;  // mg/L
   finishedWaterPH: number;
   clearwellLevel: number;      // metres (0-6.1)
+  distributionDemand: number;  // MGD — operator-configurable outflow to distribution system
   chlorinePumpStatus: EquipmentStatus;
   uvSystemStatus: EquipmentStatus;
 }
@@ -139,6 +140,7 @@ export function createInitialState(): ProcessState {
       chlorineResidualDist: 1.5,
       finishedWaterPH: 7.4,
       clearwellLevel: 4.3,
+      distributionDemand: 2.5,
       chlorinePumpStatus: { running: true, fault: false, speed: 65, runHours: 4200 },
       uvSystemStatus: { running: true, fault: false, speed: 100, runHours: 6100 },
     },

@@ -14,6 +14,7 @@ import { PumpControl } from '../equipment/PumpControl';
 import { ValveControl } from '../equipment/ValveControl';
 import { SourceWaterControl } from '../equipment/SourceWaterControl';
 import { InfoModal } from '../common/InfoModal';
+import { PlantStagesGrid } from './OverviewHMI';
 import { getEngine } from '../../simulation/engine';
 
 function SvgInfo({ x, y, onClick }: { x: number; y: number; onClick: () => void }) {
@@ -50,6 +51,9 @@ export function IntakeHMI() {
 
   return (
     <div>
+      <div className="mb-3">
+        <PlantStagesGrid activeStage="INTAKE" />
+      </div>
       <div className="flex items-center gap-2 mb-3">
         <h2 className="text-gray-300 font-bold text-sm font-mono">INTAKE — RAW WATER SUPPLY</h2>
         <button onClick={() => setInfoKey('intakePage')} className="text-blue-400 hover:text-blue-300 p-0.5 rounded hover:bg-gray-800 cursor-pointer" title="About this screen">

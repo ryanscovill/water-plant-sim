@@ -56,9 +56,10 @@ export class DisinfectionStage {
     // At nominal flow (3.375 MGD) inflow = 0.006 m/s; scales linearly to zero when pumps are off.
     const NOMINAL_FLOW_MGD = 3.375;
     const NOMINAL_INFLOW = 0.006; // m/s
+    const M_PER_MGD = NOMINAL_INFLOW / NOMINAL_FLOW_MGD; // level rate (m/s) per MGD
     const flowFraction = (intake?.rawWaterFlow ?? 0) / NOMINAL_FLOW_MGD;
     const inflow = sed.backwashInProgress ? 0 : NOMINAL_INFLOW * flowFraction;
-    const outflow = 0.0046; // m/s
+    const outflow = next.distributionDemand * M_PER_MGD; // scales with operator demand setpoint
     next.clearwellLevel = clamp(next.clearwellLevel + (inflow - outflow) * dt, 0, 6.1);
 
     return next;

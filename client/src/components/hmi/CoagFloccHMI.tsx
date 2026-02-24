@@ -11,6 +11,7 @@ import { EquipmentPanel, EmptyPanel, UnsavedChangesDialog } from '../equipment/E
 import { PumpControl } from '../equipment/PumpControl';
 import { ChemDoseControl } from '../equipment/ChemDoseControl';
 import { InfoModal } from '../common/InfoModal';
+import { PlantStagesGrid } from './OverviewHMI';
 
 function SvgInfo({ x, y, onClick }: { x: number; y: number; onClick: () => void }) {
   return (
@@ -55,6 +56,9 @@ export function CoagFloccHMI() {
 
   return (
     <div>
+      <div className="mb-3">
+        <PlantStagesGrid activeStage="COAGULATION" />
+      </div>
       <div className="flex items-center gap-2 mb-3">
         <h2 className="text-gray-300 font-bold text-sm font-mono">COAGULATION / FLOCCULATION</h2>
         <button onClick={() => setInfoKey('coagFloccPage')} className="text-blue-400 hover:text-blue-300 p-0.5 rounded hover:bg-gray-800 cursor-pointer" title="About this screen">
