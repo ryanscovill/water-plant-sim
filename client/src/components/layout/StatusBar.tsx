@@ -22,6 +22,7 @@ export function StatusBar() {
         <span className="text-amber-400">▶ {activeScenario.name}</span>
       )}
       <span className="ml-auto">Speed: {state.simSpeed}x</span>
+      <span className="text-yellow-600 font-semibold">⚠ FOR TRAINING PURPOSES ONLY — Data and values may be inaccurate</span>
     </div>
   );
 }

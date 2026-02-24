@@ -1,10 +1,102 @@
+import { useEffect, useRef } from 'react';
+import { useLocation } from 'react-router-dom';
 import { ChevronRight, ChevronLeft, X, CheckCircle } from 'lucide-react';
 import { useTutorialStore } from '../../store/useTutorialStore';
+import { useSimulationStore } from '../../store/useSimulationStore';
+import { useAlarmStore } from '../../store/useAlarmStore';
 import { TutorialStep } from './TutorialStep';
 import { TutorialProgress } from './TutorialProgress';
+import type { ProcessState, Alarm } from '../../types/process';
+
+function evaluateWaitFor(condition: string, processState: ProcessState, alarms: Alarm[]): boolean {
+  try {
+    const fn = new Function(
+      'intake', 'coagulation', 'sedimentation', 'disinfection', 'alarms',
+      `return !!(${condition});`
+    );
+    return fn(
+      processState.intake,
+      processState.coagulation,
+      processState.sedimentation,
+      processState.disinfection,
+      alarms
+    );
+  } catch {
+    return false;
+  }
+}
+
+function navSpotlightToPath(spotlight: string): string | null {
+  if (!spotlight.startsWith('nav-')) return null;
+  const section = spotlight.replace('nav-', '');
+  return section === 'overview' ? '/' : `/${section}`;
+}
 
 export function TutorialOverlay() {
   const { activeTutorial, currentStep, completed, nextStep, prevStep, exitTutorial } = useTutorialStore();
+  const processState = useSimulationStore((s) => s.state);
+  const alarms = useAlarmStore((s) => s.alarms);
+  const location = useLocation();
+
+  // Prevent double-advancing on the same step
+  const autoAdvancedRef = useRef(false);
+  useEffect(() => {
+    autoAdvancedRef.current = false;
+  }, [currentStep]);
+
+  // Auto-advance: waitFor condition met
+  useEffect(() => {
+    if (!activeTutorial || completed || autoAdvancedRef.current) return;
+    const step = activeTutorial.steps[currentStep];
+    if (!step?.waitFor || !processState) return;
+    if (evaluateWaitFor(step.waitFor, processState, alarms)) {
+      autoAdvancedRef.current = true;
+      nextStep();
+    }
+  }, [processState, alarms, activeTutorial, currentStep, completed, nextStep]);
+
+  // Auto-advance: user navigated to the spotlighted nav destination
+  useEffect(() => {
+    if (!activeTutorial || completed || autoAdvancedRef.current) return;
+    const step = activeTutorial.steps[currentStep];
+    if (!step || step.waitFor) return;
+    const targetPath = navSpotlightToPath(step.spotlight);
+    if (targetPath && location.pathname === targetPath) {
+      autoAdvancedRef.current = true;
+      nextStep();
+    }
+  }, [location.pathname, activeTutorial, currentStep, completed, nextStep]);
+
+  // Auto-advance: user clicked an interactive HMI element spotlighted by this step
+  useEffect(() => {
+    if (!activeTutorial || completed) return;
+    const step = activeTutorial.steps[currentStep];
+    if (!step || step.waitFor || navSpotlightToPath(step.spotlight)) return;
+
+    const handleClick = (e: MouseEvent) => {
+      if (autoAdvancedRef.current) return;
+      const target = e.target as Element;
+      const spotlightEl = document.getElementById(step.spotlight);
+      if (!spotlightEl?.contains(target)) return;
+
+      // Only advance for genuinely interactive elements, not read-only displays
+      const isInteractive =
+        spotlightEl.getAttribute('data-interactive') === 'true' ||
+        target.closest('[data-interactive="true"]') !== null ||
+        target instanceof HTMLButtonElement ||
+        target.closest('button') !== null ||
+        target instanceof HTMLSelectElement ||
+        target instanceof HTMLInputElement;
+
+      if (isInteractive) {
+        autoAdvancedRef.current = true;
+        nextStep();
+      }
+    };
+
+    document.addEventListener('click', handleClick);
+    return () => document.removeEventListener('click', handleClick);
+  }, [activeTutorial, currentStep, completed, nextStep]);
 
   if (!activeTutorial) return null;
 
@@ -42,7 +134,13 @@ export function TutorialOverlay() {
           ) : step ? (
             <>
               <TutorialStep step={step} stepNumber={currentStep + 1} total={activeTutorial.steps.length} />
-              <div className="flex gap-2 mt-4">
+              {step.waitFor && (
+                <div className="mt-3 flex items-center gap-1.5 text-amber-400 text-xs">
+                  <span className="inline-block w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+                  Waiting for action…
+                </div>
+              )}
+              <div className="flex gap-2 mt-3">
                 <button
                   onClick={prevStep}
                   disabled={currentStep === 0}
