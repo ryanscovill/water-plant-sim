@@ -108,6 +108,14 @@ Controls are sent via `getEngine().applyControl(type, payload)` — called direc
 
 Trend data comes from `getEngine().historian.getTagHistory(tag, durationSeconds)` — synchronous, no fetch needed.
 
+## UI Standards
+
+### Cursor on interactive elements
+
+Every clickable element **must** have `cursor-pointer` in its Tailwind class list. Tailwind's preflight resets `<button>` to `cursor: default`, so the pointer is never implicit — it must always be explicit.
+
+This applies to: `<button>`, `<a>`, clickable `<div>`/`<tr>`/`<li>`, custom tab bars, toggle switches, icon buttons, and any other element with an `onClick` handler.
+
 ### Client: HMI screens
 
 Each HMI (`IntakeHMI`, `CoagFloccHMI`, `SedimentationHMI`, `DisinfectionHMI`) follows the same pattern:

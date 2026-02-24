@@ -52,7 +52,7 @@ export function IntakeHMI() {
     <div>
       <div className="flex items-center gap-2 mb-3">
         <h2 className="text-gray-300 font-bold text-sm font-mono">INTAKE — RAW WATER SUPPLY</h2>
-        <button onClick={() => setInfoKey('intakePage')} className="text-blue-400 hover:text-blue-300 p-0.5 rounded hover:bg-gray-800" title="About this screen">
+        <button onClick={() => setInfoKey('intakePage')} className="text-blue-400 hover:text-blue-300 p-0.5 rounded hover:bg-gray-800 cursor-pointer" title="About this screen">
           <Info size={14} />
         </button>
       </div>
@@ -209,7 +209,7 @@ export function IntakeHMI() {
                 </div>
                 <button
                   onClick={clearScreen}
-                  className="w-full py-2 bg-blue-700 hover:bg-blue-600 text-white text-xs font-mono font-bold rounded"
+                  className="w-full py-2 bg-blue-700 hover:bg-blue-600 text-white text-xs font-mono font-bold rounded cursor-pointer"
                 >
                   CLEAR SCREEN
                 </button>

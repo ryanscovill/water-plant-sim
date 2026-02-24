@@ -23,6 +23,7 @@
 .animate-flash { animation: flash 0.5s ease-in-out infinite; }
 .animate-slow-flash { animation: slow-flash 1.5s ease-in-out infinite; }
 .animate-rotate { animation: rotate 2s linear infinite; }
+.animate-rotate-slow { animation: rotate 6s linear infinite; }
 .animate-flow { animation: flow-dash 0.8s linear infinite; }
 
 body {

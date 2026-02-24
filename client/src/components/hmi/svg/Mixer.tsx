@@ -9,11 +9,14 @@ interface MixerProps {
   y?: number;
   size?: number;
   selected?: boolean;
+  speed?: 'rapid' | 'slow';
 }
 
-export function Mixer({ status, label, id, onClick, x = 0, y = 0, size = 20, selected }: MixerProps) {
+export function Mixer({ status, label, id, onClick, x = 0, y = 0, size = 20, selected, speed = 'rapid' }: MixerProps) {
   const color = status.fault ? '#dc2626' : status.running ? '#16a34a' : '#6b7280';
-  const animClass = status.running && !status.fault ? 'animate-rotate' : '';
+  const animClass = status.running && !status.fault
+    ? (speed === 'slow' ? 'animate-rotate-slow' : 'animate-rotate')
+    : '';
 
   return (
     <g

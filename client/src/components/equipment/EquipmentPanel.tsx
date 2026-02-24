@@ -21,12 +21,12 @@ export function EquipmentPanel({ title, tag, onClose, onInfo, children }: Equipm
             <button
               onClick={onInfo}
               title="What is this?"
-              className="text-blue-400 hover:text-blue-200 p-1 rounded hover:bg-gray-700"
+              className="text-blue-400 hover:text-blue-200 p-1 rounded hover:bg-gray-700 cursor-pointer"
             >
               <Info size={16} />
             </button>
           )}
-          <button onClick={onClose} className="text-gray-400 hover:text-white p-1 rounded hover:bg-gray-700">
+          <button onClick={onClose} className="text-gray-400 hover:text-white p-1 rounded hover:bg-gray-700 cursor-pointer">
             <X size={16} />
           </button>
         </div>
@@ -45,13 +45,13 @@ export function UnsavedChangesDialog({ onDiscard, onCancel }: { onDiscard: () =>
         <div className="flex gap-2 justify-end">
           <button
             onClick={onCancel}
-            className="px-3 py-1.5 bg-gray-700 hover:bg-gray-600 text-white text-sm rounded"
+            className="px-3 py-1.5 bg-gray-700 hover:bg-gray-600 text-white text-sm rounded cursor-pointer"
           >
             Cancel
           </button>
           <button
             onClick={onDiscard}
-            className="px-3 py-1.5 bg-red-700 hover:bg-red-600 text-white text-sm rounded font-semibold"
+            className="px-3 py-1.5 bg-red-700 hover:bg-red-600 text-white text-sm rounded font-semibold cursor-pointer"
           >
             Discard
           </button>

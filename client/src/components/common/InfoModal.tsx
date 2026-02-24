@@ -42,7 +42,7 @@ export function InfoModal({ infoKey, onClose }: InfoModalProps) {
           </div>
           <button
             onClick={onClose}
-            className="text-gray-500 hover:text-white p-1 rounded hover:bg-gray-700 ml-4 shrink-0 mt-0.5"
+            className="text-gray-500 hover:text-white p-2.5 rounded hover:bg-gray-700 ml-4 shrink-0 cursor-pointer"
           >
             <X size={18} />
           </button>
@@ -100,7 +100,7 @@ export function InfoModal({ infoKey, onClose }: InfoModalProps) {
         <div className="px-5 pb-5">
           <button
             onClick={onClose}
-            className="w-full py-2 bg-gray-700 hover:bg-gray-600 text-gray-200 text-sm rounded-lg font-mono"
+            className="w-full py-2 bg-gray-700 hover:bg-gray-600 text-gray-200 text-sm rounded-lg font-mono cursor-pointer"
           >
             Close
           </button>

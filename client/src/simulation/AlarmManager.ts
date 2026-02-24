@@ -34,6 +34,12 @@ function getPriority(condition: 'HH' | 'H' | 'L' | 'LL'): 'CRITICAL' | 'HIGH' | 
 
 export class AlarmManager {
   private alarmHistory: Alarm[] = [];
+  private thresholds: Record<string, { ll?: number; l?: number; h?: number; hh?: number }> =
+    JSON.parse(JSON.stringify(config.alarmThresholds));
+
+  setThresholds(thresholds: Record<string, { ll?: number; l?: number; h?: number; hh?: number }>): void {
+    this.thresholds = thresholds;
+  }
 
   evaluate(state: ProcessState): { newAlarms: Alarm[]; clearedAlarms: Alarm[]; valueUpdates: { id: string; value: number }[] } {
     const tagValues = getTagValues(state);
@@ -42,7 +48,7 @@ export class AlarmManager {
     const valueUpdates: { id: string; value: number }[] = [];
 
     for (const { tag, value, description } of tagValues) {
-      const thresholds = (config.alarmThresholds as Record<string, { ll?: number; l?: number; h?: number; hh?: number }>)[tag];
+      const thresholds = this.thresholds[tag];
       if (!thresholds) continue;
 
       const checks: Array<{ condition: 'HH' | 'H' | 'L' | 'LL'; setpoint: number; active: boolean }> = [];

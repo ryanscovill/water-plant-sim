@@ -10,6 +10,7 @@ import { TrendsPage } from './pages/TrendsPage';
 import { ScenariosPage } from './pages/ScenariosPage';
 import { TutorialsPage } from './pages/TutorialsPage';
 import { HistoryPage } from './pages/HistoryPage';
+import { SettingsPage } from './pages/SettingsPage';
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
           <Route path="/scenarios" element={<ScenariosPage />} />
           <Route path="/tutorials" element={<TutorialsPage />} />
           <Route path="/history" element={<HistoryPage />} />
+          <Route path="/settings" element={<SettingsPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

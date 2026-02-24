@@ -57,7 +57,7 @@ export function CoagFloccHMI() {
     <div>
       <div className="flex items-center gap-2 mb-3">
         <h2 className="text-gray-300 font-bold text-sm font-mono">COAGULATION / FLOCCULATION</h2>
-        <button onClick={() => setInfoKey('coagFloccPage')} className="text-blue-400 hover:text-blue-300 p-0.5 rounded hover:bg-gray-800" title="About this screen">
+        <button onClick={() => setInfoKey('coagFloccPage')} className="text-blue-400 hover:text-blue-300 p-0.5 rounded hover:bg-gray-800 cursor-pointer" title="About this screen">
           <Info size={14} />
         </button>
       </div>
@@ -84,8 +84,8 @@ export function CoagFloccHMI() {
             <text x="400" y="128" textAnchor="middle" fill="#3b82f6" fontSize="12" fontFamily="monospace">FLOCCULATION BASIN</text>
             <Mixer status={coagulation.slowMixerStatus} label="M-202" id="hmi-slowMixer"
               onClick={() => requestSelect('slowMixer')} x={360} y={175} size={22}
-              selected={selected === 'slowMixer'} />
-            <Mixer status={coagulation.slowMixerStatus} label="M-203" x={440} y={175} size={22} />
+              selected={selected === 'slowMixer'} speed="slow" />
+            <Mixer status={coagulation.slowMixerStatus} label="M-203" x={440} y={175} size={22} speed="slow" />
             <SvgInfo x={474} y={113} onClick={() => setInfoKey('slowMixer')} />
 
             {/* Floc turbidity */}

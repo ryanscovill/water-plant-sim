@@ -26,7 +26,7 @@ export function EquipmentModal({ title, tag, onClose, children }: EquipmentModal
             <div className="text-white font-bold text-sm">{title}</div>
             <div className="text-gray-400 text-xs font-mono">{tag}</div>
           </div>
-          <button onClick={onClose} className="text-gray-400 hover:text-white">
+          <button onClick={onClose} className="text-gray-400 hover:text-white cursor-pointer">
             <X size={16} />
           </button>
         </div>

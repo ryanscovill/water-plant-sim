@@ -51,7 +51,7 @@ export function SedimentationHMI() {
     <div>
       <div className="flex items-center gap-2 mb-3">
         <h2 className="text-gray-300 font-bold text-sm font-mono">SEDIMENTATION / FILTRATION</h2>
-        <button onClick={() => setInfoKey('sedimentationPage')} className="text-blue-400 hover:text-blue-300 p-0.5 rounded hover:bg-gray-800" title="About this screen">
+        <button onClick={() => setInfoKey('sedimentationPage')} className="text-blue-400 hover:text-blue-300 p-0.5 rounded hover:bg-gray-800 cursor-pointer" title="About this screen">
           <Info size={14} />
         </button>
       </div>
@@ -62,24 +62,24 @@ export function SedimentationHMI() {
             {/* Inlet */}
             <text x="10" y="85" fill="#4b5563" fontSize="13" fontFamily="monospace">FROM</text>
             <text x="10" y="95" fill="#4b5563" fontSize="13" fontFamily="monospace">COAG</text>
-            <Pipe x1="60" y1="90" x2="190" y2="90" flowing={state.intake.rawWaterFlow > 0.5} />
+            <Pipe x1="60" y1="90" x2="150" y2="90" flowing={state.intake.rawWaterFlow > 0.5} />
 
             {/* Clarifier */}
             <Clarifier turbidity={sedimentation.clarifierTurbidity}
-              sludgeLevel={sedimentation.sludgeBlanketLevel} x={230} y={75} r={40} />
-            <SvgInfo x={267} y={62} onClick={() => setInfoKey('clarifier')} />
+              sludgeLevel={sedimentation.sludgeBlanketLevel} x={190} y={75} r={40} />
+            <SvgInfo x={227} y={62} onClick={() => setInfoKey('clarifier')} />
 
-            {/* Clarifier turbidity */}
+            {/* Clarifier turbidity — centered under clarifier */}
             <AnalyzerTag tag="SED-AIT-001" value={sedimentation.clarifierTurbidity} unit="NTU"
-              label="Clarifier Turb" id="hmi-clarifierTurb" x={200} y={195}
+              label="Clarifier Turb" id="hmi-clarifierTurb" x={190} y={195}
               alarm={getAlarm('SED-AIT-001')} />
-            <SvgInfo x={257} y={177} onClick={() => setInfoKey('clarifierTurbidity')} />
+            <SvgInfo x={247} y={177} onClick={() => setInfoKey('clarifierTurbidity')} />
 
-            {/* Sludge blanket */}
+            {/* Sludge blanket — centered under clarifier */}
             <AnalyzerTag tag="SED-LIT-001" value={sedimentation.sludgeBlanketLevel} unit="ft"
-              label="Sludge Blanket" id="hmi-sludgeLevel" x={130} y={270}
+              label="Sludge Blanket" id="hmi-sludgeLevel" x={190} y={270}
               alarm={getAlarm('SED-LIT-001')} />
-            <SvgInfo x={187} y={252} onClick={() => setInfoKey('sludgeBlanket')} />
+            <SvgInfo x={247} y={252} onClick={() => setInfoKey('sludgeBlanket')} />
 
             {/* Sludge pump */}
             <g data-interactive="true" data-selected={selected === 'sludgePump' ? 'true' : undefined} style={{ cursor: 'pointer' }} onClick={() => setSelected('sludgePump')}>
@@ -95,8 +95,13 @@ export function SedimentationHMI() {
             </g>
             <SvgInfo x={372} y={210} onClick={() => setInfoKey('sludgePump')} />
 
-            {/* Pipe clarifier to filter */}
-            <Pipe x1="270" y1="90" x2="440" y2="90" flowing={flowing} />
+            {/* Pipe clarifier → turns up before filter → runs to top → right → drops into filter top-left (440, 45) */}
+            <g>
+              <path d="M 230 90 L 415 90 L 415 45 L 440 45" stroke="#374151" strokeWidth="6" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+              {flowing && (
+                <path d="M 230 90 L 415 90 L 415 45 L 440 45" stroke="#60a5fa" strokeWidth="3" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeDasharray="8 6" className="animate-flow" opacity="0.7" />
+              )}
+            </g>
 
             {/* Filter bed */}
             <FilterBed headLoss={sedimentation.filterHeadLoss} runTime={sedimentation.filterRunTime}
@@ -106,52 +111,51 @@ export function SedimentationHMI() {
               selected={selected === 'filter'} />
             <SvgInfo x={497} y={48} onClick={() => setInfoKey('filterBed')} />
 
-            {/* Filter head loss */}
-            <AnalyzerTag tag="FLT-PDT-001" value={sedimentation.filterHeadLoss} unit="ft"
-              label="Filter Head Loss" id="hmi-filterHeadLoss" x={530} y={220}
-              alarm={getAlarm('FLT-PDT-001')} decimals={1} />
-            <SvgInfo x={587} y={202} onClick={() => setInfoKey('filterHeadLoss')} />
-
-            {/* Filter run time */}
+            {/* Filter run time — right of filter, above outlet pipe */}
             <g id="hmi-filterRunTime">
-              <rect x="490" y="275" width="80" height="32" rx="3" fill="#111827" stroke="#374151" strokeWidth="1" />
-              <text x="530" y="288" textAnchor="middle" fill="#6b7280" fontSize="11" fontFamily="monospace">Run Time</text>
-              <text x="530" y="301" textAnchor="middle" fill="#9ca3af" fontSize="11" fontFamily="monospace">{sedimentation.filterRunTime.toFixed(1)} hrs</text>
+              <rect x="512" y="50" width="80" height="32" rx="3" fill="#111827" stroke="#374151" strokeWidth="1" />
+              <text x="552" y="63" textAnchor="middle" fill="#6b7280" fontSize="11" fontFamily="monospace">Run Time</text>
+              <text x="552" y="76" textAnchor="middle" fill="#9ca3af" fontSize="11" fontFamily="monospace">{sedimentation.filterRunTime.toFixed(1)} hrs</text>
             </g>
 
-            {/* Filter effluent */}
-            <Pipe x1="500" y1="90" x2="580" y2="90" flowing={flowing && !sedimentation.backwashInProgress} />
-            <AnalyzerTag tag="FLT-AIT-001" value={sedimentation.filterEffluentTurbidity} unit="NTU"
-              label="Effluent Turb" id="hmi-filterEffluent" x={600} y={60}
-              alarm={getAlarm('FLT-AIT-001')} decimals={3} />
-            <SvgInfo x={657} y={42} onClick={() => setInfoKey('filterEffluent')} />
-
-            {/* Outlet */}
-            <Pipe x1="600" y1="90" x2="680" y2="90" flowing={flowing} />
-            <text x="685" y="85" fill="#4b5563" fontSize="13" fontFamily="monospace">TO</text>
-            <text x="685" y="95" fill="#4b5563" fontSize="13" fontFamily="monospace">DIS.</text>
-
-            {/* Backwash controls — centered under filter, below HL/RT labels */}
+            {/* Backwash controls — right of filter, above outlet pipe */}
             {!sedimentation.backwashInProgress ? (
               <g id="ctrl-backwash-start" data-interactive="true" style={{ cursor: 'pointer' }} onClick={() => setSelected('filter')}>
-                <rect x="432" y="172" width="76" height="28" rx="5" fill="transparent" stroke="#2563eb"
+                <rect x="512" y="88" width="76" height="28" rx="5" fill="transparent" stroke="#2563eb"
                   strokeWidth="1.5" strokeDasharray="5,3" className="interactive-ring" />
-                <rect x="435" y="175" width="70" height="22" rx="3" fill="#1e3a5f" stroke="#2563eb" strokeWidth="1.5" />
-                <text x="470" y="190" textAnchor="middle" fill="#60a5fa" fontSize="12" fontFamily="monospace">
+                <rect x="515" y="91" width="70" height="22" rx="3" fill="#1e3a5f" stroke="#2563eb" strokeWidth="1.5" />
+                <text x="550" y="106" textAnchor="middle" fill="#60a5fa" fontSize="12" fontFamily="monospace">
                   BACKWASH
                 </text>
               </g>
             ) : (
               <g data-interactive="true" style={{ cursor: 'pointer' }} onClick={abortBackwash}>
-                <rect x="432" y="172" width="76" height="28" rx="5" fill="transparent" stroke="#dc2626"
+                <rect x="512" y="88" width="76" height="28" rx="5" fill="transparent" stroke="#dc2626"
                   strokeWidth="1.5" strokeDasharray="5,3" className="interactive-ring" />
-                <rect x="435" y="175" width="70" height="22" rx="3" fill="#7f1d1d" stroke="#dc2626" strokeWidth="1.5" />
-                <text x="470" y="190" textAnchor="middle" fill="#fca5a5" fontSize="12" fontFamily="monospace">
+                <rect x="515" y="91" width="70" height="22" rx="3" fill="#7f1d1d" stroke="#dc2626" strokeWidth="1.5" />
+                <text x="550" y="106" textAnchor="middle" fill="#fca5a5" fontSize="12" fontFamily="monospace">
                   ABORT BW
                 </text>
               </g>
             )}
-            <SvgInfo x={510} y={176} onClick={() => setInfoKey('backwash')} />
+            <SvgInfo x={589} y={88} onClick={() => setInfoKey('backwash')} />
+
+            {/* Outlet — exits filter bottom-right (500, 125), runs right to TO DIS. */}
+            <Pipe x1="500" y1="125" x2="680" y2="125" flowing={flowing && !sedimentation.backwashInProgress} />
+            <text x="685" y="120" fill="#4b5563" fontSize="13" fontFamily="monospace">TO</text>
+            <text x="685" y="132" fill="#4b5563" fontSize="13" fontFamily="monospace">DIS.</text>
+
+            {/* Filter effluent — centered under filter, aligned with Clarifier Turb row */}
+            <AnalyzerTag tag="FLT-AIT-001" value={sedimentation.filterEffluentTurbidity} unit="NTU"
+              label="Effluent Turb" id="hmi-filterEffluent" x={470} y={195}
+              alarm={getAlarm('FLT-AIT-001')} decimals={3} />
+            <SvgInfo x={527} y={177} onClick={() => setInfoKey('filterEffluent')} />
+
+            {/* Filter head loss — centered under filter, aligned with Sludge Blanket row */}
+            <AnalyzerTag tag="FLT-PDT-001" value={sedimentation.filterHeadLoss} unit="ft"
+              label="Filter Head Loss" id="hmi-filterHeadLoss" x={470} y={270}
+              alarm={getAlarm('FLT-PDT-001')} decimals={1} />
+            <SvgInfo x={527} y={252} onClick={() => setInfoKey('filterHeadLoss')} />
           </svg>
         </div>
 
@@ -184,13 +188,13 @@ export function SedimentationHMI() {
                     <div className="text-cyan-400 font-mono text-sm animate-slow-flash">BACKWASH IN PROGRESS</div>
                     <div className="text-cyan-300 font-mono text-lg font-bold">{Math.ceil(sedimentation.backwashTimeRemaining)}s</div>
                     <button onClick={abortBackwash}
-                      className="mt-2 px-4 py-2 bg-red-700 hover:bg-red-600 text-white text-sm rounded w-full">
+                      className="mt-2 px-4 py-2 bg-red-700 hover:bg-red-600 text-white text-sm rounded w-full cursor-pointer">
                       ABORT BACKWASH
                     </button>
                   </div>
                 ) : (
                   <button id="ctrl-backwash-start" onClick={startBackwash}
-                    className="px-4 py-2 bg-blue-700 hover:bg-blue-600 text-white text-sm rounded w-full font-semibold">
+                    className="px-4 py-2 bg-blue-700 hover:bg-blue-600 text-white text-sm rounded w-full font-semibold cursor-pointer">
                     START BACKWASH
                   </button>
                 )}

@@ -420,4 +420,8 @@ export class SimulationEngine {
   getAlarmHistory(): Alarm[] {
     return this.alarmManager.getHistory();
   }
+
+  setAlarmThresholds(thresholds: Record<string, { ll?: number; l?: number; h?: number; hh?: number }>): void {
+    this.alarmManager.setThresholds(thresholds);
+  }
 }

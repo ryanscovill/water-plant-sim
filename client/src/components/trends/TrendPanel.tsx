@@ -113,7 +113,7 @@ export function TrendPanel() {
             <button
               key={t.tag}
               onClick={() => setSelectedTag(t.tag)}
-              className={`w-full text-left px-3 py-2 text-xs font-mono border-b border-gray-800 hover:bg-gray-800 ${selectedTag === t.tag ? 'bg-blue-900/40 text-blue-300' : 'text-gray-300'}`}
+              className={`w-full text-left px-3 py-2 text-xs font-mono border-b border-gray-800 hover:bg-gray-800 cursor-pointer ${selectedTag === t.tag ? 'bg-blue-900/40 text-blue-300' : 'text-gray-300'}`}
             >
               <div className="flex items-center justify-between gap-1">
                 <span className="font-bold">{t.tag}</span>
@@ -142,7 +142,7 @@ export function TrendPanel() {
             <button
               key={d.value}
               onClick={() => setDuration(d.value)}
-              className={`px-3 py-1 text-xs rounded font-mono ${duration === d.value ? 'bg-blue-700 text-white' : 'bg-gray-800 text-gray-300 hover:bg-gray-700'}`}
+              className={`px-3 py-1 text-xs rounded font-mono cursor-pointer ${duration === d.value ? 'bg-blue-700 text-white' : 'bg-gray-800 text-gray-300 hover:bg-gray-700'}`}
             >
               {d.label}
             </button>
@@ -178,7 +178,7 @@ export function TrendPanel() {
               {activeAlarms.some((a) => !a.acknowledged) && (
                 <button
                   onClick={() => getEngine().applyControl('acknowledgeAll', {})}
-                  className="flex items-center gap-1 px-2 py-1 text-xs bg-gray-700 hover:bg-gray-600 rounded text-gray-300"
+                  className="flex items-center gap-1 px-2 py-1 text-xs bg-gray-700 hover:bg-gray-600 rounded text-gray-300 cursor-pointer"
                 >
                   <CheckCheck size={12} /> ACK ALL
                 </button>
@@ -207,7 +207,7 @@ export function TrendPanel() {
                     {!alarm.acknowledged && (
                       <button
                         onClick={(e) => { e.stopPropagation(); getEngine().applyControl('acknowledgeAlarm', { alarmId: alarm.id }); }}
-                        className="flex items-center gap-1 px-2 py-0.5 bg-gray-700 hover:bg-gray-600 rounded text-xs text-gray-200 whitespace-nowrap shrink-0"
+                        className="flex items-center gap-1 px-2 py-0.5 bg-gray-700 hover:bg-gray-600 rounded text-xs text-gray-200 whitespace-nowrap shrink-0 cursor-pointer"
                       >
                         <Check size={10} /> ACK
                       </button>

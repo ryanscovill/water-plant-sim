@@ -57,7 +57,7 @@ export function DisinfectionHMI() {
     <div>
       <div className="flex items-center gap-2 mb-3">
         <h2 className="text-gray-300 font-bold text-sm font-mono">DISINFECTION / CLEARWELL</h2>
-        <button onClick={() => setInfoKey('disinfectionPage')} className="text-blue-400 hover:text-blue-300 p-0.5 rounded hover:bg-gray-800" title="About this screen">
+        <button onClick={() => setInfoKey('disinfectionPage')} className="text-blue-400 hover:text-blue-300 p-0.5 rounded hover:bg-gray-800 cursor-pointer" title="About this screen">
           <Info size={14} />
         </button>
       </div>
@@ -122,11 +122,11 @@ export function DisinfectionHMI() {
             <text x="665" y="165" fill="#4b5563" fontSize="13" fontFamily="monospace">DIST.</text>
             <text x="665" y="177" fill="#4b5563" fontSize="13" fontFamily="monospace">SYSTEM</text>
 
-            {/* Dist Cl2 */}
+            {/* Dist Cl2 — vertically aligned with Finished pH */}
             <AnalyzerTag tag="DIS-AIT-002" value={disinfection.chlorineResidualDist} unit="mg/L"
-              label="Dist Cl2 Res." id="hmi-distChlorine" x={645} y={280}
+              label="Dist Cl2 Res." id="hmi-distChlorine" x={583} y={280}
               alarm={getAlarm('DIS-AIT-002')} />
-            <SvgInfo x={702} y={262} onClick={() => setInfoKey('distChlorineResidual')} />
+            <SvgInfo x={640} y={262} onClick={() => setInfoKey('distChlorineResidual')} />
           </svg>
         </div>
 
