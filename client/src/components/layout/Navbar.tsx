@@ -72,7 +72,7 @@ export function Navbar() {
           {state?.running ? <Pause size={10} /> : <Play size={10} />}
           {state?.running ? 'PAUSE' : 'PAUSED'}
         </button>
-        {[1, 10, 60].map((s) => (
+        {[1, 10, 60, 600].map((s) => (
           <button
             key={s}
             onClick={() => changeSpeed(s)}

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useTrends } from '../../hooks/useTrends';
 import { useAlarmStore } from '../../store/useAlarmStore';
 import { useEventStore } from '../../store/useEventStore';
@@ -29,6 +30,7 @@ const DURATIONS = [
   { label: '10 min', value: 600 },
   { label: '30 min', value: 1800 },
   { label: '4 hr', value: 14400 },
+  { label: '1 day', value: 86400 },
 ];
 
 const PRIORITY_ORDER = ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW'];
@@ -61,7 +63,9 @@ function topAlarmForTag(alarms: Alarm[], tag: string): Alarm | null {
 }
 
 export function TrendPanel() {
-  const [selectedTag, setSelectedTag] = useState('DIS-AIT-001');
+  const [searchParams] = useSearchParams();
+  const initialTag = AVAILABLE_TAGS.find((t) => t.tag === searchParams.get('tag'))?.tag ?? 'DIS-AIT-001';
+  const [selectedTag, setSelectedTag] = useState(initialTag);
   const [duration, setDuration] = useState(600);
   const tagInfo = AVAILABLE_TAGS.find((t) => t.tag === selectedTag);
   const { data, loading } = useTrends(selectedTag, duration);

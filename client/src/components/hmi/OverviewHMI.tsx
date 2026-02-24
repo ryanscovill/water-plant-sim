@@ -20,10 +20,10 @@ function useStages() {
       color: 'border-blue-700',
       headerBg: 'bg-blue-900/30',
       values: [
-        { label: 'Flow', value: intake.rawWaterFlow, unit: 'MGD', alarm: getAlarm('INT-FIT-001'), decimals: 2 },
-        { label: 'Turbidity', value: intake.rawTurbidity, unit: 'NTU', alarm: getAlarm('INT-AIT-001'), decimals: 1 },
-        { label: 'Wet Well', value: intake.rawWaterLevel, unit: 'ft', alarm: null, decimals: 1 },
-        { label: 'Screen ΔP', value: intake.screenDiffPressure, unit: 'PSI', alarm: getAlarm('INT-PDT-001'), decimals: 1 },
+        { label: 'Flow', value: intake.rawWaterFlow, unit: 'MGD', alarm: getAlarm('INT-FIT-001'), decimals: 2, tag: 'INT-FIT-001' },
+        { label: 'Turbidity', value: intake.rawTurbidity, unit: 'NTU', alarm: getAlarm('INT-AIT-001'), decimals: 1, tag: 'INT-AIT-001' },
+        { label: 'Wet Well', value: intake.rawWaterLevel, unit: 'ft', alarm: null, decimals: 1, tag: 'INT-LIT-001' },
+        { label: 'Screen ΔP', value: intake.screenDiffPressure, unit: 'PSI', alarm: getAlarm('INT-PDT-001'), decimals: 1, tag: 'INT-PDT-001' },
       ],
       equipment: [
         { label: 'P-101', ...intake.intakePump1 },
@@ -36,8 +36,8 @@ function useStages() {
       color: 'border-purple-700',
       headerBg: 'bg-purple-900/30',
       values: [
-        { label: 'Alum Dose', value: coagulation.alumDoseRate, unit: 'mg/L', alarm: null, decimals: 1 },
-        { label: 'Floc Turb', value: coagulation.flocBasinTurbidity, unit: 'NTU', alarm: getAlarm('COG-AIT-001'), decimals: 1 },
+        { label: 'Alum Dose', value: coagulation.alumDoseRate, unit: 'mg/L', alarm: null, decimals: 1, tag: 'COG-FIT-001' },
+        { label: 'Floc Turb', value: coagulation.flocBasinTurbidity, unit: 'NTU', alarm: getAlarm('COG-AIT-001'), decimals: 1, tag: 'COG-AIT-001' },
         { label: 'Rapid Mix', value: coagulation.rapidMixerSpeed, unit: 'RPM', alarm: null, decimals: 0 },
         { label: 'Slow Mix', value: coagulation.slowMixerSpeed, unit: 'RPM', alarm: null, decimals: 0 },
       ],
@@ -52,10 +52,10 @@ function useStages() {
       color: 'border-amber-700',
       headerBg: 'bg-amber-900/30',
       values: [
-        { label: 'Clarifr Turb', value: sedimentation.clarifierTurbidity, unit: 'NTU', alarm: getAlarm('SED-AIT-001'), decimals: 2 },
-        { label: 'Sludge Blanket', value: sedimentation.sludgeBlanketLevel, unit: 'ft', alarm: getAlarm('SED-LIT-001'), decimals: 1 },
-        { label: 'Filter HL', value: sedimentation.filterHeadLoss, unit: 'ft', alarm: getAlarm('FLT-PDT-001'), decimals: 1 },
-        { label: 'Effluent Turb', value: sedimentation.filterEffluentTurbidity, unit: 'NTU', alarm: getAlarm('FLT-AIT-001'), decimals: 3 },
+        { label: 'Clarifr Turb', value: sedimentation.clarifierTurbidity, unit: 'NTU', alarm: getAlarm('SED-AIT-001'), decimals: 2, tag: 'SED-AIT-001' },
+        { label: 'Sludge Blanket', value: sedimentation.sludgeBlanketLevel, unit: 'ft', alarm: getAlarm('SED-LIT-001'), decimals: 1, tag: 'SED-LIT-001' },
+        { label: 'Filter HL', value: sedimentation.filterHeadLoss, unit: 'ft', alarm: getAlarm('FLT-PDT-001'), decimals: 1, tag: 'FLT-PDT-001' },
+        { label: 'Effluent Turb', value: sedimentation.filterEffluentTurbidity, unit: 'NTU', alarm: getAlarm('FLT-AIT-001'), decimals: 3, tag: 'FLT-AIT-001' },
       ],
       equipment: [
         { label: 'Sludge Pump', ...sedimentation.sludgePumpStatus },
@@ -68,10 +68,10 @@ function useStages() {
       color: 'border-cyan-700',
       headerBg: 'bg-cyan-900/30',
       values: [
-        { label: 'Plant Cl₂', value: disinfection.chlorineResidualPlant, unit: 'mg/L', alarm: getAlarm('DIS-AIT-001'), decimals: 2 },
-        { label: 'Dist Cl₂', value: disinfection.chlorineResidualDist, unit: 'mg/L', alarm: getAlarm('DIS-AIT-002'), decimals: 2 },
-        { label: 'pH', value: disinfection.finishedWaterPH, unit: '', alarm: getAlarm('DIS-AIT-003'), decimals: 2 },
-        { label: 'Clearwell', value: disinfection.clearwellLevel, unit: 'm', alarm: null, decimals: 2 },
+        { label: 'Plant Cl₂', value: disinfection.chlorineResidualPlant, unit: 'mg/L', alarm: getAlarm('DIS-AIT-001'), decimals: 2, tag: 'DIS-AIT-001' },
+        { label: 'Dist Cl₂', value: disinfection.chlorineResidualDist, unit: 'mg/L', alarm: getAlarm('DIS-AIT-002'), decimals: 2, tag: 'DIS-AIT-002' },
+        { label: 'pH', value: disinfection.finishedWaterPH, unit: '', alarm: getAlarm('DIS-AIT-003'), decimals: 2, tag: 'DIS-AIT-003' },
+        { label: 'Clearwell', value: disinfection.clearwellLevel, unit: 'm', alarm: null, decimals: 2, tag: 'DIS-LIT-001' },
       ],
       equipment: [
         { label: 'Cl₂ Pump', ...disinfection.chlorinePumpStatus },
@@ -118,6 +118,7 @@ export function PlantStagesGrid({ activeStage }: { activeStage?: string }) {
                   unit={v.unit}
                   decimals={v.decimals}
                   alarm={v.alarm}
+                  onTrendClick={'tag' in v ? () => navigate(`/trends?tag=${v.tag}`) : undefined}
                 />
               ))}
             </div>
