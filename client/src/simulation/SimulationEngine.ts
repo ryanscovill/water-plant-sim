@@ -311,8 +311,8 @@ export class SimulationEngine {
     type PumpStatus = typeof state.intake.intakePump1;
     const setPump = (pump: PumpStatus): PumpStatus => {
       switch (command) {
-        case 'start': return { ...pump, running: true, fault: false };
-        case 'stop': return { ...pump, running: false };
+        case 'start': return { ...pump, running: true, fault: false, speed: 75 };
+        case 'stop': return { ...pump, running: false, speed: 0 };
         case 'setSpeed': return { ...pump, speed: Math.max(0, Math.min(100, value ?? pump.speed)) };
         default: return pump;
       }
