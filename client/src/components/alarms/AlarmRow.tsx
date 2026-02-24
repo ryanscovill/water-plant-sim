@@ -1,6 +1,4 @@
-import { Check } from 'lucide-react';
 import type { Alarm } from '../../types/process';
-import { getEngine } from '../../simulation/engine';
 import { useNavigate } from 'react-router-dom';
 
 interface AlarmRowProps {
@@ -32,11 +30,6 @@ function tagToRoute(tag: string): string {
 export function AlarmRow({ alarm }: AlarmRowProps) {
   const navigate = useNavigate();
 
-  const ack = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    getEngine().applyControl('acknowledgeAlarm', { alarmId: alarm.id });
-  };
-
   const time = new Date(alarm.timestamp).toLocaleTimeString();
   const isHigh = alarm.condition === 'H' || alarm.condition === 'HH';
   const arrow = isHigh ? '↑' : '↓';
@@ -44,7 +37,7 @@ export function AlarmRow({ alarm }: AlarmRowProps) {
 
   return (
     <div
-      className={`flex items-center gap-3 px-3 py-2 border-l-4 cursor-pointer hover:brightness-125 ${alarm.acknowledged ? 'opacity-60' : ''} ${priorityStyles[alarm.priority] || ''}`}
+      className={`flex items-center gap-3 px-3 py-2 border-l-4 cursor-pointer hover:brightness-125 ${priorityStyles[alarm.priority] || ''}`}
       onClick={() => navigate(tagToRoute(alarm.tag))}
     >
       <span className={`text-xs px-1.5 py-0.5 rounded font-bold ${priorityBadge[alarm.priority]}`}>
@@ -60,18 +53,6 @@ export function AlarmRow({ alarm }: AlarmRowProps) {
           {alarm.tag} &bull; {time}
         </div>
       </div>
-      {!alarm.acknowledged && (
-        <button
-          id="alarm-ack-button"
-          onClick={ack}
-          className="flex items-center gap-1 px-2 py-1 bg-gray-700 hover:bg-gray-600 rounded text-xs text-gray-200 whitespace-nowrap"
-        >
-          <Check size={12} /> ACK
-        </button>
-      )}
-      {alarm.acknowledged && (
-        <span className="text-xs text-gray-500 font-mono">ACK</span>
-      )}
     </div>
   );
 }

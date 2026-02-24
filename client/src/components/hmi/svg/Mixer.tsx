@@ -14,9 +14,10 @@ interface MixerProps {
 
 export function Mixer({ status, label, id, onClick, x = 0, y = 0, size = 20, selected, speed = 'rapid' }: MixerProps) {
   const color = status.fault ? '#dc2626' : status.running ? '#16a34a' : '#6b7280';
-  const animClass = status.running && !status.fault
-    ? (speed === 'slow' ? 'animate-rotate-slow' : 'animate-rotate')
-    : '';
+  const isSpinning = status.running && !status.fault && status.speed > 0;
+  const animStyle = isSpinning
+    ? { animationDuration: `${(speed === 'slow' ? 200 : 100) / status.speed}s` }
+    : undefined;
 
   return (
     <g
@@ -36,7 +37,7 @@ export function Mixer({ status, label, id, onClick, x = 0, y = 0, size = 20, sel
       <rect x={-size * 0.6} y={-size * 0.6} width={size * 1.2} height={size * 1.2} rx="4"
         fill={color} stroke="#374151" strokeWidth="1.5" />
       {/* Impeller */}
-      <g className={animClass} style={{ transformOrigin: '0px 0px' }}>
+      <g className={isSpinning ? 'animate-rotate' : ''} style={{ transformOrigin: '0px 0px', ...animStyle }}>
         <ellipse cx="0" cy="0" rx={size * 0.4} ry={size * 0.15} fill="none" stroke="white" strokeWidth="1.5" />
         <ellipse cx="0" cy="0" rx={size * 0.15} ry={size * 0.4} fill="none" stroke="white" strokeWidth="1.5" />
       </g>

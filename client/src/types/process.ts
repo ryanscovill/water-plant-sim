@@ -84,8 +84,6 @@ export interface Alarm {
   setpoint: number;
   condition: 'HH' | 'H' | 'L' | 'LL';
   active: boolean;
-  acknowledged: boolean;
   timestamp: string;
-  acknowledgedAt?: string;
   clearedAt?: string;
 }

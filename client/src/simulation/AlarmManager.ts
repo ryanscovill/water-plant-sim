@@ -73,7 +73,6 @@ export class AlarmManager {
             setpoint: check.setpoint,
             condition: check.condition,
             active: true,
-            acknowledged: false,
             timestamp: state.timestamp,
           };
           newAlarms.push(alarm);

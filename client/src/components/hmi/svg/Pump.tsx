@@ -15,7 +15,10 @@ export function Pump({ status, label, id, onClick, x = 0, y = 0, selected }: Pum
     : status.running ? '#2563eb'
     : '#6b7280';
 
-  const animClass = status.running && !status.fault ? 'animate-rotate' : '';
+  const isSpinning = status.running && !status.fault && status.speed > 0;
+  const animStyle = isSpinning
+    ? { animationDuration: `${100 / status.speed}s` }
+    : undefined;
 
   return (
     <g
@@ -34,7 +37,7 @@ export function Pump({ status, label, id, onClick, x = 0, y = 0, selected }: Pum
       {/* Pump body circle */}
       <circle cx="0" cy="0" r="18" fill={color} stroke="#374151" strokeWidth="2" />
       {/* Impeller blades */}
-      <g className={animClass} style={{ transformOrigin: '0px 0px' }}>
+      <g className={isSpinning ? 'animate-rotate' : ''} style={{ transformOrigin: '0px 0px', ...animStyle }}>
         <line x1="0" y1="-12" x2="0" y2="0" stroke="white" strokeWidth="2" strokeLinecap="round" />
         <line x1="10" y1="6" x2="0" y2="0" stroke="white" strokeWidth="2" strokeLinecap="round" />
         <line x1="-10" y1="6" x2="0" y2="0" stroke="white" strokeWidth="2" strokeLinecap="round" />

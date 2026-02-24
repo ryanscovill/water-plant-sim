@@ -121,12 +121,20 @@ export function CoagFloccHMI() {
         <div className="w-72 shrink-0 self-stretch">
           {selected === 'rapidMixer' && (
             <EquipmentPanel title="Rapid Mixer" tag="M-201" onClose={() => requestSelect(null)} onInfo={() => setInfoKey('rapidMixer')}>
-              <PumpControl pumpId="rapidMixer" status={coagulation.rapidMixerStatus} label="COG-M-201" />
+              <PumpControl pumpId="rapidMixer" status={coagulation.rapidMixerStatus} label="COG-M-201" showSpeedControl={false} />
+              <div className="mt-3 flex justify-between text-xs font-mono text-gray-400">
+                <span>Speed</span>
+                <span className="text-gray-200">{coagulation.rapidMixerSpeed.toFixed(0)} RPM</span>
+              </div>
             </EquipmentPanel>
           )}
           {selected === 'slowMixer' && (
             <EquipmentPanel title="Slow Mixer" tag="M-202" onClose={() => requestSelect(null)} onInfo={() => setInfoKey('slowMixer')}>
-              <PumpControl pumpId="slowMixer" status={coagulation.slowMixerStatus} label="COG-M-202" />
+              <PumpControl pumpId="slowMixer" status={coagulation.slowMixerStatus} label="COG-M-202" showSpeedControl={false} />
+              <div className="mt-3 flex justify-between text-xs font-mono text-gray-400">
+                <span>Speed</span>
+                <span className="text-gray-200">{coagulation.slowMixerSpeed.toFixed(0)} RPM</span>
+              </div>
             </EquipmentPanel>
           )}
           {selected === 'alumDose' && (

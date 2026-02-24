@@ -4,7 +4,7 @@ import { getEngine } from '../engine';
 export const alarmResponse: TutorialDefinition = {
   id: 'alarm-response',
   title: 'Responding to Process Alarms',
-  description: 'Learn the proper procedure for acknowledging and responding to process alarms.',
+  description: 'Learn the proper procedure for identifying and responding to process alarms.',
   onStart() {
     // Inject elevated raw turbidity so INT-AIT-001 H alarm fires immediately.
     // sourceTurbidityBase keeps it elevated; rawTurbidity seeds the lag filter
@@ -33,10 +33,9 @@ export const alarmResponse: TutorialDefinition = {
     },
     {
       id: 'step-3',
-      instruction: 'Click the "Acknowledge" button on the active alarm to acknowledge it.',
-      spotlight: 'alarm-ack-button',
-      waitFor: 'alarms.some(a => a.acknowledged)',
-      hint: 'Click the "ACK" button on the alarm row.',
+      instruction: 'Review the active alarm details — note the tag name, current value, and priority.',
+      spotlight: 'alarm-list',
+      hint: 'Read the alarm row to understand what process tag is in alarm.',
     },
     {
       id: 'step-4',

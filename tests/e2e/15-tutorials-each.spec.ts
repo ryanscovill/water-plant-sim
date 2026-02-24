@@ -285,7 +285,7 @@ test.describe('Tutorial: Plant Startup Procedure', () => {
 // Operator action sequence:
 //   Step 1  alarm-banner, observe      → click Next
 //   Step 2  nav-alarms spotlight       → click #nav-alarms
-//   Step 3  alarm-ack-button waitFor   → click #alarm-ack-button (ACK active alarm)
+//   Step 3  alarm-list, observe        → click Next
 //   Step 4  nav-intake spotlight       → click #nav-intake
 //   Step 5  hmi-rawTurbidity, observe  → click Next
 //   Step 6  hmi-alumDose waitFor       → navigate to coagulation, set alum dose > 20, APPLY
@@ -314,8 +314,8 @@ test.describe('Tutorial: Responding to Process Alarms', () => {
     await page.locator('#nav-alarms').click();
     await waitForStep(page, 3);
     if (step <= 3) return;
-    // Step 3 → alarm-ack-button waitFor: acknowledge the active INT-AIT-001 alarm
-    await page.locator('#alarm-ack-button').first().click();
+    // Step 3 → alarm-list observation: click Next after reviewing alarm details
+    await nextBtn(page).click();
     await waitForStep(page, 4);
     if (step <= 4) return;
     // Step 4 → nav-intake spotlight: navigate to Intake to investigate
@@ -338,7 +338,7 @@ test.describe('Tutorial: Responding to Process Alarms', () => {
   test('card displays correct title, description, and step count', async ({ page }) => {
     const card = page.locator('div.bg-gray-900').filter({ hasText: 'Responding to Process Alarms' });
     await expect(card).toBeVisible();
-    await expect(card).toContainText('acknowledging and responding');
+    await expect(card).toContainText('identifying and responding');
     await expect(card).toContainText('7 steps');
   });
 
@@ -368,25 +368,23 @@ test.describe('Tutorial: Responding to Process Alarms', () => {
     expect(await spotlightTargets(page, 'nav-alarms')).toBe(true);
   });
 
-  // Step 3 waitFor: alarms.some(a => a.acknowledged) — not satisfied until the
-  // operator clicks ACK, so the "Waiting for action" indicator is shown.
-  test('step 3 shows "Waiting for action" indicator (has waitFor)', async ({ page }) => {
+  test('step 3 shows STEP 3 OF 7 and instruction mentions alarm details', async ({ page }) => {
     await startTutorialByTitle(page, 'Responding to Process Alarms');
     await goTo(page, 3);
     await expect(overlay(page)).toContainText('STEP 3 OF 7');
-    await expect(overlay(page)).toContainText('Waiting for action');
+    await expect(overlay(page)).toContainText('alarm');
   });
 
-  test('step 3 spotlights alarm-ack-button', async ({ page }) => {
+  test('step 3 spotlights alarm-list', async ({ page }) => {
     await startTutorialByTitle(page, 'Responding to Process Alarms');
     await goTo(page, 3);
-    expect(await spotlightTargets(page, 'alarm-ack-button')).toBe(true);
+    expect(await spotlightTargets(page, 'alarm-list')).toBe(true);
   });
 
-  test('acknowledging alarm on step 3 advances to step 4', async ({ page }) => {
+  test('clicking Next on step 3 advances to step 4', async ({ page }) => {
     await startTutorialByTitle(page, 'Responding to Process Alarms');
     await goTo(page, 3);
-    await page.locator('#alarm-ack-button').first().click();
+    await nextBtn(page).click();
     await waitForStep(page, 4);
   });
 
@@ -847,7 +845,7 @@ test.describe('Cross-tutorial behaviour', () => {
     // Step 1 — alarm-banner observation: click Next
     await nextBtn(page).click();
     await expect(overlay(page)).toContainText('STEP 2 OF 7', { timeout: 5_000 });
-    // Step 2 — nav-alarms spotlight: navigate to Alarms page
+    // Step 2 — nav-alarms spotlight: navigate to Alarms page (advances to step 3 observation)
     await page.locator('#nav-alarms').click();
     await expect(overlay(page)).toContainText('STEP 3 OF 7', { timeout: 5_000 });
   });

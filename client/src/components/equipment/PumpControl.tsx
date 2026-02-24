@@ -6,9 +6,10 @@ interface PumpControlProps {
   pumpId: string;
   status: EquipmentStatus;
   label: string;
+  showSpeedControl?: boolean;
 }
 
-export function PumpControl({ pumpId, status, label }: PumpControlProps) {
+export function PumpControl({ pumpId, status, label, showSpeedControl = true }: PumpControlProps) {
   const [speed, setSpeed] = useState(status.speed);
   // Keep slider in sync with engine-reported speed when not actively dragging
   useEffect(() => {
@@ -47,16 +48,18 @@ export function PumpControl({ pumpId, status, label }: PumpControlProps) {
         </button>
       </div>
 
-      <div>
-        <label className="text-xs text-gray-300 block mb-1">Speed: {speed}%</label>
-        <input
-          type="range" min="0" max="100" value={speed}
-          onChange={(e) => setSpeed(Number(e.target.value))}
-          onMouseUp={() => sendCommand('setSpeed', speed)}
-          onTouchEnd={() => sendCommand('setSpeed', speed)}
-          className="w-full accent-blue-500"
-        />
-      </div>
+      {showSpeedControl && (
+        <div>
+          <label className="text-xs text-gray-300 block mb-1">Speed: {speed}%</label>
+          <input
+            type="range" min="0" max="100" value={speed}
+            onChange={(e) => setSpeed(Number(e.target.value))}
+            onMouseUp={() => sendCommand('setSpeed', speed)}
+            onTouchEnd={() => sendCommand('setSpeed', speed)}
+            className="w-full accent-blue-500"
+          />
+        </div>
+      )}
 
       <div className="text-xs text-gray-400 font-mono">
         <div>{label}</div>

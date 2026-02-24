@@ -147,27 +147,6 @@ export class SimulationEngine {
         }
         break;
       }
-      case 'acknowledgeAlarm': {
-        const { alarmId } = payload as { alarmId: string };
-        this.state = {
-          ...this.state,
-          alarms: this.state.alarms.map((a) =>
-            a.id === alarmId ? { ...a, acknowledged: true, acknowledgedAt: new Date(this.simulatedTime).toISOString() } : a
-          ),
-        };
-        break;
-      }
-      case 'acknowledgeAll': {
-        this.state = {
-          ...this.state,
-          alarms: this.state.alarms.map((a) => ({
-            ...a,
-            acknowledged: true,
-            acknowledgedAt: a.acknowledged ? a.acknowledgedAt : new Date(this.simulatedTime).toISOString(),
-          })),
-        };
-        break;
-      }
       case 'clearScreen': {
         this.state = { ...this.state, intake: this.intakeStage.clearScreen(this.state.intake) };
         break;
@@ -287,8 +266,6 @@ export class SimulationEngine {
         const { command } = payload as { command: string };
         return command === 'start' ? 'Filter backwash started' : 'Filter backwash aborted';
       }
-      case 'acknowledgeAlarm': return 'Alarm acknowledged';
-      case 'acknowledgeAll':   return 'All alarms acknowledged';
       case 'clearScreen':      return 'Intake screen cleared';
       default:                 return type;
     }

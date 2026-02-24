@@ -4,8 +4,6 @@ import { useAlarmStore } from '../../store/useAlarmStore';
 import { useEventStore } from '../../store/useEventStore';
 import { useSimulationStore } from '../../store/useSimulationStore';
 import { TrendChart } from './TrendChart';
-import { getEngine } from '../../simulation/engine';
-import { Check, CheckCheck } from 'lucide-react';
 import type { Alarm } from '../../types/process';
 
 const AVAILABLE_TAGS = [
@@ -176,16 +174,8 @@ export function TrendPanel() {
         {/* Active alarms */}
         {activeAlarms.length > 0 && (
           <div className="bg-gray-900 border border-gray-700 rounded-lg overflow-hidden">
-            <div className="flex items-center justify-between px-3 py-2 bg-gray-800 border-b border-gray-700">
+            <div className="px-3 py-2 bg-gray-800 border-b border-gray-700">
               <span className="text-xs font-bold text-gray-200 font-mono">ACTIVE ALARMS ({activeAlarms.length})</span>
-              {activeAlarms.some((a) => !a.acknowledged) && (
-                <button
-                  onClick={() => getEngine().applyControl('acknowledgeAll', {})}
-                  className="flex items-center gap-1 px-2 py-1 text-xs bg-gray-700 hover:bg-gray-600 rounded text-gray-300 cursor-pointer"
-                >
-                  <CheckCheck size={12} /> ACK ALL
-                </button>
-              )}
             </div>
             <div className="max-h-48 overflow-y-auto divide-y divide-gray-800">
               {activeAlarms.map((alarm) => {
@@ -194,7 +184,7 @@ export function TrendPanel() {
                 return (
                   <div
                     key={alarm.id}
-                    className={`flex items-center gap-2 px-3 py-1.5 border-l-4 cursor-pointer hover:brightness-125 ${alarm.acknowledged ? 'opacity-60' : ''} ${PRIORITY_ROW[alarm.priority]} ${isSelected ? 'ring-1 ring-inset ring-white/20' : ''}`}
+                    className={`flex items-center gap-2 px-3 py-1.5 border-l-4 cursor-pointer hover:brightness-125 ${PRIORITY_ROW[alarm.priority]} ${isSelected ? 'ring-1 ring-inset ring-white/20' : ''}`}
                     onClick={() => setSelectedTag(alarm.tag)}
                   >
                     <span className={`text-xs px-1 py-0.5 rounded font-bold shrink-0 ${PRIORITY_BADGE[alarm.priority]}`}>
@@ -207,14 +197,6 @@ export function TrendPanel() {
                         <span className="text-xs font-mono font-bold text-white">{isHigh ? '↑' : '↓'} {alarm.value.toFixed(2)}</span>
                       </div>
                     </div>
-                    {!alarm.acknowledged && (
-                      <button
-                        onClick={(e) => { e.stopPropagation(); getEngine().applyControl('acknowledgeAlarm', { alarmId: alarm.id }); }}
-                        className="flex items-center gap-1 px-2 py-0.5 bg-gray-700 hover:bg-gray-600 rounded text-xs text-gray-200 whitespace-nowrap shrink-0 cursor-pointer"
-                      >
-                        <Check size={10} /> ACK
-                      </button>
-                    )}
                   </div>
                 );
               })}

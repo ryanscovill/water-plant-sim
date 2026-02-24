@@ -8,7 +8,7 @@ export function Navbar() {
   const connected = useSimulationStore((s) => s.connected);
   const state = useSimulationStore((s) => s.state);
   const alarms = useAlarmStore((s) => s.alarms);
-  const activeUnacked = alarms.filter((a) => a.active && !a.acknowledged).length;
+  const activeUnacked = alarms.filter((a) => a.active).length;
   const [showResetConfirm, setShowResetConfirm] = useState(false);
 
   const changeSpeed = (speed: number) => {

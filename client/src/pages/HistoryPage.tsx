@@ -5,8 +5,6 @@ const TYPE_BADGE: Record<string, string> = {
   valve:            'bg-cyan-700 text-cyan-100',
   setpoint:         'bg-purple-700 text-purple-100',
   backwash:         'bg-amber-700 text-amber-100',
-  acknowledgeAlarm: 'bg-gray-600 text-gray-100',
-  acknowledgeAll:   'bg-gray-600 text-gray-100',
   clearScreen:      'bg-green-700 text-green-100',
   simulation:       'bg-orange-700 text-orange-100',
 };

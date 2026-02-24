@@ -6,7 +6,7 @@ export function useAlarmSound() {
   const prevCountRef = useRef(0);
 
   useEffect(() => {
-    const activeUnacked = alarms.filter((a) => a.active && !a.acknowledged).length;
+    const activeUnacked = alarms.filter((a) => a.active).length;
     if (activeUnacked > prevCountRef.current) {
       // Play a simple beep using Web Audio API
       try {

@@ -60,16 +60,4 @@ test.describe('Alarms Page', () => {
     }
   });
 
-  test('ACK ALL button appears when there are unacknowledged alarms', async ({ page }) => {
-    // If unacked alarms exist, the ACK ALL button should be present
-    const ackAll = page.getByRole('button', { name: /ACK ALL/i });
-    const activeText = await page.getByText(/ACTIVE ALARMS \(\d+\)/).textContent();
-    const count = parseInt(activeText?.match(/\((\d+)\)/)?.[1] ?? '0');
-
-    if (count > 0) {
-      // ACK ALL button may be visible if any alarm is unacknowledged
-      const isVisible = await ackAll.isVisible();
-      // No assertion here — just verify it doesn't crash
-    }
-  });
 });

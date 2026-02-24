@@ -23,7 +23,7 @@ const navItems = [
 
 export function Sidebar() {
   const alarms = useAlarmStore((s) => s.alarms);
-  const unacked = alarms.filter((a) => a.active && !a.acknowledged).length;
+  const unacked = alarms.filter((a) => a.active).length;
 
   return (
     <nav className="w-44 bg-gray-900 border-r border-gray-700 flex flex-col py-2 shrink-0">
