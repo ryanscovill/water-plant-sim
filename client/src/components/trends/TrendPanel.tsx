@@ -26,10 +26,9 @@ const AVAILABLE_TAGS = [
 ];
 
 const DURATIONS = [
-  { label: '5 min', value: 300 },
   { label: '10 min', value: 600 },
   { label: '30 min', value: 1800 },
-  { label: '1 hr', value: 3600 },
+  { label: '4 hr', value: 14400 },
 ];
 
 const PRIORITY_ORDER = ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW'];
@@ -63,7 +62,7 @@ function topAlarmForTag(alarms: Alarm[], tag: string): Alarm | null {
 
 export function TrendPanel() {
   const [selectedTag, setSelectedTag] = useState('DIS-AIT-001');
-  const [duration, setDuration] = useState(300);
+  const [duration, setDuration] = useState(600);
   const tagInfo = AVAILABLE_TAGS.find((t) => t.tag === selectedTag);
   const { data, loading } = useTrends(selectedTag, duration);
 
@@ -74,7 +73,7 @@ export function TrendPanel() {
 
   const chartEvents = [
     ...allEvents
-      .filter((e) => new Date(e.timestamp).getTime() >= cutoff)
+      .filter((e) => new Date(e.timestamp).getTime() >= cutoff && !(e.type === 'setpoint' && e.description.startsWith('Simulation speed')))
       .map((e) => ({
         ts: new Date(e.timestamp).getTime(),
         type: e.type,

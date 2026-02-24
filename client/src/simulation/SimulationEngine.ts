@@ -76,7 +76,9 @@ export class SimulationEngine {
 
     const nextIntake = this.intakeStage.update(this.state.intake, dt);
     const nextCoag = this.coagStage.update(this.state.coagulation, nextIntake, dt);
+    const wasBackwashing = this.state.sedimentation.backwashInProgress;
     const nextSed = this.sedStage.update(this.state.sedimentation, nextCoag, dt);
+    const backwashJustEnded = wasBackwashing && !nextSed.backwashInProgress;
     const nextDis = this.disStage.update(this.state.disinfection, nextSed, dt, nextCoag, nextIntake);
 
     const preAlarmState: ProcessState = {
@@ -114,6 +116,15 @@ export class SimulationEngine {
     this.historian.record(this.state);
 
     this.scenarioEngine.tick(this, this.simulatedTime);
+
+    if (backwashJustEnded) {
+      this.emit('simulation:event', {
+        id: crypto.randomUUID(),
+        timestamp: new Date(this.simulatedTime).toISOString(),
+        type: 'backwash',
+        description: 'Filter backwash completed',
+      });
+    }
 
     this.emit('state:update', this.state);
     for (const alarm of newAlarms) {
