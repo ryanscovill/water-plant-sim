@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { X, FlaskConical, CheckCircle } from 'lucide-react';
 import { getEngine } from '../../simulation/engine';
 
@@ -38,6 +38,11 @@ interface JarTestModalProps {
 }
 
 export function JarTestModal({ rawTurbidity, sourceTemperature, currentSetpoint, onClose }: JarTestModalProps) {
+  useEffect(() => {
+    getEngine().pause();
+    return () => { getEngine().resume(); };
+  }, []);
+
   const tempFactor = clamp((sourceTemperature - 1) / 19, 0.35, 1.0);
 
   // Generate 6 doses spanning from under-dose to over-dose relative to the theoretical optimum.
