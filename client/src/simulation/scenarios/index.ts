@@ -1,10 +1,19 @@
+import type { ProcessState } from '../ProcessState';
+
+export interface CompletionCondition {
+  description: string;
+  check: (state: ProcessState) => boolean;
+}
+
 export interface ScenarioDefinition {
   id: string;
   name: string;
   description: string;
   difficulty: 'Beginner' | 'Intermediate' | 'Advanced';
   duration: number; // seconds, displayed in UI only
-  completionTime: number; // simulated seconds; scenario passes if no active alarms at/after this time
+  simSpeed: number; // sim speed set when scenario starts
+  minTime: number;  // simulated seconds before completion check begins
+  completionConditions: CompletionCondition[];
   steps: ScenarioStep[];
 }
 

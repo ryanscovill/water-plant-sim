@@ -53,8 +53,8 @@ export function useSocket() {
     };
 
     const onScenarioComplete = (evt: unknown) => {
-      const { name } = evt as { name: string };
-      setCompletedScenario(name);
+      const { name, conditions } = evt as { name: string; conditions: string[] };
+      setCompletedScenario(name, conditions);
     };
 
     engine.on('state:update', onStateUpdate);

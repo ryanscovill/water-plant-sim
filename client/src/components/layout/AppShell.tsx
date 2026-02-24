@@ -18,6 +18,7 @@ export function AppShell() {
   const activeTutorial = useTutorialStore((s) => s.activeTutorial);
   const running = useSimulationStore((s) => s.state?.running ?? true);
   const completedScenarioName = useScenarioStore((s) => s.completedScenarioName);
+  const completedScenarioConditions = useScenarioStore((s) => s.completedScenarioConditions);
   const setCompletedScenario = useScenarioStore((s) => s.setCompletedScenario);
 
   return (
@@ -39,9 +40,17 @@ export function AppShell() {
             <CheckCircle size={40} className="text-green-400 mx-auto mb-4" />
             <h2 className="text-green-400 font-bold text-sm tracking-widest mb-2">SCENARIO COMPLETE</h2>
             <p className="text-white font-semibold text-base mb-3">{completedScenarioName}</p>
-            <p className="text-gray-400 text-xs mb-6">
-              All alarms cleared. The plant is operating within normal parameters.
-            </p>
+            {completedScenarioConditions.length > 0 && (
+              <div className="bg-gray-950/60 rounded border border-green-900 p-3 mb-4 space-y-1.5 text-left">
+                {completedScenarioConditions.map((desc, i) => (
+                  <div key={i} className="flex items-center gap-2">
+                    <CheckCircle size={12} className="text-green-400 shrink-0" />
+                    <span className="text-green-300 text-xs font-mono">{desc}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+            <p className="text-gray-400 text-xs mb-6">All alarms cleared. The plant is operating within normal parameters.</p>
             <button
               onClick={() => setCompletedScenario(null)}
               className="px-6 py-2 rounded text-sm font-mono bg-green-700 text-green-100 hover:bg-green-600 cursor-pointer"

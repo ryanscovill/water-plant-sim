@@ -4,6 +4,8 @@ export interface ScenarioInfo {
   description: string;
   difficulty: 'Beginner' | 'Intermediate' | 'Advanced';
   duration: number;
-  completionTime: number;
+  simSpeed: number;
+  minTime: number;
+  completionConditionDescriptions: string[];
   active: boolean;
 }

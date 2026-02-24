@@ -28,10 +28,21 @@ const ALL_SCENARIOS: ScenarioDefinition[] = [
 export function ScenarioPanel() {
   const { setScenarios, setActiveScenario } = useScenarioStore();
   const activeScenarioId = useSimulationStore((s) => s.state?.activeScenario ?? null);
+  const processState = useSimulationStore((s) => s.state);
   const [pendingScenario, setPendingScenario] = useState<ScenarioDefinition | null>(null);
 
   useEffect(() => {
-    setScenarios(ALL_SCENARIOS.map((s) => ({ ...s, active: false })));
+    setScenarios(ALL_SCENARIOS.map((s) => ({
+      id: s.id,
+      name: s.name,
+      description: s.description,
+      difficulty: s.difficulty,
+      duration: s.duration,
+      simSpeed: s.simSpeed,
+      minTime: s.minTime,
+      completionConditionDescriptions: s.completionConditions.map((c) => c.description),
+      active: false,
+    })));
   }, [setScenarios]);
 
   useEffect(() => {
@@ -46,7 +57,7 @@ export function ScenarioPanel() {
   const handleConfirmStart = () => {
     if (!pendingScenario) return;
     getEngine().reset();
-    getEngine().applyControl('setpoint', { tagId: 'simSpeed', value: 10 });
+    getEngine().applyControl('setpoint', { tagId: 'simSpeed', value: pendingScenario.simSpeed });
     getEngine().scenarioEngine.start(pendingScenario, getEngine(), getEngine().getSimulatedTime());
     setPendingScenario(null);
   };
@@ -63,7 +74,7 @@ export function ScenarioPanel() {
             <h2 className="text-amber-400 font-bold text-sm tracking-wider mb-1">START SCENARIO?</h2>
             <p className="text-white font-semibold text-sm mb-3">{pendingScenario.name}</p>
             <p className="text-gray-400 text-xs mb-5">
-              Starting this scenario will reset the simulation. All process data, alarm history, and operator events will be cleared. Simulation speed will be set to 10×.
+              Starting this scenario will reset the simulation. All process data, alarm history, and operator events will be cleared. Simulation speed will be set to {pendingScenario.simSpeed}×.
             </p>
             <div className="flex gap-3 justify-end">
               <button
@@ -86,14 +97,32 @@ export function ScenarioPanel() {
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {ALL_SCENARIOS.map((scenario) => (
-          <ScenarioCard
-            key={scenario.id}
-            scenario={{ ...scenario, active: scenario.id === activeScenarioId }}
-            onStart={() => handleStartRequest(scenario.id)}
-            onStop={stopScenario}
-          />
-        ))}
+        {ALL_SCENARIOS.map((scenario) => {
+          const isActive = scenario.id === activeScenarioId;
+          const conditionStatuses = isActive && processState
+            ? scenario.completionConditions.map((c) => c.check(processState))
+            : undefined;
+
+          return (
+            <ScenarioCard
+              key={scenario.id}
+              scenario={{
+                id: scenario.id,
+                name: scenario.name,
+                description: scenario.description,
+                difficulty: scenario.difficulty,
+                duration: scenario.duration,
+                simSpeed: scenario.simSpeed,
+                minTime: scenario.minTime,
+                completionConditionDescriptions: scenario.completionConditions.map((c) => c.description),
+                active: isActive,
+              }}
+              conditionStatuses={conditionStatuses}
+              onStart={() => handleStartRequest(scenario.id)}
+              onStop={stopScenario}
+            />
+          );
+        })}
       </div>
     </>
   );

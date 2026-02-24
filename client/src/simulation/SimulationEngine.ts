@@ -431,8 +431,8 @@ export class SimulationEngine {
     });
   }
 
-  emitScenarioComplete(name: string): void {
-    this.emit('scenario:complete', { name });
+  emitScenarioComplete(name: string, conditions: string[]): void {
+    this.emit('scenario:complete', { name, conditions });
   }
 
   getAlarmHistory(): Alarm[] {
