@@ -39,7 +39,7 @@ export function ScenarioPanel() {
   const startScenario = (id: string) => {
     const scenario = ALL_SCENARIOS.find((s) => s.id === id);
     if (scenario) {
-      getEngine().scenarioEngine.start(scenario, getEngine());
+      getEngine().scenarioEngine.start(scenario, getEngine(), getEngine().getSimulatedTime());
     }
   };
 

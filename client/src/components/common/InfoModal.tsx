@@ -1,4 +1,4 @@
-import { X, BookOpen, AlertCircle, Settings, FlaskConical, Database } from 'lucide-react';
+import { X, BookOpen, AlertCircle, Settings, FlaskConical, Database, ExternalLink } from 'lucide-react';
 import { hmiInfo, type HmiInfo } from '../../data/hmiInfo';
 
 interface InfoModalProps {
@@ -26,7 +26,7 @@ export function InfoModal({ infoKey, onClose }: InfoModalProps) {
       style={{ paddingTop: '4rem' }}
     >
       <div
-        className="bg-gray-900 border border-gray-700 rounded-xl max-w-lg w-full shadow-2xl mb-8"
+        className="bg-gray-900 border border-gray-700 rounded-xl max-w-4xl w-full shadow-2xl mb-8"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -48,56 +48,81 @@ export function InfoModal({ infoKey, onClose }: InfoModalProps) {
           </button>
         </div>
 
-        {/* Body */}
-        <div className="px-5 py-4 space-y-5">
-          {/* Description */}
-          <div>
-            <div className="text-gray-400 text-xs font-mono uppercase tracking-wider mb-1.5">What is this?</div>
-            <p className="text-gray-200 text-sm leading-relaxed" style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}>{info.description}</p>
+        {/* Body — two-column layout */}
+        <div className="flex gap-0 divide-x divide-gray-700">
+          {/* Left column: image + description + why it matters */}
+          <div className="flex-1 px-5 py-4 space-y-4 min-w-0">
+            {info.imageUrl && (
+              <div className="rounded-lg overflow-hidden border border-gray-700">
+                <img
+                  src={info.imageUrl}
+                  alt={info.title}
+                  className="w-full object-cover max-h-48"
+                />
+                {info.referenceUrl && (
+                  <div className="bg-gray-800 px-3 py-1.5 flex items-center justify-between">
+                    <span className="text-gray-500 text-xs font-mono">Reference</span>
+                    <a
+                      href={info.referenceUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-1 text-blue-400 hover:text-blue-300 text-xs font-mono cursor-pointer"
+                    >
+                      Wikipedia <ExternalLink size={10} />
+                    </a>
+                  </div>
+                )}
+              </div>
+            )}
+
+            <div>
+              <div className="text-gray-400 text-xs font-mono uppercase tracking-wider mb-1.5">What is this?</div>
+              <p className="text-gray-200 text-sm leading-relaxed" style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}>{info.description}</p>
+            </div>
+
+            <div>
+              <div className="text-gray-400 text-xs font-mono uppercase tracking-wider mb-1.5">Why it matters</div>
+              <p className="text-gray-200 text-sm leading-relaxed" style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}>{info.whyItMatters}</p>
+            </div>
           </div>
 
-          {/* Why it matters */}
-          <div>
-            <div className="text-gray-400 text-xs font-mono uppercase tracking-wider mb-1.5">Why it matters</div>
-            <p className="text-gray-200 text-sm leading-relaxed" style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}>{info.whyItMatters}</p>
-          </div>
-
-          {/* Key parameters */}
-          <div>
-            <div className="text-gray-400 text-xs font-mono uppercase tracking-wider mb-2">Key parameters</div>
-            <div className="space-y-1.5">
-              {info.keyParameters.map((p, i) => (
-                <div key={i} className="bg-gray-800 rounded-lg px-3 py-2 flex items-start gap-3">
-                  <span className="text-gray-400 text-xs font-mono shrink-0 pt-0.5 min-w-[110px]">{p.name}</span>
-                  <div className="flex-1">
+          {/* Right column: key parameters + operator tips */}
+          <div className="flex-1 px-5 py-4 space-y-4 min-w-0">
+            <div>
+              <div className="text-gray-400 text-xs font-mono uppercase tracking-wider mb-2">Key parameters</div>
+              <div className="space-y-1.5">
+                {info.keyParameters.map((p, i) => (
+                  <div key={i} className="bg-gray-800 rounded-lg px-3 py-2">
+                    <div className="flex items-start gap-2">
+                      <span className="text-gray-400 text-xs font-mono shrink-0 pt-0.5">{p.name}</span>
+                    </div>
                     <span className="text-cyan-300 text-xs font-mono font-semibold">{p.range}</span>
                     {p.note && (
                       <div className="text-gray-500 text-xs mt-0.5" style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}>{p.note}</div>
                     )}
                   </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Operator tips */}
-          {info.operatorTips && info.operatorTips.length > 0 && (
-            <div>
-              <div className="text-gray-400 text-xs font-mono uppercase tracking-wider mb-2">Operator tips</div>
-              <ul className="space-y-2">
-                {info.operatorTips.map((tip, i) => (
-                  <li key={i} className="flex items-start gap-2 text-sm text-gray-300 leading-relaxed" style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}>
-                    <span className="text-amber-400 mt-0.5 shrink-0">›</span>
-                    {tip}
-                  </li>
                 ))}
-              </ul>
+              </div>
             </div>
-          )}
+
+            {info.operatorTips && info.operatorTips.length > 0 && (
+              <div>
+                <div className="text-gray-400 text-xs font-mono uppercase tracking-wider mb-2">Operator tips</div>
+                <ul className="space-y-2">
+                  {info.operatorTips.map((tip, i) => (
+                    <li key={i} className="flex items-start gap-2 text-sm text-gray-300 leading-relaxed" style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}>
+                      <span className="text-amber-400 mt-0.5 shrink-0">›</span>
+                      {tip}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Footer */}
-        <div className="px-5 pb-5">
+        <div className="px-5 pb-5 border-t border-gray-700 pt-4">
           <button
             onClick={onClose}
             className="w-full py-2 bg-gray-700 hover:bg-gray-600 text-gray-200 text-sm rounded-lg font-mono cursor-pointer"

@@ -5,6 +5,8 @@ export interface HmiInfo {
   whyItMatters: string;
   keyParameters: { name: string; range: string; note?: string }[];
   operatorTips?: string[];
+  imageUrl?: string;
+  referenceUrl?: string;
 }
 
 export const hmiInfo: Record<string, HmiInfo> = {
@@ -12,6 +14,8 @@ export const hmiInfo: Record<string, HmiInfo> = {
   intakePage: {
     title: 'Intake — Raw Water Supply',
     category: 'Process',
+    imageUrl: '/images/intake-page.jpg',
+    referenceUrl: 'https://en.wikipedia.org/wiki/Water_treatment',
     description:
       'The intake stage is the entry point of a surface water treatment plant. Raw water is drawn from a river, lake, or reservoir through a screening structure, pumped into a wet well, and metered before being sent forward to coagulation. The quality of raw water (turbidity, pH, temperature, color) varies with weather, seasons, and upstream land use.',
     whyItMatters:
@@ -31,6 +35,8 @@ export const hmiInfo: Record<string, HmiInfo> = {
   coagFloccPage: {
     title: 'Coagulation / Flocculation',
     category: 'Process',
+    imageUrl: '/images/coag-flocc-page.jpg',
+    referenceUrl: 'https://en.wikipedia.org/wiki/Coagulation_(water_treatment)',
     description:
       'Coagulation and flocculation are the first chemical treatment stages. Alum (aluminium sulfate) is injected into the rapid-mix basin to destabilise the colloidal particles that make water turbid. The slow-mix (flocculation) basins then gently agitate the water so that the destabilised particles collide and grow into larger, settleable floc.',
     whyItMatters:
@@ -50,6 +56,8 @@ export const hmiInfo: Record<string, HmiInfo> = {
   sedimentationPage: {
     title: 'Sedimentation / Filtration',
     category: 'Process',
+    imageUrl: '/images/sedimentation-page.jpg',
+    referenceUrl: 'https://en.wikipedia.org/wiki/Clarifier',
     description:
       'Settled water from the flocculation basins enters the clarifier where gravity separates floc from the water. The clarified effluent then passes through dual-media (anthracite over sand) filters that capture remaining particles. As filters accumulate solids, head loss builds until a backwash cycle is triggered to restore capacity.',
     whyItMatters:
@@ -69,6 +77,8 @@ export const hmiInfo: Record<string, HmiInfo> = {
   disinfectionPage: {
     title: 'Disinfection / Clearwell',
     category: 'Process',
+    imageUrl: '/images/disinfection-page.jpg',
+    referenceUrl: 'https://en.wikipedia.org/wiki/Water_chlorination',
     description:
       'Filtered water receives chlorine (and optionally UV) to inactivate pathogens before entering the clearwell storage and distribution system. Chlorine residual is measured at the plant outlet and at a representative distribution point. Fluoride may also be added at this stage. The clearwell provides hydraulic buffer capacity between the plant and the distribution system.',
     whyItMatters:
@@ -91,6 +101,8 @@ export const hmiInfo: Record<string, HmiInfo> = {
   sourceWater: {
     title: 'Raw Source Water',
     category: 'Process',
+    imageUrl: '/images/source-water.jpg',
+    referenceUrl: 'https://en.wikipedia.org/wiki/Surface_water',
     description:
       'The raw water supply drawn from a river, reservoir, or lake before any treatment. Raw water quality varies with season, weather events, and upstream land use.',
     whyItMatters:
@@ -111,6 +123,8 @@ export const hmiInfo: Record<string, HmiInfo> = {
   wetWell: {
     title: 'Wet Well (Raw Water Sump)',
     category: 'Storage',
+    imageUrl: '/images/wet-well.jpg',
+    referenceUrl: 'https://en.wikipedia.org/wiki/Pump_station',
     description:
       'A below-grade or in-ground basin that receives raw water from the intake structure and holds it temporarily before the intake pumps lift it into the treatment process.',
     whyItMatters:
@@ -130,6 +144,8 @@ export const hmiInfo: Record<string, HmiInfo> = {
   intakeValve: {
     title: 'Intake Valve (XV-101)',
     category: 'Equipment',
+    imageUrl: '/images/intake-valve.jpg',
+    referenceUrl: 'https://en.wikipedia.org/wiki/Butterfly_valve',
     description:
       'A motor-operated butterfly or gate valve that controls the flow of raw water from the source into the wet well and intake piping. It is the primary isolation point for the entire intake system.',
     whyItMatters:
@@ -149,6 +165,8 @@ export const hmiInfo: Record<string, HmiInfo> = {
   intakePump1: {
     title: 'Intake Pump 1 (P-101)',
     category: 'Equipment',
+    imageUrl: '/images/intake-pump.jpg',
+    referenceUrl: 'https://en.wikipedia.org/wiki/Centrifugal_pump',
     description:
       'A large vertical turbine or horizontal centrifugal pump that lifts raw water from the wet well and delivers it to the treatment plant headworks. P-101 is the lead pump in a lead/lag arrangement with P-102.',
     whyItMatters:
@@ -170,6 +188,8 @@ export const hmiInfo: Record<string, HmiInfo> = {
   intakePump2: {
     title: 'Intake Pump 2 (P-102)',
     category: 'Equipment',
+    imageUrl: '/images/intake-pump.jpg',
+    referenceUrl: 'https://en.wikipedia.org/wiki/Centrifugal_pump',
     description:
       'The lag (standby) intake pump paired with P-101. It starts automatically when demand exceeds P-101\'s capacity or when P-101 faults. Both pumps can run simultaneously at high plant demand.',
     whyItMatters:
@@ -189,6 +209,8 @@ export const hmiInfo: Record<string, HmiInfo> = {
   intakeScreen: {
     title: 'Intake Bar/Mesh Screen (INT-SCR-001)',
     category: 'Equipment',
+    imageUrl: '/images/intake-screen.jpg',
+    referenceUrl: 'https://en.wikipedia.org/wiki/Traveling_screen',
     description:
       'A coarse physical screen (typically 1/4″ to 1/2″ openings) installed at the intake that removes large debris such as leaves, fish, sticks, and trash from the raw water before it enters the pumps and treatment process.',
     whyItMatters:
@@ -208,6 +230,8 @@ export const hmiInfo: Record<string, HmiInfo> = {
   rawFlowMeter: {
     title: 'Raw Water Flow Meter (INT-FIT-001)',
     category: 'Instrument',
+    imageUrl: '/images/raw-flow-meter.jpg',
+    referenceUrl: 'https://en.wikipedia.org/wiki/Flow_measurement',
     description:
       'An electromagnetic or ultrasonic flow meter measuring the total volume of raw water entering the plant per unit time. This is the primary plant influent flow measurement.',
     whyItMatters:
@@ -227,6 +251,8 @@ export const hmiInfo: Record<string, HmiInfo> = {
   rawTurbidity: {
     title: 'Raw Water Turbidity Analyzer (INT-AIT-001)',
     category: 'Instrument',
+    imageUrl: '/images/turbidimeter.jpg',
+    referenceUrl: 'https://en.wikipedia.org/wiki/Turbidimeter',
     description:
       'An online nephelometric turbidity unit (NTU) analyzer that continuously measures the cloudiness of raw incoming water caused by suspended particles, sediment, algae, and colloidal material.',
     whyItMatters:
@@ -248,6 +274,8 @@ export const hmiInfo: Record<string, HmiInfo> = {
   rapidMixer: {
     title: 'Rapid Mixer (M-201)',
     category: 'Equipment',
+    imageUrl: '/images/flocculation.jpg',
+    referenceUrl: 'https://en.wikipedia.org/wiki/Coagulation_(water_treatment)',
     description:
       'A high-speed impeller mixer located in the rapid mix basin where coagulant (alum) is injected. It violently agitates the water for 30–60 seconds to uniformly disperse the coagulant throughout the water volume.',
     whyItMatters:
@@ -267,6 +295,8 @@ export const hmiInfo: Record<string, HmiInfo> = {
   slowMixer: {
     title: 'Flocculation Mixers (M-202 / M-203)',
     category: 'Equipment',
+    imageUrl: '/images/flocculation.jpg',
+    referenceUrl: 'https://en.wikipedia.org/wiki/Flocculation',
     description:
       'Low-speed paddle or impeller mixers in the flocculation basin that provide gentle, sustained agitation to help destabilized particles gently collide and grow into larger, visible floc particles (like fluffy snowflakes) over 15–30 minutes.',
     whyItMatters:
@@ -286,6 +316,8 @@ export const hmiInfo: Record<string, HmiInfo> = {
   alumFeed: {
     title: 'Alum Chemical Feed (COG-P-201)',
     category: 'Chemical',
+    imageUrl: '/images/alum-feed.jpg',
+    referenceUrl: 'https://en.wikipedia.org/wiki/Aluminium_sulfate',
     description:
       'A metering pump system that delivers aluminum sulfate (alum, Al₂(SO₄)₃) — or sometimes polyaluminum chloride (PACl) — to the rapid mix basin. Alum neutralizes the negative surface charge on suspended particles, allowing them to stick together.',
     whyItMatters:
@@ -307,6 +339,8 @@ export const hmiInfo: Record<string, HmiInfo> = {
   pHAdjust: {
     title: 'pH Adjustment Chemical Feed',
     category: 'Chemical',
+    imageUrl: '/images/ph-adjust.png',
+    referenceUrl: 'https://en.wikipedia.org/wiki/Sodium_hydroxide',
     description:
       'A metering pump system that adds caustic soda (NaOH), lime (Ca(OH)₂), or soda ash (Na₂CO₃) to compensate for pH depression caused by alum addition and to optimize the coagulation pH window. Some plants add CO₂ or acid to lower pH instead.',
     whyItMatters:
@@ -326,6 +360,8 @@ export const hmiInfo: Record<string, HmiInfo> = {
   flocTurbidity: {
     title: 'Floc Basin Turbidity Analyzer (COG-AIT-001)',
     category: 'Instrument',
+    imageUrl: '/images/turbidimeter.jpg',
+    referenceUrl: 'https://en.wikipedia.org/wiki/Turbidimeter',
     description:
       'An online turbidity analyzer measuring the cloudiness of water at the exit of the flocculation basin, just before it enters the sedimentation clarifier. This reading reflects how well coagulation and flocculation have worked.',
     whyItMatters:
@@ -345,6 +381,8 @@ export const hmiInfo: Record<string, HmiInfo> = {
   clarifier: {
     title: 'Sedimentation Clarifier',
     category: 'Process',
+    imageUrl: '/images/clarifier.jpg',
+    referenceUrl: 'https://en.wikipedia.org/wiki/Clarifier',
     description:
       'A large circular or rectangular settling basin where coagulated and flocculated water is held for 2–4 hours, allowing floc particles to slowly sink to the bottom by gravity, producing clarified water that overflows the effluent weir.',
     whyItMatters:
@@ -364,6 +402,8 @@ export const hmiInfo: Record<string, HmiInfo> = {
   clarifierTurbidity: {
     title: 'Clarifier Effluent Turbidity (SED-AIT-001)',
     category: 'Instrument',
+    imageUrl: '/images/turbidimeter.jpg',
+    referenceUrl: 'https://en.wikipedia.org/wiki/Turbidimeter',
     description:
       'An online turbidity analyzer measuring the clarity of water leaving the clarifier settling basin and entering the filter. This is a key intermediate quality indicator for the sedimentation process.',
     whyItMatters:
@@ -384,6 +424,8 @@ export const hmiInfo: Record<string, HmiInfo> = {
   sludgeBlanket: {
     title: 'Sludge Blanket Level (SED-LIT-001)',
     category: 'Instrument',
+    imageUrl: '/images/clarifier.jpg',
+    referenceUrl: 'https://en.wikipedia.org/wiki/Clarifier',
     description:
       'A level instrument (typically an ultrasonic or suspended solids sensor) measuring the depth of the accumulated sludge/floc layer at the bottom of the clarifier. The sludge blanket must be maintained within a narrow operating range.',
     whyItMatters:
@@ -403,6 +445,8 @@ export const hmiInfo: Record<string, HmiInfo> = {
   sludgePump: {
     title: 'Sludge Withdrawal Pump (P-301)',
     category: 'Equipment',
+    imageUrl: '/images/sludge-pump.jpg',
+    referenceUrl: 'https://en.wikipedia.org/wiki/Peristaltic_pump',
     description:
       'A pump (typically progressive cavity or submersible centrifugal) that continuously or intermittently withdraws settled sludge from the clarifier bottom to maintain the sludge blanket at the correct depth. Sludge is pumped to a lagoon, thickener, or dewatering facility.',
     whyItMatters:
@@ -422,6 +466,8 @@ export const hmiInfo: Record<string, HmiInfo> = {
   filterBed: {
     title: 'Rapid Sand Filter (FLT-F-301)',
     category: 'Process',
+    imageUrl: '/images/filter-bed.jpg',
+    referenceUrl: 'https://en.wikipedia.org/wiki/Rapid_sand_filter',
     description:
       'A gravity or pressure filter containing media layers — typically anthracite coal over sand over gravel — that physically traps and removes fine particles, floc, and microorganisms that escaped sedimentation. This is the last particle removal step before disinfection.',
     whyItMatters:
@@ -443,6 +489,8 @@ export const hmiInfo: Record<string, HmiInfo> = {
   filterHeadLoss: {
     title: 'Filter Head Loss / Differential Pressure (FLT-PDT-001)',
     category: 'Instrument',
+    imageUrl: '/images/pressure-gauge.jpg',
+    referenceUrl: 'https://en.wikipedia.org/wiki/Pressure_measurement',
     description:
       'A differential pressure transmitter measuring the water pressure drop across the filter bed from the top (influent header) to the bottom (effluent underdrain). As the filter collects particles, resistance increases and head loss grows.',
     whyItMatters:
@@ -463,6 +511,8 @@ export const hmiInfo: Record<string, HmiInfo> = {
   filterEffluent: {
     title: 'Filter Effluent Turbidity (FLT-AIT-001)',
     category: 'Instrument',
+    imageUrl: '/images/turbidimeter.jpg',
+    referenceUrl: 'https://en.wikipedia.org/wiki/Turbidimeter',
     description:
       'An online continuous turbidity analyzer on the filter effluent (filtered water) line. This is one of the most critical measurements in the plant — it directly measures whether the treatment process is producing safe, clear water.',
     whyItMatters:
@@ -484,6 +534,8 @@ export const hmiInfo: Record<string, HmiInfo> = {
   backwash: {
     title: 'Filter Backwash Process',
     category: 'Process',
+    imageUrl: '/images/backwash.jpg',
+    referenceUrl: 'https://en.wikipedia.org/wiki/Backwashing_(water_treatment)',
     description:
       'A periodic cleaning cycle in which flow through the filter is reversed at high velocity to expand and fluidize the filter media bed, dislodging and washing away accumulated particles and floc. Typically takes 10–20 minutes. The backwash waste water is recycled to the plant headworks.',
     whyItMatters:
@@ -506,6 +558,8 @@ export const hmiInfo: Record<string, HmiInfo> = {
   chlorineFeed: {
     title: 'Chlorine Feed System (DIS-P-401)',
     category: 'Chemical',
+    imageUrl: '/images/chlorine.jpg',
+    referenceUrl: 'https://en.wikipedia.org/wiki/Sodium_hypochlorite',
     description:
       'A metering pump system delivering sodium hypochlorite (bleach, NaOCl) or gaseous chlorine (Cl₂) to the contact chamber inlet. Chlorine is the most widely used drinking water disinfectant in the United States, providing both primary disinfection and a protective residual through the distribution system.',
     whyItMatters:
@@ -528,6 +582,8 @@ export const hmiInfo: Record<string, HmiInfo> = {
   contactChamber: {
     title: 'Chlorine Contact Chamber',
     category: 'Process',
+    imageUrl: '/images/disinfection-page.jpg',
+    referenceUrl: 'https://en.wikipedia.org/wiki/Disinfection',
     description:
       'A baffled concrete chamber designed to ensure that every volume of water receives adequate contact time with disinfectant (chlorine) before leaving the plant. The baffles force water to travel a long, tortuous path, preventing short-circuiting.',
     whyItMatters:
@@ -547,6 +603,8 @@ export const hmiInfo: Record<string, HmiInfo> = {
   uvSystem: {
     title: 'UV Disinfection System',
     category: 'Equipment',
+    imageUrl: '/images/uv-system.jpg',
+    referenceUrl: 'https://en.wikipedia.org/wiki/Ultraviolet_germicidal_irradiation',
     description:
       'A bank of ultraviolet (UV) lamps that exposes water to UV light at 254 nm wavelength, damaging the DNA of microorganisms and preventing them from reproducing. UV is particularly effective against Cryptosporidium and Giardia, which are resistant to normal chlorine concentrations.',
     whyItMatters:
@@ -568,6 +626,8 @@ export const hmiInfo: Record<string, HmiInfo> = {
   clearwell: {
     title: 'Clearwell / Finished Water Storage',
     category: 'Storage',
+    imageUrl: '/images/clearwell.jpg',
+    referenceUrl: 'https://en.wikipedia.org/wiki/Water_tower',
     description:
       'A large covered concrete or steel tank that stores finished (fully treated and disinfected) water ready for distribution. The clearwell serves as a hydraulic buffer between the treatment plant\'s constant production rate and the variable demand of the distribution system.',
     whyItMatters:
@@ -589,6 +649,8 @@ export const hmiInfo: Record<string, HmiInfo> = {
   plantChlorineResidual: {
     title: 'Plant Chlorine Residual Analyzer (DIS-AIT-001)',
     category: 'Instrument',
+    imageUrl: '/images/chlorine.jpg',
+    referenceUrl: 'https://en.wikipedia.org/wiki/Chlorine',
     description:
       'An online amperometric or colorimetric analyzer measuring free chlorine concentration in the treated water leaving the plant (at the clearwell discharge or distribution entry point). This is the primary compliance measurement for disinfection residual.',
     whyItMatters:
@@ -609,6 +671,8 @@ export const hmiInfo: Record<string, HmiInfo> = {
   finishedPH: {
     title: 'Finished Water pH Analyzer (DIS-AIT-003)',
     category: 'Instrument',
+    imageUrl: '/images/ph-meter.jpg',
+    referenceUrl: 'https://en.wikipedia.org/wiki/pH_meter',
     description:
       'An online pH sensor measuring the acidity or alkalinity of fully treated water leaving the plant. Finished water pH affects chlorine effectiveness, pipe corrosion, and customer perception, and is directly regulated under the Lead and Copper Rule.',
     whyItMatters:
@@ -628,6 +692,8 @@ export const hmiInfo: Record<string, HmiInfo> = {
   distChlorineResidual: {
     title: 'Distribution Chlorine Residual (DIS-AIT-002)',
     category: 'Instrument',
+    imageUrl: '/images/chlorine.jpg',
+    referenceUrl: 'https://en.wikipedia.org/wiki/Chlorine',
     description:
       'A chlorine residual analyzer or grab-sampling point measuring free or total chlorine at a point within the distribution system (downstream of the plant, typically at a representative far-end location). This confirms that disinfection protection persists throughout the distribution network.',
     whyItMatters:

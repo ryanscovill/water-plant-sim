@@ -57,7 +57,6 @@ export function ValveControl({ valveId, status, label }: ValveControlProps) {
 
       <div className="text-xs text-gray-400 font-mono">
         <div>Tag: {label}</div>
-        <div>ID: {valveId}</div>
       </div>
     </div>
   );

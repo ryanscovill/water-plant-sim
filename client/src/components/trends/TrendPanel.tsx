@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useTrends } from '../../hooks/useTrends';
 import { useAlarmStore } from '../../store/useAlarmStore';
 import { useEventStore } from '../../store/useEventStore';
+import { useSimulationStore } from '../../store/useSimulationStore';
 import { TrendChart } from './TrendChart';
 import { getEngine } from '../../simulation/engine';
 import { Check, CheckCheck } from 'lucide-react';
@@ -70,7 +71,8 @@ export function TrendPanel() {
 
   const allEvents = useEventStore((s) => s.events);
   const alarmHistory = useAlarmStore((s) => s.history);
-  const cutoff = Date.now() - duration * 1000;
+  const simNow = useSimulationStore((s) => new Date(s.state.timestamp).getTime());
+  const cutoff = simNow - duration * 1000;
 
   const chartEvents = [
     ...allEvents

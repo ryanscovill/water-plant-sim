@@ -11,14 +11,14 @@ interface EngineInterface {
 
 export class ScenarioEngine {
   private activeScenario: ScenarioDefinition | null = null;
-  private startTime: number = 0;
+  private startSimTime: number = 0;
   private executedSteps: Set<number> = new Set();
   private turbidityTarget: number | null = null;
   private turbidityDuration: number = 0;
 
-  start(scenario: ScenarioDefinition, engine: EngineInterface): void {
+  start(scenario: ScenarioDefinition, engine: EngineInterface, simulatedTime: number): void {
     this.activeScenario = scenario;
-    this.startTime = Date.now();
+    this.startSimTime = simulatedTime;
     this.executedSteps = new Set();
     engine.setActiveScenario(scenario.id);
     engine.emitSimulationEvent(`Scenario started: ${scenario.name}`);
@@ -39,10 +39,10 @@ export class ScenarioEngine {
     if (name) engine.emitSimulationEvent(`Scenario stopped: ${name}`);
   }
 
-  tick(engine: EngineInterface): void {
+  tick(engine: EngineInterface, simulatedTime: number): void {
     if (!this.activeScenario) return;
 
-    const elapsed = (Date.now() - this.startTime) / 1000;
+    const elapsed = (simulatedTime - this.startSimTime) / 1000;
 
     for (const step of this.activeScenario.steps) {
       if (step.triggerAt > 0 && elapsed >= step.triggerAt && !this.executedSteps.has(step.triggerAt)) {

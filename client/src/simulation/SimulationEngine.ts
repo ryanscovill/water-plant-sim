@@ -95,13 +95,13 @@ export class SimulationEngine {
     updatedAlarms = updatedAlarms.filter(
       (a) =>
         a.active ||
-        (a.clearedAt && Date.now() - new Date(a.clearedAt).getTime() < 300000)
+        (a.clearedAt && this.simulatedTime - new Date(a.clearedAt).getTime() < 300000)
     );
 
     this.state = { ...preAlarmState, alarms: updatedAlarms };
     this.historian.record(this.state);
 
-    this.scenarioEngine.tick(this);
+    this.scenarioEngine.tick(this, this.simulatedTime);
 
     this.emit('state:update', this.state);
     for (const alarm of newAlarms) {
@@ -114,6 +114,10 @@ export class SimulationEngine {
 
   getState(): ProcessState {
     return this.state;
+  }
+
+  getSimulatedTime(): number {
+    return this.simulatedTime;
   }
 
   applyControl(type: string, payload: Record<string, unknown>): void {
@@ -148,7 +152,7 @@ export class SimulationEngine {
         this.state = {
           ...this.state,
           alarms: this.state.alarms.map((a) =>
-            a.id === alarmId ? { ...a, acknowledged: true, acknowledgedAt: new Date().toISOString() } : a
+            a.id === alarmId ? { ...a, acknowledged: true, acknowledgedAt: new Date(this.simulatedTime).toISOString() } : a
           ),
         };
         break;
@@ -159,7 +163,7 @@ export class SimulationEngine {
           alarms: this.state.alarms.map((a) => ({
             ...a,
             acknowledged: true,
-            acknowledgedAt: a.acknowledged ? a.acknowledgedAt : new Date().toISOString(),
+            acknowledgedAt: a.acknowledged ? a.acknowledgedAt : new Date(this.simulatedTime).toISOString(),
           })),
         };
         break;
@@ -171,7 +175,7 @@ export class SimulationEngine {
     }
     this.emit('operator:event', {
       id: crypto.randomUUID(),
-      timestamp: new Date().toISOString(),
+      timestamp: new Date(this.simulatedTime).toISOString(),
       type,
       description,
     });
@@ -411,7 +415,7 @@ export class SimulationEngine {
   emitSimulationEvent(description: string): void {
     this.emit('simulation:event', {
       id: crypto.randomUUID(),
-      timestamp: new Date().toISOString(),
+      timestamp: new Date(this.simulatedTime).toISOString(),
       type: 'simulation',
       description,
     });

@@ -60,7 +60,6 @@ export function PumpControl({ pumpId, status, label }: PumpControlProps) {
 
       <div className="text-xs text-gray-400 font-mono">
         <div>Tag: {label}</div>
-        <div>ID: {pumpId}</div>
       </div>
     </div>
   );

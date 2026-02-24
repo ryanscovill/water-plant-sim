@@ -73,18 +73,18 @@ export class AlarmManager {
             condition: check.condition,
             active: true,
             acknowledged: false,
-            timestamp: new Date().toISOString(),
+            timestamp: state.timestamp,
           };
           newAlarms.push(alarm);
           this.alarmHistory.push({ ...alarm });
         } else if (check.active && existing && existing.active) {
           valueUpdates.push({ id: alarmId, value });
         } else if (!check.active && existing && existing.active) {
-          clearedAlarms.push({ ...existing, active: false, clearedAt: new Date().toISOString() });
+          clearedAlarms.push({ ...existing, active: false, clearedAt: state.timestamp });
           const histIdx = this.alarmHistory.findIndex(a => a.id === alarmId && a.active);
           if (histIdx >= 0) {
             this.alarmHistory[histIdx].active = false;
-            this.alarmHistory[histIdx].clearedAt = new Date().toISOString();
+            this.alarmHistory[histIdx].clearedAt = state.timestamp;
           }
         }
       }

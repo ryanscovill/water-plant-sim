@@ -13,31 +13,10 @@ export function AlarmHistory() {
   const navigate = useNavigate();
   const history = useAlarmStore((s) => s.history);
 
-  const exportCSV = () => {
-    const header = 'ID,Tag,Description,Priority,Condition,Value,Setpoint,Active,Acknowledged,Timestamp,AcknowledgedAt,ClearedAt\n';
-    const rows = history.map((a) =>
-      [a.id, a.tag, a.description, a.priority, a.condition, a.value, a.setpoint,
-        a.active, a.acknowledged, a.timestamp, a.acknowledgedAt || '', a.clearedAt || ''].join(',')
-    ).join('\n');
-    const blob = new Blob([header + rows], { type: 'text/csv' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `alarm-history-${new Date().toISOString()}.csv`;
-    link.click();
-    URL.revokeObjectURL(url);
-  };
-
   return (
     <div className="bg-gray-900 border border-gray-700 rounded-lg overflow-hidden">
-      <div className="flex items-center justify-between px-3 py-2 bg-gray-800 border-b border-gray-700">
+      <div className="px-3 py-2 bg-gray-800 border-b border-gray-700">
         <span className="text-sm font-bold text-gray-200">ALARM HISTORY ({history.length})</span>
-        <button
-          onClick={exportCSV}
-          className="px-2 py-1 text-xs bg-gray-700 hover:bg-gray-600 rounded text-gray-300"
-        >
-          Export CSV
-        </button>
       </div>
       <div className="max-h-96 overflow-y-auto">
         <table className="w-full text-xs font-mono">

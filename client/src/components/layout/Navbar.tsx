@@ -32,13 +32,13 @@ export function Navbar() {
           <div className="flex gap-3 justify-end">
             <button
               onClick={() => setShowResetConfirm(false)}
-              className="px-3 py-1.5 rounded text-xs font-mono bg-gray-700 text-gray-300 hover:bg-gray-600"
+              className="px-3 py-1.5 rounded text-xs font-mono bg-gray-700 text-gray-300 hover:bg-gray-600 cursor-pointer"
             >
               CANCEL
             </button>
             <button
               onClick={confirmReset}
-              className="px-3 py-1.5 rounded text-xs font-mono bg-red-800 text-red-200 hover:bg-red-700 flex items-center gap-1"
+              className="px-3 py-1.5 rounded text-xs font-mono bg-red-800 text-red-200 hover:bg-red-700 flex items-center gap-1 cursor-pointer"
             >
               <RotateCcw size={11} />
               RESET
@@ -68,7 +68,7 @@ export function Navbar() {
           <button
             key={s}
             onClick={() => changeSpeed(s)}
-            className={`px-2 py-0.5 rounded text-xs font-mono ${state?.simSpeed === s ? 'bg-blue-700 text-white' : 'bg-gray-800 text-gray-400 hover:bg-gray-700'}`}
+            className={`px-2 py-0.5 rounded text-xs font-mono cursor-pointer ${state?.simSpeed === s ? 'bg-blue-700 text-white' : 'bg-gray-800 text-gray-400 hover:bg-gray-700'}`}
           >
             {s}x
           </button>
@@ -76,7 +76,7 @@ export function Navbar() {
         <button
           onClick={() => setShowResetConfirm(true)}
           title="Reset simulation"
-          className="ml-1 flex items-center gap-1 px-2 py-0.5 rounded text-xs font-mono bg-gray-800 text-gray-400 hover:bg-red-900 hover:text-red-300"
+          className="ml-1 flex items-center gap-1 px-2 py-0.5 rounded text-xs font-mono bg-gray-800 text-gray-400 hover:bg-red-900 hover:text-red-300 cursor-pointer"
         >
           <RotateCcw size={11} />
           RESET

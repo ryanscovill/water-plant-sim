@@ -48,7 +48,10 @@ export class Historian {
   }
 
   getTagHistory(tag: string, durationSeconds: number): Array<{ timestamp: string; value: number }> {
-    const cutoff = Date.now() - durationSeconds * 1000;
+    const latest = this.buffer.length > 0
+      ? new Date(this.buffer[this.buffer.length - 1].timestamp).getTime()
+      : Date.now();
+    const cutoff = latest - durationSeconds * 1000;
     return this.buffer
       .filter((p) => new Date(p.timestamp).getTime() >= cutoff)
       .map((p) => ({ timestamp: p.timestamp, value: p.values[tag] ?? 0 }));
