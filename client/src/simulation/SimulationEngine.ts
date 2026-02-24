@@ -376,7 +376,7 @@ export class SimulationEngine {
       case 'pHAdjustDoseSetpoint':
         return { ...state, coagulation: { ...state.coagulation, pHAdjustDoseSetpoint: Math.max(0, Math.min(10, value)) } };
       case 'simSpeed':
-        return { ...state, simSpeed: Math.max(0.5, Math.min(10, value)) };
+        return { ...state, simSpeed: Math.max(0.5, Math.min(60, value)) };
       case 'clearScreen':
         return { ...state, intake: this.intakeStage.clearScreen(state.intake) };
       case 'sourceTurbidityBase':

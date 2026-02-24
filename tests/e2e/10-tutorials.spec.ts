@@ -92,8 +92,8 @@ test.describe('Tutorials Page', () => {
     const overlay = page.locator('.fixed.bottom-12.right-4');
     await expect(overlay).toBeVisible({ timeout: 5_000 });
 
-    // The TutorialsPage shows an active tutorial banner
-    await page.goto('/tutorials');
+    // Use SPA navigation to return to tutorials page (preserves Zustand store state)
+    await page.locator('#nav-tutorials').click();
     await page.waitForTimeout(500);
     await expect(page.getByText('Tutorial in progress')).toBeVisible({ timeout: 5_000 });
   });

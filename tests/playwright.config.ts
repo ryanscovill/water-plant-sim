@@ -2,7 +2,7 @@ import { defineConfig, devices } from '@playwright/test';
 import path from 'path';
 
 export default defineConfig({
-  testDir: './integration',
+  testDir: './e2e',
   fullyParallel: false, // single server, shared state
   workers: 1,
   retries: process.env.CI ? 2 : 0,

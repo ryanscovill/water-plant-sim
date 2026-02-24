@@ -102,4 +102,70 @@ describe('IntakeStage', () => {
     s = runTicks(stage, s, 1000, 0.5);
     expect(s.screenDiffPressure).toBe(12);
   });
+
+  it('clearScreen resets screenDiffPressure to 0.8 PSI', () => {
+    let s = baseIntake();
+    s.screenDiffPressure = 8.5;
+    s = stage.clearScreen(s);
+    expect(s.screenDiffPressure).toBe(0.8);
+  });
+
+  it('rawWaterLevel rises when both pumps are off (naturalInflow > 0, outflow = 0)', () => {
+    let s = baseIntake();
+    s.intakePump1 = { ...s.intakePump1, running: false };
+    s.intakePump2 = { ...s.intakePump2, running: false };
+    s.rawWaterFlow = 0;
+    s.rawWaterLevel = 5.0;
+    s.naturalInflow = 0.07;
+    const result = stage.update(s, 0.5);
+    expect(result.rawWaterLevel).toBeGreaterThan(5.0);
+  });
+
+  it('rawWaterLevel drops when pump outflow exceeds naturalInflow', () => {
+    let s = baseIntake();
+    // rawWaterFlow drives outflow = flow × 0.02; at 9 MGD outflow = 0.18 > naturalInflow 0.07
+    s.rawWaterFlow = 9.0;
+    s.intakePump1 = { ...s.intakePump1, running: true, speed: 100 };
+    s.intakePump2 = { ...s.intakePump2, running: true, speed: 100 };
+    s.intakeValve = { ...s.intakeValve, open: true, position: 100 };
+    s.rawWaterLevel = 8.0;
+    s.naturalInflow = 0.07;
+    const result = stage.update(s, 0.5);
+    expect(result.rawWaterLevel).toBeLessThan(8.0);
+  });
+
+  it('rawWaterLevel clamps at 0 and does not go negative', () => {
+    let s = baseIntake();
+    s.rawWaterLevel = 0;
+    s.rawWaterFlow = 9.0; // outflow > inflow
+    s.naturalInflow = 0;
+    s = runTicks(stage, s, 100, 0.5);
+    expect(s.rawWaterLevel).toBeGreaterThanOrEqual(0);
+  });
+
+  it('rawWaterLevel clamps at 15 ft maximum', () => {
+    let s = baseIntake();
+    s.rawWaterLevel = 14.9;
+    s.intakePump1 = { ...s.intakePump1, running: false };
+    s.intakePump2 = { ...s.intakePump2, running: false };
+    s.rawWaterFlow = 0;
+    s.naturalInflow = 0.5; // very high inflow
+    s = runTicks(stage, s, 100, 0.5);
+    expect(s.rawWaterLevel).toBeLessThanOrEqual(15);
+  });
+
+  it('higher sourceTurbidityBase results in higher rawTurbidity over time', () => {
+    const lowBase = baseIntake();
+    lowBase.sourceTurbidityBase = 5;
+    lowBase.rawTurbidity = 5;
+
+    const highBase = baseIntake();
+    highBase.sourceTurbidityBase = 150;
+    highBase.rawTurbidity = 150;
+
+    const lowResult = runTicks(new IntakeStage(), lowBase, 500);
+    const highResult = runTicks(new IntakeStage(), highBase, 500);
+
+    expect(highResult.rawTurbidity).toBeGreaterThan(lowResult.rawTurbidity);
+  });
 });

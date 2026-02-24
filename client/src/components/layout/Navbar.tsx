@@ -53,8 +53,8 @@ export function Navbar() {
           <rect width="32" height="32" rx="6" fill="#1a1a2e"/>
           <path d="M16 5 C16 5 8 14 8 19 a8 8 0 0 0 16 0 C24 14 16 5 16 5Z" fill="#38bdf8"/>
           <ellipse cx="13" cy="17" rx="2" ry="3" fill="white" opacity="0.25" transform="rotate(-20 13 17)"/>
-          <path d="M22 10 a9 9 0 0 1 0 12" stroke="#60a5fa" stroke-width="1.5" fill="none" stroke-linecap="round" opacity="0.7"/>
-          <path d="M24 8 a12 12 0 0 1 0 16" stroke="#60a5fa" stroke-width="1.5" fill="none" stroke-linecap="round" opacity="0.4"/>
+          <path d="M22 10 a9 9 0 0 1 0 12" stroke="#60a5fa" strokeWidth="1.5" fill="none" strokeLinecap="round" opacity="0.7"/>
+          <path d="M24 8 a12 12 0 0 1 0 16" stroke="#60a5fa" strokeWidth="1.5" fill="none" strokeLinecap="round" opacity="0.4"/>
         </svg>
         <span className="text-white font-bold text-sm tracking-wider">WATERWORKS SCADA TRAINER</span>
       </div>
@@ -64,7 +64,7 @@ export function Navbar() {
       {/* Sim speed */}
       <div className="flex items-center gap-1 text-xs text-gray-400">
         <span>SIM:</span>
-        {[1, 5, 10].map((s) => (
+        {[1, 10, 60].map((s) => (
           <button
             key={s}
             onClick={() => changeSpeed(s)}

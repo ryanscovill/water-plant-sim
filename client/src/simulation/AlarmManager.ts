@@ -20,6 +20,7 @@ function getTagValues(state: ProcessState): TagValue[] {
     { tag: 'DIS-AIT-001', value: state.disinfection.chlorineResidualPlant, description: 'Plant Cl2 Residual' },
     { tag: 'DIS-AIT-002', value: state.disinfection.chlorineResidualDist, description: 'Dist Cl2 Residual' },
     { tag: 'DIS-AIT-003', value: state.disinfection.finishedWaterPH, description: 'Finished Water pH' },
+    { tag: 'DIS-LIT-001', value: state.disinfection.clearwellLevel, description: 'Clearwell Level' },
   ];
 }
 

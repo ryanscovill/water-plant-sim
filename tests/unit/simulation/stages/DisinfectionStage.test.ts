@@ -111,12 +111,35 @@ describe('DisinfectionStage', () => {
     expect(result.finishedWaterPH).toBeLessThanOrEqual(8.5);
   });
 
-  it('clearwell level rises when not backwashing', () => {
+  it('clearwell level rises when not backwashing at normal flow', () => {
     const { dis, sed, coag, intake } = baseStates();
     dis.clearwellLevel = 3.0;
     const normalSed = { ...sed, backwashInProgress: false };
     const result = stage.update(dis, normalSed, 0.5, coag, intake);
     expect(result.clearwellLevel).toBeGreaterThan(3.0);
+  });
+
+  it('clearwell drains when intake flow is zero', () => {
+    const { dis, sed, coag, intake } = baseStates();
+    dis.clearwellLevel = 3.0;
+    const zeroFlowIntake = { ...intake, rawWaterFlow: 0 };
+    const normalSed = { ...sed, backwashInProgress: false };
+    const result = stage.update(dis, normalSed, 0.5, coag, zeroFlowIntake);
+    expect(result.clearwellLevel).toBeLessThan(3.0);
+  });
+
+  it('clearwell inflow scales with flow rate', () => {
+    const { dis, sed, coag, intake } = baseStates();
+    dis.clearwellLevel = 3.0;
+    const halfFlowIntake = { ...intake, rawWaterFlow: intake.rawWaterFlow / 2 };
+    const normalSed = { ...sed, backwashInProgress: false };
+
+    const fullResult = stage.update({ ...dis }, normalSed, 0.5, coag, intake);
+    const halfResult = stage.update({ ...dis }, normalSed, 0.5, coag, halfFlowIntake);
+
+    // Full flow rises more than half flow
+    expect(fullResult.clearwellLevel - dis.clearwellLevel)
+      .toBeGreaterThan(halfResult.clearwellLevel - dis.clearwellLevel);
   });
 
   it('clearwell level drains during backwash', () => {
@@ -140,5 +163,54 @@ describe('DisinfectionStage', () => {
     dis.chlorinePumpStatus = { ...dis.chlorinePumpStatus, running: true, fault: false, runHours: 0 };
     const result = stage.update(dis, sed, 3600, coag, intake);
     expect(result.chlorinePumpStatus.runHours).toBeCloseTo(1, 5);
+  });
+
+  it('UV system run hours accumulate when running and not faulted', () => {
+    const { dis, sed, coag, intake } = baseStates();
+    dis.uvSystemStatus = { ...dis.uvSystemStatus, running: true, fault: false, runHours: 0 };
+    const result = stage.update(dis, sed, 3600, coag, intake);
+    expect(result.uvSystemStatus.runHours).toBeCloseTo(1, 5);
+  });
+
+  it('high filter effluent turbidity exerts chlorine demand → lower plant Cl₂', () => {
+    const { dis, coag, intake } = baseStates();
+    dis.chlorineDoseRate = 2.0;
+    dis.chlorineDoseSetpoint = 2.0;
+    dis.chlorinePumpStatus = { ...dis.chlorinePumpStatus, running: true };
+
+    const cleanSed = { ...createInitialState().sedimentation, filterEffluentTurbidity: 0.05 };
+    const dirtySed = { ...createInitialState().sedimentation, filterEffluentTurbidity: 5.0 };
+
+    const cleanResult = runTicks(stage, { ...dis }, cleanSed, 300, 0.5, coag, intake);
+    const dirtyResult = runTicks(new DisinfectionStage(), { ...dis }, dirtySed, 300, 0.5, coag, intake);
+
+    expect(cleanResult.chlorineResidualPlant).toBeGreaterThan(dirtyResult.chlorineResidualPlant);
+  });
+
+  it('distribution Cl₂ is lower than plant Cl₂ due to decay', () => {
+    const { dis, sed, coag, intake } = baseStates();
+    const result = runTicks(stage, dis, sed, 500, 0.5, coag, intake);
+    expect(result.chlorineResidualDist).toBeLessThan(result.chlorineResidualPlant);
+  });
+
+  it('higher plant Cl₂ results in higher distribution Cl₂', () => {
+    const { coag, intake } = baseStates();
+    const sed = createInitialState().sedimentation;
+
+    const lowDis = { ...createInitialState().disinfection, chlorineDoseRate: 0.5, chlorineDoseSetpoint: 0.5 };
+    const highDis = { ...createInitialState().disinfection, chlorineDoseRate: 4.0, chlorineDoseSetpoint: 4.0 };
+
+    const lowResult = runTicks(new DisinfectionStage(), lowDis, sed, 500, 0.5, coag, intake);
+    const highResult = runTicks(new DisinfectionStage(), highDis, sed, 500, 0.5, coag, intake);
+
+    expect(highResult.chlorineResidualDist).toBeGreaterThan(lowResult.chlorineResidualDist);
+  });
+
+  it('chlorine pump fault causes dose rate to decay even when running=true', () => {
+    const { dis, sed, coag, intake } = baseStates();
+    dis.chlorineDoseRate = 2.0;
+    dis.chlorinePumpStatus = { ...dis.chlorinePumpStatus, running: true, fault: true };
+    const result = runTicks(stage, dis, sed, 100, 0.5, coag, intake);
+    expect(result.chlorineDoseRate).toBeLessThan(2.0);
   });
 });

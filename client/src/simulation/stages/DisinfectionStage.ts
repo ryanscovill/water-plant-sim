@@ -52,8 +52,12 @@ export class DisinfectionStage {
     // τ = 25 s — pH analyser response / clearwell mixing lag
     next.finishedWaterPH = clamp(firstOrderLag(next.finishedWaterPH, targetPH, lagFactor(dt, 25)), 6.0, 9.0);
 
-    // Clearwell level: inflow stops during backwash (filter not producing filtered water).
-    const inflow = sed.backwashInProgress ? 0 : 0.006; // m/s
+    // Clearwell level: inflow is proportional to plant flow; stops during backwash.
+    // At nominal flow (3.375 MGD) inflow = 0.006 m/s; scales linearly to zero when pumps are off.
+    const NOMINAL_FLOW_MGD = 3.375;
+    const NOMINAL_INFLOW = 0.006; // m/s
+    const flowFraction = (intake?.rawWaterFlow ?? 0) / NOMINAL_FLOW_MGD;
+    const inflow = sed.backwashInProgress ? 0 : NOMINAL_INFLOW * flowFraction;
     const outflow = 0.0046; // m/s
     next.clearwellLevel = clamp(next.clearwellLevel + (inflow - outflow) * dt, 0, 6.1);
 

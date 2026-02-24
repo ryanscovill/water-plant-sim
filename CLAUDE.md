@@ -2,6 +2,10 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Meta
+
+When the user says "remember" something, add it to this file immediately.
+
 ## Commands
 
 **Client** (`cd client`)
@@ -13,13 +17,13 @@ npm run lint      # ESLint
 
 **Tests** (`cd tests`)
 
-Integration tests — Playwright auto-starts the client dev server:
+E2e tests — Playwright auto-starts the client dev server:
 ```bash
-npm test                                        # all suites, headless
-npm test -- integration/03-intake.spec.ts       # single suite
-npm run test:headed -- integration/03-intake.spec.ts  # with browser visible
-npm run test:ui                                 # interactive UI mode
-npm run test:report                             # open last HTML report
+npm test                                   # all suites, headless
+npm test -- e2e/03-intake.spec.ts          # single suite
+npm run test:headed -- e2e/03-intake.spec.ts  # with browser visible
+npm run test:ui                            # interactive UI mode
+npm run test:report                        # open last HTML report
 ```
 
 Unit tests — Vitest, no browser needed:
@@ -31,7 +35,7 @@ npm run test:unit:watch    # watch mode during development
 Tests are organized as:
 ```
 tests/
-  integration/   Playwright e2e suites (browser, shared state)
+  e2e/           Playwright e2e suites (browser, shared state)
   unit/          Vitest unit tests (pure TS, no DOM)
     simulation/  mirrors client/src/simulation/ layout
 ```
@@ -52,6 +56,14 @@ Applies to:
 
 Do **not** add logic to the simulation layer without a corresponding unit test.
 
+## Adding a new alarm
+
+When adding a new alarm, all three of these must be updated together:
+
+1. **`client/src/simulation/config.ts`** — add the tag and thresholds to `alarmThresholds`
+2. **`client/src/simulation/AlarmManager.ts`** — add the tag/value/description to `getTagValues()`
+3. **`client/src/components/settings/AlarmThresholdsTab.tsx`** — add an entry to `TAG_META` so the threshold is editable in the Settings UI
+
 ## Simulation standards reference
 
 All alarm thresholds and process constants are verified against EPA SWTR (40 CFR 141), AWWA, and Ten States Standards (2022). The full reference table is in **`docs/water-treatment-standards.md`**.
@@ -61,7 +73,7 @@ Key regulatory limits encoded in `config.ts`:
 - **Plant Cl₂ HH**: 4.0 mg/L — EPA MRDL (40 CFR 141.65)
 - **Dist. Cl₂ LL**: 0.2 mg/L — EPA SWTR minimum (40 CFR 141.72)
 - **pH LL/HH**: 6.5 / 8.5 — EPA Secondary MCL bounds
-- **Fluoride L**: 0.7 mg/L — HHS/PHS optimal level (2015)
+- **Clearwell Level LL**: 1.83 m — 30% of 6.1 m maximum
 
 Shared calculation primitives (`clamp`, `firstOrderLag`, `accumulateRunHours`, `rampDoseRate`) live in `client/src/simulation/utils.ts`.
 
@@ -71,7 +83,7 @@ Shared calculation primitives (`clamp`, `firstOrderLag`, `accumulateRunHours`, `
 
 ```
 client/   React 19 + Vite + Tailwind CSS — runs the full simulation in-browser
-tests/    Playwright e2e (13 suites, single worker, shared state)
+tests/    Playwright e2e (15 suites, single worker, shared state)
 ```
 
 ### Simulation pipeline (runs entirely in the browser)
@@ -118,7 +130,7 @@ This applies to: `<button>`, `<a>`, clickable `<div>`/`<tr>`/`<li>`, custom tab 
 
 ### Client: HMI screens
 
-Each HMI (`IntakeHMI`, `CoagFloccHMI`, `SedimentationHMI`, `DisinfectionHMI`) follows the same pattern:
+Each HMI (`OverviewHMI`, `IntakeHMI`, `CoagFloccHMI`, `SedimentationHMI`, `DisinfectionHMI`) follows the same pattern:
 - SVG diagram built from reusable components in `components/hmi/svg/` (Pump, Valve, Tank, Pipe, FlowMeter, etc.)
 - `viewBox="0 0 720 N"` with `width="100%"` for responsive scaling; a `<style>` block inside the SVG pins font sizes to fixed pixel values so text doesn't scale with the viewport
 - `useState<string | null>` tracks which equipment item is selected

@@ -135,6 +135,37 @@ describe('AlarmManager', () => {
     });
   });
 
+  describe('DIS-LIT-001 — Clearwell Level (30% minimum)', () => {
+    it('raises LL (CRITICAL) at ≤ 1.83 m (30% of 6.1 m)', () => {
+      const state = createInitialState();
+      state.disinfection = { ...state.disinfection, clearwellLevel: 1.83 };
+      const { newAlarms } = manager.evaluate(state);
+      const alarm = newAlarms.find(a => a.id === 'DIS-LIT-001-LL');
+      expect(alarm).toBeDefined();
+      expect(alarm?.priority).toBe('CRITICAL');
+    });
+
+    it('does not raise LL above 1.83 m', () => {
+      const state = createInitialState();
+      state.disinfection = { ...state.disinfection, clearwellLevel: 1.84 };
+      const { newAlarms } = manager.evaluate(state);
+      expect(newAlarms.find(a => a.id === 'DIS-LIT-001-LL')).toBeUndefined();
+    });
+
+    it('clears LL when level recovers above 1.83 m', () => {
+      const state = createInitialState();
+      state.disinfection = { ...state.disinfection, clearwellLevel: 1.83 };
+      const { newAlarms } = manager.evaluate(state);
+      state.alarms = [...newAlarms];
+
+      const recovered = createInitialState();
+      recovered.disinfection = { ...recovered.disinfection, clearwellLevel: 2.0 };
+      recovered.alarms = [...state.alarms];
+      const { clearedAlarms } = manager.evaluate(recovered);
+      expect(clearedAlarms.find(a => a.id === 'DIS-LIT-001-LL')).toBeDefined();
+    });
+  });
+
   describe('Alarm lifecycle', () => {
     it('produces valueUpdates when alarm already active in state', () => {
       const state = makeState({ chlorineResidualPlant: 4.0 });

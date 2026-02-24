@@ -23,6 +23,7 @@ const TAG_META: TagMeta[] = [
   { tag: 'DIS-AIT-001', description: 'Plant Cl₂ Residual',        unit: 'mg/L', levels: ['ll', 'l', 'h', 'hh'] },
   { tag: 'DIS-AIT-002', description: 'Dist Cl₂ Residual',         unit: 'mg/L', levels: ['ll', 'l', 'h'] },
   { tag: 'DIS-AIT-003', description: 'Finished Water pH',         unit: '',     levels: ['ll', 'l', 'h', 'hh'] },
+  { tag: 'DIS-LIT-001', description: 'Clearwell Level',           unit: 'm',    levels: ['ll'] },
 ];
 
 const LEVEL_LABELS: Record<Level, { label: string; color: string }> = {

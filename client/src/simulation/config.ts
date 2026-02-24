@@ -18,5 +18,6 @@ export const config = {
     'DIS-AIT-001': { ll: 0.3, l: 0.5, h: 3.0, hh: 4.0 }, // HH = EPA MRDL (40 CFR 141.65)
     'DIS-AIT-002': { ll: 0.2, l: 0.3, h: 2.0 },
     'DIS-AIT-003': { ll: 6.5, l: 6.8, h: 8.0, hh: 8.5 }, // LL = EPA SMCL lower bound
+    'DIS-LIT-001': { ll: 1.83 }, // 30% of 6.1 m — minimum clearwell level
   },
 };

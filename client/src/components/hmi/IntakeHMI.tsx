@@ -134,11 +134,11 @@ export function IntakeHMI() {
 
             {/* Screen diff pressure */}
             <g id="hmi-screenDP" onClick={() => setSelected('screen')} style={{ cursor: 'pointer' }} data-interactive="true" data-selected={selected === 'screen' ? 'true' : undefined}>
-              <rect x="397" y="127" width="46" height="34" rx="5" fill="transparent" stroke="#22d3ee"
+              <rect x="391" y="127" width="58" height="34" rx="5" fill="transparent" stroke="#22d3ee"
                 strokeWidth="1.5" strokeDasharray="5,3" className="interactive-ring" />
-              <rect x="400" y="130" width="40" height="28" rx="3" fill="#111827" stroke={intake.screenDiffPressure > 5 ? '#f59e0b' : '#374151'} strokeWidth="1.5" />
+              <rect x="394" y="130" width="52" height="28" rx="3" fill="#111827" stroke={intake.screenDiffPressure > 5 ? '#f59e0b' : '#374151'} strokeWidth="1.5" />
               <text x="420" y="142" textAnchor="middle" fill="#6b7280" fontSize="11" fontFamily="monospace">SCR</text>
-              <text x="420" y="153" textAnchor="middle" fill={intake.screenDiffPressure > 5 ? '#f59e0b' : '#9ca3af'} fontSize="12" fontFamily="monospace">
+              <text x="420" y="153" textAnchor="middle" fill={intake.screenDiffPressure > 5 ? '#f59e0b' : '#9ca3af'} fontSize="11" fontFamily="monospace">
                 {intake.screenDiffPressure.toFixed(1)} PSI
               </text>
             </g>
