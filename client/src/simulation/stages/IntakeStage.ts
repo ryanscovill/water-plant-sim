@@ -1,5 +1,5 @@
 import type { IntakeState } from '../ProcessState';
-import { clamp, firstOrderLag, accumulateRunHours } from '../utils';
+import { clamp, firstOrderLag, lagFactor, accumulateRunHours } from '../utils';
 
 // PSI drift per simulated second (screen clogging rate)
 const SCREEN_DRIFT_RATE = 0.0005;
@@ -27,7 +27,8 @@ export class IntakeStage {
     const valveFactor = next.intakeValve.open ? (next.intakeValve.position / 100) : 0;
     const targetFlow = (pump1Flow + pump2Flow) * valveFactor;
 
-    next.rawWaterFlow = clamp(firstOrderLag(next.rawWaterFlow, targetFlow, 0.1), 0, 10);
+    // τ = 5 s — pump/valve hydraulic response time
+    next.rawWaterFlow = clamp(firstOrderLag(next.rawWaterFlow, targetFlow, lagFactor(dt, 5)), 0, 10);
 
     // Wet-well mass balance: naturalInflow (ft/s equivalent) minus pump withdrawal.
     // Equilibrium at rawWaterFlow = naturalInflow / 0.02 MGD.
@@ -43,7 +44,8 @@ export class IntakeStage {
     const baseTurbidity = next.sourceTurbidityBase
       + Math.sin(this.turbidityPhase) * amplitude * 0.6
       + Math.cos(this.turbidityPhase * 0.3) * amplitude * 0.4;
-    next.rawTurbidity = clamp(firstOrderLag(next.rawTurbidity, baseTurbidity, 0.005), 1, 600);
+    // τ = 100 s — slow turbidimeter response / river mixing inertia
+    next.rawTurbidity = clamp(firstOrderLag(next.rawTurbidity, baseTurbidity, lagFactor(dt, 100)), 1, 600);
 
     return next;
   }

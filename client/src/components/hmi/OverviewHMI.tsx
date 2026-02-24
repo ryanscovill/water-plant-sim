@@ -4,7 +4,7 @@ import { useAlarmStore } from '../../store/useAlarmStore';
 import { ValueDisplay } from '../common/ValueDisplay';
 import { StatusIndicator } from '../common/StatusIndicator';
 
-export function OverviewHMI() {
+export function OverviewHMI({ activeStage }: { activeStage?: string }) {
   const state = useSimulationStore((s) => s.state);
   const alarms = useAlarmStore((s) => s.alarms);
   const navigate = useNavigate();
@@ -76,7 +76,7 @@ export function OverviewHMI() {
         { label: 'Plant Cl₂', value: disinfection.chlorineResidualPlant, unit: 'mg/L', alarm: getAlarm('DIS-AIT-001'), decimals: 2 },
         { label: 'Dist Cl₂', value: disinfection.chlorineResidualDist, unit: 'mg/L', alarm: getAlarm('DIS-AIT-002'), decimals: 2 },
         { label: 'pH', value: disinfection.finishedWaterPH, unit: '', alarm: getAlarm('DIS-AIT-003'), decimals: 2 },
-        { label: 'Clearwell', value: disinfection.clearwellLevel, unit: 'ft', alarm: null, decimals: 1 },
+        { label: 'Clearwell', value: disinfection.clearwellLevel, unit: 'm', alarm: null, decimals: 2 },
       ],
       equipment: [
         { label: 'Cl₂ Pump', ...disinfection.chlorinePumpStatus },
@@ -108,7 +108,11 @@ export function OverviewHMI() {
         {stages.map((stage) => (
           <div
             key={stage.title}
-            className={`border ${stage.color} rounded-lg overflow-hidden cursor-pointer hover:brightness-110 transition-all`}
+            className={`border rounded-lg overflow-hidden cursor-pointer transition-all ${
+              activeStage === stage.title
+                ? `${stage.color} ring-2 ring-offset-1 ring-offset-gray-950 brightness-125`
+                : `${stage.color} hover:brightness-110`
+            }`}
             onClick={() => navigate(stage.path)}
           >
             <div className={`${stage.headerBg} px-3 py-2 border-b ${stage.color}`}>

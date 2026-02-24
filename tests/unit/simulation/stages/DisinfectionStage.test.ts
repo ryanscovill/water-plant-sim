@@ -113,18 +113,18 @@ describe('DisinfectionStage', () => {
 
   it('clearwell level rises when not backwashing', () => {
     const { dis, sed, coag, intake } = baseStates();
-    dis.clearwellLevel = 10;
+    dis.clearwellLevel = 3.0;
     const normalSed = { ...sed, backwashInProgress: false };
     const result = stage.update(dis, normalSed, 0.5, coag, intake);
-    expect(result.clearwellLevel).toBeGreaterThan(10);
+    expect(result.clearwellLevel).toBeGreaterThan(3.0);
   });
 
   it('clearwell level drains during backwash', () => {
     const { dis, sed, coag, intake } = baseStates();
-    dis.clearwellLevel = 10;
+    dis.clearwellLevel = 3.0;
     const bwSed = { ...sed, backwashInProgress: true };
     const result = stage.update(dis, bwSed, 0.5, coag, intake);
-    expect(result.clearwellLevel).toBeLessThan(10);
+    expect(result.clearwellLevel).toBeLessThan(3.0);
   });
 
   it('clearwell level clamps at 0 during extended backwash with empty well', () => {

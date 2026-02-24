@@ -1,5 +1,5 @@
 import type { SedimentationState, CoagulationState } from '../ProcessState';
-import { clamp, firstOrderLag, accumulateRunHours } from '../utils';
+import { clamp, firstOrderLag, lagFactor, accumulateRunHours } from '../utils';
 
 // AWWA/Ten States Standards: 10-minute backwash at normal flow
 const BACKWASH_DURATION = 600; // seconds
@@ -31,7 +31,8 @@ export class SedimentationStage {
     const sludgeImpact = clamp(next.sludgeBlanketLevel / 6, 0, 0.5);
     const clarifierEfficiency = CLARIFIER_BASE_EFFICIENCY * (1 - sludgeImpact);
     const targetClarTurb = coag.flocBasinTurbidity * (1 - clarifierEfficiency);
-    next.clarifierTurbidity = clamp(firstOrderLag(next.clarifierTurbidity, targetClarTurb, 0.05), 0.1, 200);
+    // τ = 10 s — clarifier turbidimeter response
+    next.clarifierTurbidity = clamp(firstOrderLag(next.clarifierTurbidity, targetClarTurb, lagFactor(dt, 10)), 0.1, 200);
 
     // Sludge blanket: constant accumulation vs. pump removal (normalized to standard 500 ms tick).
     const tickNorm = dt / 0.5;
@@ -64,7 +65,8 @@ export class SedimentationStage {
       0, 1,
     );
     const targetEfflTurb = next.clarifierTurbidity * FILTER_NORMAL_REMOVAL + filterBreakthrough * 2;
-    next.filterEffluentTurbidity = clamp(firstOrderLag(next.filterEffluentTurbidity, targetEfflTurb, 0.03), 0.01, 10);
+    // τ = 16 s — filter effluent turbidimeter response
+    next.filterEffluentTurbidity = clamp(firstOrderLag(next.filterEffluentTurbidity, targetEfflTurb, lagFactor(dt, 16)), 0.01, 10);
 
     return next;
   }

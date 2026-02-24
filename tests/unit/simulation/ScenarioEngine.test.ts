@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { ScenarioEngine } from '../../../client/src/simulation/ScenarioEngine';
 import { createInitialState } from '../../../client/src/simulation/ProcessState';
 import type { ProcessState } from '../../../client/src/simulation/ProcessState';
@@ -83,32 +83,27 @@ describe('ScenarioEngine', () => {
   let mock: MockEngine;
 
   beforeEach(() => {
-    vi.useFakeTimers();
     engine = new ScenarioEngine();
     mock = makeMockEngine();
-  });
-
-  afterEach(() => {
-    vi.useRealTimers();
   });
 
   // ── start() ────────────────────────────────────────────────────────────────
 
   describe('start()', () => {
     it('sets the active scenario', () => {
-      engine.start(INDEFINITE, mock);
+      engine.start(INDEFINITE, mock, 0);
       expect(engine.getActiveScenario()).toBe(INDEFINITE);
     });
 
     it('calls setActiveScenario with the scenario id', () => {
-      engine.start(INDEFINITE, mock);
+      engine.start(INDEFINITE, mock, 0);
       const calls = mock.callsOfType('setActiveScenario');
       expect(calls).toHaveLength(1);
       expect(calls[0].args[0]).toBe(INDEFINITE.id);
     });
 
     it('emits a "Scenario started" event', () => {
-      engine.start(INDEFINITE, mock);
+      engine.start(INDEFINITE, mock, 0);
       const events = mock.callsOfType('emitSimulationEvent');
       expect(events.some(e => (e.args[0] as string).includes('Scenario started'))).toBe(true);
     });
@@ -121,7 +116,7 @@ describe('ScenarioEngine', () => {
           { triggerAt: 30, action: 'faultPump',     params: { pumpId: 'intakePump1' } },
         ],
       };
-      engine.start(scenario, mock);
+      engine.start(scenario, mock, 0);
       // preloadFilter is triggerAt=0 → injected immediately
       expect(mock.getState().sedimentation.filterHeadLoss).toBe(8.5);
       expect(mock.getState().sedimentation.filterRunTime).toBe(71);
@@ -134,7 +129,7 @@ describe('ScenarioEngine', () => {
         ...INDEFINITE,
         steps: [{ triggerAt: 15, action: 'faultPump', params: { pumpId: 'intakePump1' } }],
       };
-      engine.start(scenario, mock);
+      engine.start(scenario, mock, 0);
       expect(mock.getState().intake.intakePump1.fault).toBe(false);
     });
   });
@@ -143,20 +138,20 @@ describe('ScenarioEngine', () => {
 
   describe('stop()', () => {
     it('clears the active scenario', () => {
-      engine.start(INDEFINITE, mock);
+      engine.start(INDEFINITE, mock, 0);
       engine.stop(mock);
       expect(engine.getActiveScenario()).toBeNull();
     });
 
     it('calls setActiveScenario(null)', () => {
-      engine.start(INDEFINITE, mock);
+      engine.start(INDEFINITE, mock, 0);
       engine.stop(mock);
       const nullCalls = mock.callsOfType('setActiveScenario').filter(c => c.args[0] === null);
       expect(nullCalls).toHaveLength(1);
     });
 
     it('emits a "Scenario stopped" event containing the scenario name', () => {
-      engine.start(INDEFINITE, mock);
+      engine.start(INDEFINITE, mock, 0);
       engine.stop(mock);
       const events = mock.callsOfType('emitSimulationEvent');
       expect(events.some(e => (e.args[0] as string).includes('Scenario stopped'))).toBe(true);
@@ -168,12 +163,12 @@ describe('ScenarioEngine', () => {
         ...INDEFINITE,
         steps: [{ triggerAt: 0, action: 'setTurbidity', params: { target: 300, duration: 10 } }],
       };
-      engine.start(scenario, mock);
+      engine.start(scenario, mock, 0);
       engine.stop(mock);
 
       // tick after stop should not inject anything
       const callsBefore = mock.getCalls().length;
-      engine.tick(mock);
+      engine.tick(mock, 0);
       expect(mock.getCalls().length).toBe(callsBefore);
     });
   });
@@ -186,12 +181,12 @@ describe('ScenarioEngine', () => {
     });
 
     it('returns the active scenario after start()', () => {
-      engine.start(INDEFINITE, mock);
+      engine.start(INDEFINITE, mock, 0);
       expect(engine.getActiveScenario()).toBe(INDEFINITE);
     });
 
     it('returns null after stop()', () => {
-      engine.start(INDEFINITE, mock);
+      engine.start(INDEFINITE, mock, 0);
       engine.stop(mock);
       expect(engine.getActiveScenario()).toBeNull();
     });
@@ -201,7 +196,7 @@ describe('ScenarioEngine', () => {
 
   describe('tick()', () => {
     it('does nothing when no scenario is active', () => {
-      engine.tick(mock);
+      engine.tick(mock, 0);
       expect(mock.getCalls()).toHaveLength(0);
     });
 
@@ -210,11 +205,10 @@ describe('ScenarioEngine', () => {
         ...INDEFINITE,
         steps: [{ triggerAt: 15, action: 'faultPump', params: { pumpId: 'intakePump1' } }],
       };
-      engine.start(scenario, mock);
+      engine.start(scenario, mock, 0);
       expect(mock.getState().intake.intakePump1.fault).toBe(false);
 
-      vi.advanceTimersByTime(16_000); // 16 seconds real/fake time
-      engine.tick(mock);
+      engine.tick(mock, 16_000); // 16 simulated seconds (ms)
       expect(mock.getState().intake.intakePump1.fault).toBe(true);
     });
 
@@ -223,9 +217,8 @@ describe('ScenarioEngine', () => {
         ...INDEFINITE,
         steps: [{ triggerAt: 30, action: 'faultPump', params: { pumpId: 'intakePump1' } }],
       };
-      engine.start(scenario, mock);
-      vi.advanceTimersByTime(10_000); // only 10 s
-      engine.tick(mock);
+      engine.start(scenario, mock, 0);
+      engine.tick(mock, 10_000); // only 10 s elapsed
       expect(mock.getState().intake.intakePump1.fault).toBe(false);
     });
 
@@ -234,11 +227,10 @@ describe('ScenarioEngine', () => {
         ...INDEFINITE,
         steps: [{ triggerAt: 15, action: 'faultPump', params: { pumpId: 'intakePump1' } }],
       };
-      engine.start(scenario, mock);
-      vi.advanceTimersByTime(16_000);
-      engine.tick(mock);
+      engine.start(scenario, mock, 0);
+      engine.tick(mock, 16_000);
       const injectsBefore = mock.callsOfType('injectScenario').length;
-      engine.tick(mock); // second tick — same elapsed time
+      engine.tick(mock, 16_000); // second tick — same elapsed time
       expect(mock.callsOfType('injectScenario').length).toBe(injectsBefore);
     });
 
@@ -247,33 +239,30 @@ describe('ScenarioEngine', () => {
         ...INDEFINITE,
         steps: [{ triggerAt: 0, action: 'setTurbidity', params: { target: 300, duration: 10 } }],
       };
-      engine.start(scenario, mock);
+      engine.start(scenario, mock, 0);
       const initialTurbidity = mock.getState().intake.sourceTurbidityBase;
-      engine.tick(mock);
+      engine.tick(mock, 500);
       const afterTick = mock.getState().intake.sourceTurbidityBase;
       expect(afterTick).toBeGreaterThan(initialTurbidity);
       expect(afterTick).toBeLessThan(300);
     });
 
     it('completes a timed scenario when duration elapses', () => {
-      engine.start(TIMED, mock);
-      vi.advanceTimersByTime(61_000); // past the 60 s duration
-      engine.tick(mock);
+      engine.start(TIMED, mock, 0);
+      engine.tick(mock, 61_000); // past the 60 s duration
       expect(engine.getActiveScenario()).toBeNull();
     });
 
     it('emits "Scenario completed" event when timed scenario ends', () => {
-      engine.start(TIMED, mock);
-      vi.advanceTimersByTime(61_000);
-      engine.tick(mock);
+      engine.start(TIMED, mock, 0);
+      engine.tick(mock, 61_000);
       const events = mock.callsOfType('emitSimulationEvent');
       expect(events.some(e => (e.args[0] as string).includes('Scenario completed'))).toBe(true);
     });
 
     it('never auto-completes an indefinite scenario (duration === 0)', () => {
-      engine.start(INDEFINITE, mock);
-      vi.advanceTimersByTime(999_999_000);
-      engine.tick(mock);
+      engine.start(INDEFINITE, mock, 0);
+      engine.tick(mock, 999_999_000);
       expect(engine.getActiveScenario()).toBe(INDEFINITE);
     });
   });
@@ -286,7 +275,7 @@ describe('ScenarioEngine', () => {
         ...INDEFINITE,
         steps: [{ triggerAt: 0, action: 'faultPump', params: { pumpId } }],
       };
-      engine.start(scenario, mock);
+      engine.start(scenario, mock, 0);
     }
 
     it('faults intakePump1 — sets fault=true and running=false', () => {
@@ -307,7 +296,7 @@ describe('ScenarioEngine', () => {
         ...INDEFINITE,
         steps: [{ triggerAt: 0, action: 'faultPump', params: { pumpId: 'intakePump2' } }],
       };
-      engine.start(scenario, m);
+      engine.start(scenario, m, 0);
       expect(m.getState().intake.intakePump2.fault).toBe(true);
       expect(m.getState().intake.intakePump2.running).toBe(false);
     });
@@ -349,7 +338,7 @@ describe('ScenarioEngine', () => {
         ...INDEFINITE,
         steps: [{ triggerAt: 0, action: 'setTurbidity', params: { target: 300, duration: 10 } }],
       };
-      engine.start(scenario, mock);
+      engine.start(scenario, mock, 0);
       // start() runs triggerAt=0 — setTurbidity only sets internal target, no inject yet
       expect(mock.callsOfType('injectScenario')).toHaveLength(0);
       expect(mock.getState().intake.sourceTurbidityBase).toBe(baseTurbidity);
@@ -360,8 +349,8 @@ describe('ScenarioEngine', () => {
         ...INDEFINITE,
         steps: [{ triggerAt: 0, action: 'setTurbidity', params: { target: 300, duration: 10 } }],
       };
-      engine.start(scenario, mock);
-      for (let i = 0; i < 20; i++) engine.tick(mock);
+      engine.start(scenario, mock, 0);
+      for (let i = 0; i < 20; i++) engine.tick(mock, i * 500);
       expect(mock.getState().intake.sourceTurbidityBase).toBeGreaterThan(
         createInitialState().intake.sourceTurbidityBase
       );
@@ -373,8 +362,8 @@ describe('ScenarioEngine', () => {
         ...INDEFINITE,
         steps: [{ triggerAt: 0, action: 'setTurbidity', params: { target: 0, duration: 1 } }],
       };
-      engine.start(scLow, mock);
-      for (let i = 0; i < 100; i++) engine.tick(mock);
+      engine.start(scLow, mock, 0);
+      for (let i = 0; i < 100; i++) engine.tick(mock, i * 500);
       expect(mock.getState().intake.sourceTurbidityBase).toBeGreaterThanOrEqual(1);
     });
 
@@ -383,7 +372,7 @@ describe('ScenarioEngine', () => {
         ...INDEFINITE,
         steps: [{ triggerAt: 0, action: 'setTurbidity', params: { target: 80, duration: 10 } }],
       };
-      engine.start(scenario, mock);
+      engine.start(scenario, mock, 0);
       const events = mock.callsOfType('emitSimulationEvent');
       expect(events.some(e => (e.args[0] as string).includes('80'))).toBe(true);
     });
@@ -395,7 +384,7 @@ describe('ScenarioEngine', () => {
         ...INDEFINITE,
         steps: [{ triggerAt: 0, action: 'preloadFilter', params: { headLoss: 8.5, filterRunTime: 71 } }],
       };
-      engine.start(scenario, mock);
+      engine.start(scenario, mock, 0);
       expect(mock.getState().sedimentation.filterHeadLoss).toBe(8.5);
     });
 
@@ -404,7 +393,7 @@ describe('ScenarioEngine', () => {
         ...INDEFINITE,
         steps: [{ triggerAt: 0, action: 'preloadFilter', params: { headLoss: 8.5, filterRunTime: 71 } }],
       };
-      engine.start(scenario, mock);
+      engine.start(scenario, mock, 0);
       expect(mock.getState().sedimentation.filterRunTime).toBe(71);
     });
 
@@ -413,7 +402,7 @@ describe('ScenarioEngine', () => {
         ...INDEFINITE,
         steps: [{ triggerAt: 0, action: 'preloadFilter', params: { headLoss: 8.5, filterRunTime: 71 } }],
       };
-      engine.start(scenario, mock);
+      engine.start(scenario, mock, 0);
       const events = mock.callsOfType('emitSimulationEvent');
       expect(events.some(e => {
         const msg = e.args[0] as string;
@@ -428,7 +417,7 @@ describe('ScenarioEngine', () => {
         ...INDEFINITE,
         steps: [{ triggerAt: 0, action: 'setAlumDose', params: { value: 50 } }],
       };
-      engine.start(scenario, mock);
+      engine.start(scenario, mock, 0);
       expect(mock.getState().coagulation.alumDoseSetpoint).toBe(50);
     });
 
@@ -437,7 +426,7 @@ describe('ScenarioEngine', () => {
         ...INDEFINITE,
         steps: [{ triggerAt: 0, action: 'setAlumDose', params: { value: 50 } }],
       };
-      engine.start(scenario, mock);
+      engine.start(scenario, mock, 0);
       const events = mock.callsOfType('emitSimulationEvent');
       expect(events.some(e => (e.args[0] as string).includes('50'))).toBe(true);
     });
@@ -449,7 +438,7 @@ describe('ScenarioEngine', () => {
         ...INDEFINITE,
         steps: [{ triggerAt: 0, action: 'setChlorineDoseSetpoint', params: { value: 0 } }],
       };
-      engine.start(scenario, mock);
+      engine.start(scenario, mock, 0);
       expect(mock.getState().disinfection.chlorineDoseSetpoint).toBe(0);
     });
 
@@ -458,7 +447,7 @@ describe('ScenarioEngine', () => {
         ...INDEFINITE,
         steps: [{ triggerAt: 0, action: 'setChlorineDoseSetpoint', params: { value: 3.5 } }],
       };
-      engine.start(scenario, mock);
+      engine.start(scenario, mock, 0);
       const events = mock.callsOfType('emitSimulationEvent');
       expect(events.some(e => (e.args[0] as string).includes('3.5'))).toBe(true);
     });
@@ -470,7 +459,7 @@ describe('ScenarioEngine', () => {
         ...INDEFINITE,
         steps: [{ triggerAt: 0, action: 'setSludgeLevel', params: { value: 3.5 } }],
       };
-      engine.start(scenario, mock);
+      engine.start(scenario, mock, 0);
       expect(mock.getState().sedimentation.sludgeBlanketLevel).toBe(3.5);
     });
 
@@ -479,7 +468,7 @@ describe('ScenarioEngine', () => {
         ...INDEFINITE,
         steps: [{ triggerAt: 0, action: 'setSludgeLevel', params: { value: 3.5 } }],
       };
-      engine.start(scenario, mock);
+      engine.start(scenario, mock, 0);
       const events = mock.callsOfType('emitSimulationEvent');
       expect(events.some(e => (e.args[0] as string).includes('3.5'))).toBe(true);
     });
@@ -762,84 +751,71 @@ describe('ScenarioEngine — end-to-end state mutations', () => {
   let mock: MockEngine;
 
   beforeEach(() => {
-    vi.useFakeTimers();
     scenarioEngine = new ScenarioEngine();
     mock = makeMockEngine();
   });
 
-  afterEach(() => {
-    vi.useRealTimers();
-  });
-
   it('filterBreakthrough: starting the scenario pre-loads filter state immediately', () => {
-    scenarioEngine.start(filterBreakthrough, mock);
+    scenarioEngine.start(filterBreakthrough, mock, 0);
     const state = mock.getState();
     expect(state.sedimentation.filterHeadLoss).toBe(8.5);
     expect(state.sedimentation.filterRunTime).toBe(71);
   });
 
   it('intakePumpFailure: pump fault fires after 15 s (not before)', () => {
-    scenarioEngine.start(intakePumpFailure, mock);
+    scenarioEngine.start(intakePumpFailure, mock, 0);
     expect(mock.getState().intake.intakePump1.fault).toBe(false);
-    vi.advanceTimersByTime(14_999);
-    scenarioEngine.tick(mock);
+    scenarioEngine.tick(mock, 14_999); // 14.999 s elapsed — not yet
     expect(mock.getState().intake.intakePump1.fault).toBe(false);
-    vi.advanceTimersByTime(2);
-    scenarioEngine.tick(mock);
+    scenarioEngine.tick(mock, 15_001); // 15.001 s elapsed — triggers
     expect(mock.getState().intake.intakePump1.fault).toBe(true);
   });
 
   it('chlorineDosingFault: setpoint drops at t=5 and pump faults at t=15', () => {
-    scenarioEngine.start(chlorineDosingFault, mock);
+    scenarioEngine.start(chlorineDosingFault, mock, 0);
     expect(mock.getState().disinfection.chlorineDoseSetpoint).toBeGreaterThan(0);
 
-    vi.advanceTimersByTime(5_001);
-    scenarioEngine.tick(mock);
+    scenarioEngine.tick(mock, 5_001); // 5.001 s — setpoint step fires
     expect(mock.getState().disinfection.chlorineDoseSetpoint).toBe(0);
     expect(mock.getState().disinfection.chlorinePumpStatus.fault).toBe(false);
 
-    vi.advanceTimersByTime(10_000);
-    scenarioEngine.tick(mock);
+    scenarioEngine.tick(mock, 15_001); // 15.001 s — fault step fires
     expect(mock.getState().disinfection.chlorinePumpStatus.fault).toBe(true);
   });
 
   it('alumOverdose: alum setpoint spikes to 50 mg/L at t=15', () => {
-    scenarioEngine.start(alumOverdose, mock);
+    scenarioEngine.start(alumOverdose, mock, 0);
     expect(mock.getState().coagulation.alumDoseSetpoint).toBe(
       createInitialState().coagulation.alumDoseSetpoint
     );
-    vi.advanceTimersByTime(15_001);
-    scenarioEngine.tick(mock);
+    scenarioEngine.tick(mock, 15_001); // 15.001 s elapsed
     expect(mock.getState().coagulation.alumDoseSetpoint).toBe(50);
   });
 
   it('sludgeBlanketBuildup: sludge pre-set at t=0, pump faults at t=15', () => {
-    scenarioEngine.start(sludgeBlanketBuildup, mock);
+    scenarioEngine.start(sludgeBlanketBuildup, mock, 0);
     expect(mock.getState().sedimentation.sludgeBlanketLevel).toBe(3.5);
     expect(mock.getState().sedimentation.sludgePumpStatus.fault).toBe(false);
-    vi.advanceTimersByTime(15_001);
-    scenarioEngine.tick(mock);
+    scenarioEngine.tick(mock, 15_001); // 15.001 s elapsed
     expect(mock.getState().sedimentation.sludgePumpStatus.fault).toBe(true);
   });
 
   it('highTurbidityStorm: turbidity ramps toward 80 NTU after t=10', () => {
-    scenarioEngine.start(highTurbidityStorm, mock);
+    scenarioEngine.start(highTurbidityStorm, mock, 0);
     const initialTurbidity = mock.getState().intake.sourceTurbidityBase;
-    vi.advanceTimersByTime(10_001);
-    scenarioEngine.tick(mock);   // activates ramp
-    scenarioEngine.tick(mock);   // applies ramp
+    scenarioEngine.tick(mock, 10_001); // activates ramp (t=10 step fires)
+    scenarioEngine.tick(mock, 10_001); // applies ramp increment
     expect(mock.getState().intake.sourceTurbidityBase).toBeGreaterThan(initialTurbidity);
   });
 
   it('highTurbidityStorm: auto-completes after 300 s', () => {
-    scenarioEngine.start(highTurbidityStorm, mock);
-    vi.advanceTimersByTime(301_000);
-    scenarioEngine.tick(mock);
+    scenarioEngine.start(highTurbidityStorm, mock, 0);
+    scenarioEngine.tick(mock, 301_000); // 301 s elapsed
     expect(scenarioEngine.getActiveScenario()).toBeNull();
   });
 
   it('normalOperations: start and immediate stop emits correct events', () => {
-    scenarioEngine.start(normalOperations, mock);
+    scenarioEngine.start(normalOperations, mock, 0);
     scenarioEngine.stop(mock);
     const events = mock.callsOfType('emitSimulationEvent').map(e => e.args[0] as string);
     expect(events.some(e => e.includes('Scenario started'))).toBe(true);

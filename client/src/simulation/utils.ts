@@ -12,6 +12,17 @@ export function firstOrderLag(current: number, target: number, factor: number): 
 }
 
 /**
+ * Compute the correct first-order lag factor for a given dt and time constant τ.
+ * Use this instead of a hardcoded factor so behavior is dt-independent.
+ *
+ * @param dt          simulated seconds elapsed this tick
+ * @param tauSeconds  physical time constant in simulated seconds
+ */
+export function lagFactor(dt: number, tauSeconds: number): number {
+  return 1 - Math.exp(-dt / tauSeconds);
+}
+
+/**
  * Accumulate run hours for a piece of equipment.
  * Only counts when running and not faulted.
  */

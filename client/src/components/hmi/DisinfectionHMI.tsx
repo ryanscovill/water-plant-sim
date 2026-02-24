@@ -63,7 +63,7 @@ export function DisinfectionHMI() {
       </div>
       <div className="flex gap-3 items-start">
         <div className="flex-1 min-w-0">
-          <svg viewBox="0 0 720 380" width="100%" className="bg-gray-950 rounded border border-gray-800" onClick={handleSvgClick}>
+          <svg viewBox="0 0 720 320" width="100%" className="bg-gray-950 rounded border border-gray-800 max-h-[58vh]" onClick={handleSvgClick}>
             <style>{`text[font-size="11"],tspan[font-size="11"]{font-size:11px}text[font-size="12"]{font-size:12px}text[font-size="13"]{font-size:13px}text[font-size="14"]{font-size:14px}`}</style>
             {/* Inlet */}
             <text x="10" y="165" fill="#4b5563" fontSize="13" fontFamily="monospace">FROM</text>
@@ -92,17 +92,17 @@ export function DisinfectionHMI() {
 
             {/* Cl2 residual at plant — below pipe to avoid overlap with chem feeds */}
             <AnalyzerTag tag="DIS-AIT-001" value={disinfection.chlorineResidualPlant} unit="mg/L"
-              label="Plant Cl2 Res." id="hmi-chlorineResidual" x={310} y={255}
+              label="Plant Cl2 Res." id="hmi-chlorineResidual" x={310} y={235}
               alarm={getAlarm('DIS-AIT-001')} />
-            <SvgInfo x={367} y={237} onClick={() => setInfoKey('plantChlorineResidual')} />
+            <SvgInfo x={367} y={217} onClick={() => setInfoKey('plantChlorineResidual')} />
 
             {/* Clearwell */}
             <Tank
               id="hmi-clearwell"
-              level={(disinfection.clearwellLevel / 20) * 100}
-              maxLevel={20}
+              level={(disinfection.clearwellLevel / 6.1) * 100}
+              maxLevel={6.1}
               currentLevel={disinfection.clearwellLevel}
-              unit="ft"
+              unit="m"
               label="CLEARWELL"
               x={420}
               y={110}
@@ -124,9 +124,9 @@ export function DisinfectionHMI() {
 
             {/* Dist Cl2 — vertically aligned with Finished pH */}
             <AnalyzerTag tag="DIS-AIT-002" value={disinfection.chlorineResidualDist} unit="mg/L"
-              label="Dist Cl2 Res." id="hmi-distChlorine" x={583} y={280}
+              label="Dist Cl2 Res." id="hmi-distChlorine" x={583} y={235}
               alarm={getAlarm('DIS-AIT-002')} />
-            <SvgInfo x={640} y={262} onClick={() => setInfoKey('distChlorineResidual')} />
+            <SvgInfo x={640} y={217} onClick={() => setInfoKey('distChlorineResidual')} />
           </svg>
         </div>
 

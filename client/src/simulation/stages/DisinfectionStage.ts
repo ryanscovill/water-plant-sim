@@ -1,5 +1,5 @@
 import type { DisinfectionState, SedimentationState, CoagulationState, IntakeState } from '../ProcessState';
-import { clamp, firstOrderLag, accumulateRunHours, rampDoseRate } from '../utils';
+import { clamp, firstOrderLag, lagFactor, accumulateRunHours, rampDoseRate } from '../utils';
 
 // Chlorine utilisation efficiency (fraction of applied dose becoming residual)
 const CL_DOSE_EFFICIENCY = 0.85;
@@ -30,29 +30,32 @@ export class DisinfectionStage {
     next.chlorinePumpStatus.runHours = accumulateRunHours(next.chlorinePumpStatus.runHours, next.chlorinePumpStatus.running, next.chlorinePumpStatus.fault, dt);
     next.uvSystemStatus.runHours = accumulateRunHours(next.uvSystemStatus.runHours, next.uvSystemStatus.running, next.uvSystemStatus.fault, dt);
 
-    // Chlorine dose rate ramps toward setpoint when pump runs; decays slowly when off.
-    next.chlorineDoseRate = rampDoseRate(next.chlorineDoseRate, next.chlorineDoseSetpoint, next.chlorinePumpStatus.running, next.chlorinePumpStatus.fault, 0.1, 0.95, 0, 10);
+    // Chlorine dose: ramp τ = 5 s (pump response), decay τ = 10 s (residual line drain).
+    next.chlorineDoseRate = rampDoseRate(next.chlorineDoseRate, next.chlorineDoseSetpoint, next.chlorinePumpStatus.running, next.chlorinePumpStatus.fault, lagFactor(dt, 5), Math.exp(-dt / 10), 0, 10);
 
     // Plant residual: dose efficiency minus turbidity demand (high turbidity exerts Cl₂ demand).
     const targetClResidual = next.chlorineDoseRate * CL_DOSE_EFFICIENCY
       - sed.filterEffluentTurbidity * CL_TURBIDITY_DEMAND;
-    next.chlorineResidualPlant = clamp(firstOrderLag(next.chlorineResidualPlant, targetClResidual, 0.05), 0, 5);
+    // τ = 10 s — chlorine analyser response / contactor mixing
+    next.chlorineResidualPlant = clamp(firstOrderLag(next.chlorineResidualPlant, targetClResidual, lagFactor(dt, 10)), 0, 5);
 
     // Distribution residual: first-order decay from plant (scales with dt so simSpeed-independent).
     const targetDistResidual = next.chlorineResidualPlant * Math.exp(-CL_DIST_DECAY_K * dt);
-    next.chlorineResidualDist = clamp(firstOrderLag(next.chlorineResidualDist, targetDistResidual, 0.03), 0, 4);
+    // τ = 16 s — distribution analyser response / pipe transit lag
+    next.chlorineResidualDist = clamp(firstOrderLag(next.chlorineResidualDist, targetDistResidual, lagFactor(dt, 16)), 0, 4);
 
     // Finished-water pH: starts from source water pH, alum depresses it, caustic/lime raises it.
     // Default: 7.2 (sourcePH) − 18×0.02 + 2.8×0.2 = 7.2 − 0.36 + 0.56 = 7.40 S.U.
     const sourcePH = intake?.sourcePH ?? DEFAULT_SOURCE_PH;
     const alumDose = coag?.alumDoseRate ?? 18;
     const targetPH = sourcePH - alumDose * ALUM_PH_DEPRESSION + (coag?.pHAdjustDoseRate ?? 2.8) * PH_ADJUST_FACTOR;
-    next.finishedWaterPH = clamp(firstOrderLag(next.finishedWaterPH, targetPH, 0.02), 6.0, 9.0);
+    // τ = 25 s — pH analyser response / clearwell mixing lag
+    next.finishedWaterPH = clamp(firstOrderLag(next.finishedWaterPH, targetPH, lagFactor(dt, 25)), 6.0, 9.0);
 
     // Clearwell level: inflow stops during backwash (filter not producing filtered water).
-    const inflow = sed.backwashInProgress ? 0 : 0.02;
-    const outflow = 0.015;
-    next.clearwellLevel = clamp(next.clearwellLevel + (inflow - outflow) * dt, 0, 20);
+    const inflow = sed.backwashInProgress ? 0 : 0.006; // m/s
+    const outflow = 0.0046; // m/s
+    next.clearwellLevel = clamp(next.clearwellLevel + (inflow - outflow) * dt, 0, 6.1);
 
     return next;
   }

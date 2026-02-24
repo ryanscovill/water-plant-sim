@@ -17,7 +17,7 @@ export function StatusBar() {
       <span>pH: <span className="text-purple-400">{state.disinfection.finishedWaterPH.toFixed(2)}</span></span>
       <span>Plant Cl₂: <span className="text-cyan-400">{state.disinfection.chlorineResidualPlant.toFixed(2)} mg/L</span></span>
       <span>Dist Cl₂: <span className="text-cyan-300">{state.disinfection.chlorineResidualDist.toFixed(2)} mg/L</span></span>
-      <span>CW Level: <span className="text-blue-400">{state.disinfection.clearwellLevel.toFixed(1)} ft</span></span>
+      <span>CW Level: <span className="text-blue-400">{state.disinfection.clearwellLevel.toFixed(2)} m</span></span>
       <span>Filter HL: <span className="text-blue-400">{state.sedimentation.filterHeadLoss.toFixed(1)} ft</span></span>
       {state.sedimentation.backwashInProgress && (
         <span className="text-cyan-300 animate-slow-flash">BACKWASH IN PROGRESS</span>

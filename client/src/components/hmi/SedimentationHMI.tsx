@@ -57,7 +57,7 @@ export function SedimentationHMI() {
       </div>
       <div className="flex gap-3 items-start">
         <div className="flex-1 min-w-0">
-          <svg viewBox="0 0 720 340" width="100%" className="bg-gray-950 rounded border border-gray-800" onClick={handleSvgClick}>
+          <svg viewBox="0 0 720 340" width="100%" className="bg-gray-950 rounded border border-gray-800 max-h-[58vh]" onClick={handleSvgClick}>
             <style>{`text[font-size="11"],tspan[font-size="11"]{font-size:11px}text[font-size="12"]{font-size:12px}text[font-size="13"]{font-size:13px}text[font-size="14"]{font-size:14px}`}</style>
             {/* Inlet */}
             <text x="10" y="85" fill="#4b5563" fontSize="13" fontFamily="monospace">FROM</text>

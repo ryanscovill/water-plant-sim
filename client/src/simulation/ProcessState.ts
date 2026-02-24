@@ -59,7 +59,7 @@ export interface DisinfectionState {
   chlorineResidualPlant: number; // mg/L
   chlorineResidualDist: number;  // mg/L
   finishedWaterPH: number;
-  clearwellLevel: number;      // feet (0-20)
+  clearwellLevel: number;      // metres (0-6.1)
   chlorinePumpStatus: EquipmentStatus;
   uvSystemStatus: EquipmentStatus;
 }
@@ -140,7 +140,7 @@ export function createInitialState(): ProcessState {
       chlorineResidualPlant: 1.7,
       chlorineResidualDist: 1.5,
       finishedWaterPH: 7.4,
-      clearwellLevel: 14.0,
+      clearwellLevel: 4.3,
       chlorinePumpStatus: { running: true, fault: false, speed: 65, runHours: 4200 },
       uvSystemStatus: { running: true, fault: false, speed: 100, runHours: 6100 },
     },

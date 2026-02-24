@@ -1,5 +1,5 @@
 import type { CoagulationState, IntakeState } from '../ProcessState';
-import { clamp, firstOrderLag, accumulateRunHours, rampDoseRate } from '../utils';
+import { clamp, firstOrderLag, lagFactor, accumulateRunHours, rampDoseRate } from '../utils';
 
 // Alum dose-to-turbidity ratio constant (dimensionless)
 const ALUM_TURBIDITY_RATIO = 0.12;
@@ -24,11 +24,11 @@ export class CoagulationStage {
     next.slowMixerStatus.runHours = accumulateRunHours(next.slowMixerStatus.runHours, next.slowMixerStatus.running, next.slowMixerStatus.fault, dt);
     next.pHAdjustPumpStatus.runHours = accumulateRunHours(next.pHAdjustPumpStatus.runHours, next.pHAdjustPumpStatus.running, next.pHAdjustPumpStatus.fault, dt);
 
-    // Alum dose ramps toward setpoint when pump runs; decays when off (τ_decay = 10 ticks).
-    next.alumDoseRate = rampDoseRate(next.alumDoseRate, next.alumDoseSetpoint, next.alumPumpStatus.running, next.alumPumpStatus.fault, 0.1, 0.9, 0, 80);
+    // Alum dose: ramp τ = 5 s (pump response), decay τ = 5 s (line drains quickly).
+    next.alumDoseRate = rampDoseRate(next.alumDoseRate, next.alumDoseSetpoint, next.alumPumpStatus.running, next.alumPumpStatus.fault, lagFactor(dt, 5), Math.exp(-dt / 5), 0, 80);
 
-    // pH adjust (caustic/lime) dose ramps toward setpoint; decays slowly when pump is off.
-    next.pHAdjustDoseRate = rampDoseRate(next.pHAdjustDoseRate, next.pHAdjustDoseSetpoint, next.pHAdjustPumpStatus.running, next.pHAdjustPumpStatus.fault, 0.1, 0.95, 0, 10);
+    // pH adjust: ramp τ = 5 s, decay τ = 10 s (caustic line drains more slowly).
+    next.pHAdjustDoseRate = rampDoseRate(next.pHAdjustDoseRate, next.pHAdjustDoseSetpoint, next.pHAdjustPumpStatus.running, next.pHAdjustPumpStatus.fault, lagFactor(dt, 5), Math.exp(-dt / 10), 0, 10);
 
     // Mixing energy boosts coagulation (rapid mix has larger effect than slow mix).
     const mixingFactor =
@@ -46,16 +46,17 @@ export class CoagulationStage {
       0, 1,
     );
     const targetFlocTurb = (intake.rawTurbidity * (1 - MAX_COAG_REMOVAL * alumEffectiveness)) / mixingFactor;
-    next.flocBasinTurbidity = clamp(firstOrderLag(next.flocBasinTurbidity, targetFlocTurb, 0.02), 0.5, 600);
+    // τ = 25 s — flocculation basin hydraulic retention / mixing inertia
+    next.flocBasinTurbidity = clamp(firstOrderLag(next.flocBasinTurbidity, targetFlocTurb, lagFactor(dt, 25)), 0.5, 600);
 
-    // Mixer speeds track target RPM with first-order lag; coast down when stopped.
+    // Mixer speeds: spin-up τ = 5 s, coast-down τ = 5 s.
     next.rapidMixerSpeed = next.rapidMixerStatus.running
-      ? clamp(firstOrderLag(next.rapidMixerSpeed, RAPID_MIX_TARGET_RPM, 0.1), 0, 200)
-      : next.rapidMixerSpeed * 0.9;
+      ? clamp(firstOrderLag(next.rapidMixerSpeed, RAPID_MIX_TARGET_RPM, lagFactor(dt, 5)), 0, 200)
+      : next.rapidMixerSpeed * Math.exp(-dt / 5);
 
     next.slowMixerSpeed = next.slowMixerStatus.running
-      ? clamp(firstOrderLag(next.slowMixerSpeed, SLOW_MIX_TARGET_RPM, 0.1), 0, 100)
-      : next.slowMixerSpeed * 0.9;
+      ? clamp(firstOrderLag(next.slowMixerSpeed, SLOW_MIX_TARGET_RPM, lagFactor(dt, 5)), 0, 100)
+      : next.slowMixerSpeed * Math.exp(-dt / 5);
 
     return next;
   }
