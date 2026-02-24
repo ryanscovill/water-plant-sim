@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type React from 'react';
-import { Info } from 'lucide-react';
+import { Info, FlaskConical } from 'lucide-react';
 import { useSimulationStore } from '../../store/useSimulationStore';
 import { useAlarmStore } from '../../store/useAlarmStore';
 import { Mixer } from './svg/Mixer';
@@ -11,6 +11,7 @@ import { EquipmentPanel, EmptyPanel, UnsavedChangesDialog } from '../equipment/E
 import { PumpControl } from '../equipment/PumpControl';
 import { ChemDoseControl } from '../equipment/ChemDoseControl';
 import { InfoModal } from '../common/InfoModal';
+import { JarTestModal } from './JarTestModal';
 import { PlantStagesGrid } from './OverviewHMI';
 
 function SvgInfo({ x, y, onClick }: { x: number; y: number; onClick: () => void }) {
@@ -29,6 +30,7 @@ export function CoagFloccHMI() {
   const [infoKey, setInfoKey] = useState<string | null>(null);
   const [isDirty, setIsDirty] = useState(false);
   const [pendingSelect, setPendingSelect] = useState<string | null | undefined>(undefined);
+  const [showJarTest, setShowJarTest] = useState(false);
 
   if (!state) return <div className="text-gray-500">Connecting...</div>;
 
@@ -149,6 +151,15 @@ export function CoagFloccHMI() {
                   currentActual={coagulation.alumDoseRate} label="Alum Dose" unit="mg/L" min={0} max={80} step={0.5}
                   onDirtyChange={setIsDirty} />
               </div>
+              <div className="mt-3">
+                <button
+                  onClick={() => setShowJarTest(true)}
+                  className="w-full py-2 bg-purple-950/60 hover:bg-purple-900/70 border border-purple-800 hover:border-purple-600 text-purple-300 hover:text-purple-200 text-xs font-mono rounded flex items-center justify-center gap-1.5 cursor-pointer transition-colors"
+                >
+                  <FlaskConical size={13} />
+                  JAR TEST
+                </button>
+              </div>
             </EquipmentPanel>
           )}
           {selected === 'pHAdjust' && (
@@ -166,6 +177,14 @@ export function CoagFloccHMI() {
       </div>
 
       {infoKey && <InfoModal infoKey={infoKey} onClose={() => setInfoKey(null)} />}
+      {showJarTest && (
+        <JarTestModal
+          rawTurbidity={state.intake.rawTurbidity}
+          sourceTemperature={state.intake.sourceTemperature}
+          currentSetpoint={coagulation.alumDoseSetpoint}
+          onClose={() => setShowJarTest(false)}
+        />
+      )}
       {pendingSelect !== undefined && (
         <UnsavedChangesDialog
           onDiscard={() => { setSelected(pendingSelect ?? null); setIsDirty(false); setPendingSelect(undefined); }}

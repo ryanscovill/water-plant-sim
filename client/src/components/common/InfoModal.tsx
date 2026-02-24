@@ -1,5 +1,7 @@
+import { useEffect } from 'react';
 import { X, BookOpen, AlertCircle, Settings, FlaskConical, Database, ExternalLink } from 'lucide-react';
 import { hmiInfo, type HmiInfo } from '../../data/hmiInfo';
+import { getEngine } from '../../simulation/engine';
 
 interface InfoModalProps {
   infoKey: string;
@@ -16,6 +18,12 @@ const categoryConfig: Record<HmiInfo['category'], { color: string; bg: string; i
 
 export function InfoModal({ infoKey, onClose }: InfoModalProps) {
   const info = hmiInfo[infoKey];
+
+  useEffect(() => {
+    getEngine().pause();
+    return () => { getEngine().resume(); };
+  }, []);
+
   if (!info) return null;
 
   const cat = categoryConfig[info.category];

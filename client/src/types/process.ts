@@ -59,6 +59,7 @@ export interface DisinfectionState {
   chlorineResidualDist: number;
   finishedWaterPH: number;
   clearwellLevel: number;
+  distributionDemand: number;
   chlorinePumpStatus: EquipmentStatus;
   uvSystemStatus: EquipmentStatus;
 }

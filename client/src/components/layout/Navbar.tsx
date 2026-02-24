@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Wifi, WifiOff, RotateCcw } from 'lucide-react';
+import { Wifi, WifiOff, RotateCcw, Pause, Play } from 'lucide-react';
 import { useSimulationStore } from '../../store/useSimulationStore';
 import { useAlarmStore } from '../../store/useAlarmStore';
 import { getEngine } from '../../simulation/engine';
@@ -64,11 +64,20 @@ export function Navbar() {
       {/* Sim speed */}
       <div className="flex items-center gap-1 text-xs text-gray-400">
         <span>SIM:</span>
+        <button
+          onClick={() => state?.running ? getEngine().pause() : getEngine().resume()}
+          title={state?.running ? 'Pause simulation' : 'Resume simulation'}
+          className={`flex items-center gap-1 px-2 py-0.5 rounded text-xs font-mono cursor-pointer ${!state?.running ? 'bg-amber-700 text-amber-100 hover:bg-amber-600' : 'bg-gray-800 text-gray-400 hover:bg-gray-700'}`}
+        >
+          {state?.running ? <Pause size={10} /> : <Play size={10} />}
+          {state?.running ? 'PAUSE' : 'PAUSED'}
+        </button>
         {[1, 10, 60].map((s) => (
           <button
             key={s}
             onClick={() => changeSpeed(s)}
-            className={`px-2 py-0.5 rounded text-xs font-mono cursor-pointer ${state?.simSpeed === s ? 'bg-blue-700 text-white' : 'bg-gray-800 text-gray-400 hover:bg-gray-700'}`}
+            disabled={!state?.running}
+            className={`px-2 py-0.5 rounded text-xs font-mono cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed ${state?.simSpeed === s && state?.running ? 'bg-blue-700 text-white' : 'bg-gray-800 text-gray-400 hover:bg-gray-700'}`}
           >
             {s}x
           </button>

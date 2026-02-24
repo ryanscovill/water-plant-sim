@@ -26,6 +26,8 @@
 .animate-rotate-slow { animation: rotate 6s linear infinite; }
 .animate-flow { animation: flow-dash 0.8s linear infinite; }
 
+.sim-paused * { animation-play-state: paused !important; }
+
 body {
   margin: 0;
   background-color: #1a1a2e;

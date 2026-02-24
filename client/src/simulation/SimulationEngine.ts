@@ -58,6 +58,18 @@ export class SimulationEngine {
     }
   }
 
+  pause(): void {
+    this.stop();
+    this.state = { ...this.state, running: false };
+    this.emit('state:update', this.state);
+  }
+
+  resume(): void {
+    this.state = { ...this.state, running: true };
+    this.start();
+    this.emit('state:update', this.state);
+  }
+
   private tick(): void {
     const dt = (config.simulationInterval / 1000) * this.state.simSpeed;
     this.simulatedTime += dt * 1000;
