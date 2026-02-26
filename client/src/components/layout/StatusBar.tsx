@@ -1,7 +1,11 @@
 import { useSimulationStore } from '../../store/useSimulationStore';
 import { useScenarioStore } from '../../store/useScenarioStore';
 
-export function StatusBar() {
+interface StatusBarProps {
+  onOpenWelcome: () => void;
+}
+
+export function StatusBar({ onOpenWelcome }: StatusBarProps) {
   const state = useSimulationStore((s) => s.state);
   const scenarios = useScenarioStore((s) => s.scenarios);
   const activeScenarioId = useScenarioStore((s) => s.activeScenarioId);
@@ -27,6 +31,13 @@ export function StatusBar() {
       )}
       <span className="ml-auto">Speed: {state.simSpeed}x</span>
       <span className="text-yellow-600 font-semibold">⚠ FOR TRAINING PURPOSES ONLY — Data and values may be inaccurate</span>
+      <button
+        onClick={onOpenWelcome}
+        className="ml-2 px-2 py-0.5 rounded border border-gray-700 text-gray-500 hover:text-gray-300 hover:border-gray-500 font-mono text-xs cursor-pointer"
+        title="Welcome Guide"
+      >
+        ?
+      </button>
     </div>
   );
 }

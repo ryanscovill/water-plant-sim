@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { CheckCircle } from 'lucide-react';
 import { Outlet } from 'react-router-dom';
 import { Navbar } from './Navbar';
@@ -10,10 +11,20 @@ import { useTutorialStore } from '../../store/useTutorialStore';
 import { useSimulationStore } from '../../store/useSimulationStore';
 import { useScenarioStore } from '../../store/useScenarioStore';
 import { TutorialOverlay } from '../tutorials/TutorialOverlay';
+import { WelcomeModal } from '../common/WelcomeModal';
+
+const WELCOME_SEEN_KEY = 'scada_welcome_seen';
 
 export function AppShell() {
   useSocket();
   useAlarmSound();
+
+  const [showWelcome, setShowWelcome] = useState(() => localStorage.getItem(WELCOME_SEEN_KEY) !== 'true');
+
+  function handleCloseWelcome() {
+    localStorage.setItem(WELCOME_SEEN_KEY, 'true');
+    setShowWelcome(false);
+  }
 
   const activeTutorial = useTutorialStore((s) => s.activeTutorial);
   const running = useSimulationStore((s) => s.state?.running ?? true);
@@ -31,8 +42,9 @@ export function AppShell() {
           <Outlet />
         </main>
       </div>
-      <StatusBar />
+      <StatusBar onOpenWelcome={() => setShowWelcome(true)} />
       {activeTutorial && <TutorialOverlay />}
+      {showWelcome && <WelcomeModal onClose={handleCloseWelcome} />}
 
       {completedScenarioName && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
