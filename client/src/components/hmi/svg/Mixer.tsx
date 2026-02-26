@@ -31,7 +31,7 @@ export function Mixer({ status, label, id, onClick, x = 0, y = 0, size = 20, sel
       {/* Clickable ring indicator */}
       {onClick && (
         <rect x={-size * 0.6 - 5} y={-size * 0.6 - 5} width={size * 1.2 + 10} height={size * 1.2 + 10}
-          rx="6" fill="transparent" stroke="#22d3ee" strokeWidth="1.5" strokeDasharray="5,3" className="interactive-ring" />
+          rx="6" fill="transparent" stroke="#22d3ee" strokeWidth="2.5" strokeDasharray="5,3" className="interactive-ring" />
       )}
       {/* Motor housing */}
       <rect x={-size * 0.6} y={-size * 0.6} width={size * 1.2} height={size * 1.2} rx="4"

@@ -67,7 +67,7 @@ export function IntakeHMI() {
             {/* Source — clickable to open source water quality panel */}
             <g data-interactive="true" data-selected={selected === 'source' ? 'true' : undefined} style={{ cursor: 'pointer' }} onClick={() => setSelected('source')}>
               <rect x="8" y="140" width="62" height="36" rx="4" fill="transparent" stroke="#22d3ee"
-                strokeWidth="1.5" strokeDasharray="5,3" className="interactive-ring" />
+                strokeWidth="2.5" strokeDasharray="5,3" className="interactive-ring" />
               <text x="39" y="155" textAnchor="middle" fill="#4b5563" fontSize="14" fontFamily="monospace">RIVER</text>
               <text x="39" y="169" textAnchor="middle" fill="#4b5563" fontSize="14" fontFamily="monospace">SOURCE</text>
             </g>
@@ -79,12 +79,14 @@ export function IntakeHMI() {
             {/* Split: up to P-101, down to P-102 */}
             <Pipe x1="270" y1="160" x2="270" y2="100" flowing={intake.intakePump1.running} />
             <Pipe x1="270" y1="160" x2="270" y2="220" flowing={intake.intakePump2.running} />
-            <Pipe x1="270" y1="100" x2="277" y2="100" flowing={intake.intakePump1.running} />
-            <Pipe x1="270" y1="220" x2="277" y2="220" flowing={intake.intakePump2.running} />
+            <Pipe x1="270" y1="100" x2="302" y2="100" flowing={intake.intakePump1.running} />
+            <Pipe x1="270" y1="220" x2="302" y2="220" flowing={intake.intakePump2.running} />
             {/* Rejoin after pumps */}
-            <Pipe x1="313" y1="100" x2="313" y2="160" flowing={intake.intakePump1.running} />
-            <Pipe x1="313" y1="220" x2="313" y2="160" flowing={intake.intakePump2.running} />
-            <Pipe x1="313" y1="160" x2="397" y2="160" flowing={intake.intakePump1.running || intake.intakePump2.running} />
+            <Pipe x1="338" y1="100" x2="363" y2="100" flowing={intake.intakePump1.running} />
+            <Pipe x1="338" y1="220" x2="363" y2="220" flowing={intake.intakePump2.running} />
+            <Pipe x1="363" y1="100" x2="363" y2="160" flowing={intake.intakePump1.running} />
+            <Pipe x1="363" y1="220" x2="363" y2="160" flowing={intake.intakePump2.running} />
+            <Pipe x1="363" y1="160" x2="397" y2="160" flowing={intake.intakePump1.running || intake.intakePump2.running} />
             <Pipe x1="443" y1="160" x2="470" y2="160" flowing={intake.rawWaterFlow > 0.5} />
             <Pipe x1="520" y1="160" x2="660" y2="160" flowing={intake.rawWaterFlow > 0.5} />
 
@@ -105,7 +107,7 @@ export function IntakeHMI() {
             {/* Inlet valve */}
             <Valve
               status={intake.intakeValve}
-              label="XV-101"
+              label="Intake Valve"
               id="hmi-intakeValve"
               onClick={() => setSelected('intakeValve')}
               x={215}
@@ -117,36 +119,36 @@ export function IntakeHMI() {
             {/* Pumps */}
             <Pump
               status={intake.intakePump1}
-              label="P-101"
+              label="Pump 1"
               id="hmi-intakePump1"
               onClick={() => setSelected('pump1')}
-              x={295}
+              x={320}
               y={100}
               selected={selected === 'pump1'}
             />
-            <SvgInfo x={314} y={80} onClick={() => setInfoKey('intakePump1')} />
+            <SvgInfo x={339} y={80} onClick={() => setInfoKey('intakePump1')} />
             <Pump
               status={intake.intakePump2}
-              label="P-102"
+              label="Pump 2"
               id="hmi-intakePump2"
               onClick={() => setSelected('pump2')}
-              x={295}
+              x={320}
               y={220}
               selected={selected === 'pump2'}
             />
-            <SvgInfo x={314} y={200} onClick={() => setInfoKey('intakePump2')} />
+            <SvgInfo x={339} y={200} onClick={() => setInfoKey('intakePump2')} />
 
             {/* Screen diff pressure */}
             <g id="hmi-screenDP" onClick={() => setSelected('screen')} style={{ cursor: 'pointer' }} data-interactive="true" data-selected={selected === 'screen' ? 'true' : undefined}>
-              <rect x="391" y="127" width="58" height="34" rx="5" fill="transparent" stroke="#22d3ee"
-                strokeWidth="1.5" strokeDasharray="5,3" className="interactive-ring" />
-              <rect x="394" y="130" width="52" height="28" rx="3" fill="#111827" stroke={intake.screenDiffPressure > 5 ? '#f59e0b' : '#374151'} strokeWidth="1.5" />
-              <text x="420" y="142" textAnchor="middle" fill="#6b7280" fontSize="11" fontFamily="monospace">SCR</text>
+              <rect x="385" y="127" width="70" height="34" rx="5" fill="transparent" stroke="#22d3ee"
+                strokeWidth="2.5" strokeDasharray="5,3" className="interactive-ring" />
+              <rect x="388" y="130" width="64" height="28" rx="3" fill="#111827" stroke={intake.screenDiffPressure > 5 ? '#f59e0b' : '#374151'} strokeWidth="1.5" />
+              <text x="420" y="142" textAnchor="middle" fill="#6b7280" fontSize="11" fontFamily="monospace">Screen</text>
               <text x="420" y="153" textAnchor="middle" fill={intake.screenDiffPressure > 5 ? '#f59e0b' : '#9ca3af'} fontSize="11" fontFamily="monospace">
                 {intake.screenDiffPressure.toFixed(1)} PSI
               </text>
             </g>
-            <SvgInfo x={440} y={130} onClick={() => setInfoKey('intakeScreen')} />
+            <SvgInfo x={450} y={130} onClick={() => setInfoKey('intakeScreen')} />
 
             {/* Flow meter */}
             <FlowMeter

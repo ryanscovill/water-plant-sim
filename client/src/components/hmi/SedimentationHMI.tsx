@@ -73,22 +73,22 @@ export function SedimentationHMI() {
               sludgeLevel={sedimentation.sludgeBlanketLevel} x={190} y={75} r={40} />
             <SvgInfo x={227} y={62} onClick={() => setInfoKey('clarifier')} />
 
-            {/* Clarifier turbidity — centered under clarifier */}
-            <AnalyzerTag tag="SED-AIT-001" value={sedimentation.clarifierTurbidity} unit="NTU"
-              label="Clarifier Turb" id="hmi-clarifierTurb" x={190} y={195}
-              alarm={getAlarm('SED-AIT-001')} />
-            <SvgInfo x={247} y={177} onClick={() => setInfoKey('clarifierTurbidity')} />
-
             {/* Sludge blanket — centered under clarifier */}
             <AnalyzerTag tag="SED-LIT-001" value={sedimentation.sludgeBlanketLevel} unit="ft"
-              label="Sludge Blanket" id="hmi-sludgeLevel" x={190} y={270}
-              alarm={getAlarm('SED-LIT-001')} />
-            <SvgInfo x={247} y={252} onClick={() => setInfoKey('sludgeBlanket')} />
+              label="Sludge Blanket" id="hmi-sludgeLevel" x={190} y={195}
+              alarm={getAlarm('SED-LIT-001')} valueColor="#92400e" />
+            <SvgInfo x={247} y={177} onClick={() => setInfoKey('sludgeBlanket')} />
+
+            {/* Clarifier turbidity — centered under clarifier */}
+            <AnalyzerTag tag="SED-AIT-001" value={sedimentation.clarifierTurbidity} unit="NTU"
+              label="Clarifier Turb" id="hmi-clarifierTurb" x={190} y={270}
+              alarm={getAlarm('SED-AIT-001')} />
+            <SvgInfo x={247} y={252} onClick={() => setInfoKey('clarifierTurbidity')} />
 
             {/* Sludge pump */}
             <g data-interactive="true" data-selected={selected === 'sludgePump' ? 'true' : undefined} style={{ cursor: 'pointer' }} onClick={() => setSelected('sludgePump')}>
               <rect x="283" y="207" width="94" height="46" rx="5" fill="transparent" stroke="#22d3ee"
-                strokeWidth="1.5" strokeDasharray="5,3" className="interactive-ring" />
+                strokeWidth="2.5" strokeDasharray="5,3" className="interactive-ring" />
               <text x="330" y="221" fill="#6b7280" fontSize="12" fontFamily="monospace" textAnchor="middle">SLUDGE PUMP</text>
               <rect x="286" y="225" width="88" height="22" rx="3" fill="#111827"
                 stroke={sedimentation.sludgePumpStatus.fault ? '#dc2626' : sedimentation.sludgePumpStatus.running ? '#16a34a' : '#6b7280'} strokeWidth="1.5" />
@@ -117,7 +117,7 @@ export function SedimentationHMI() {
 
             {/* Filter run time — right of filter, above outlet pipe */}
             <g id="hmi-filterRunTime">
-              <rect x="512" y="50" width="80" height="32" rx="3" fill="#111827" stroke="#374151" strokeWidth="1" />
+              <rect x="512" y="50" width="80" height="32" rx="3" fill="#111827" />
               <text x="552" y="63" textAnchor="middle" fill="#6b7280" fontSize="11" fontFamily="monospace">Run Time</text>
               <text x="552" y="76" textAnchor="middle" fill="#9ca3af" fontSize="11" fontFamily="monospace">{sedimentation.filterRunTime.toFixed(1)} hrs</text>
             </g>
@@ -126,7 +126,7 @@ export function SedimentationHMI() {
             {!sedimentation.backwashInProgress ? (
               <g id="ctrl-backwash-start" data-interactive="true" style={{ cursor: 'pointer' }} onClick={() => setSelected('filter')}>
                 <rect x="512" y="88" width="76" height="28" rx="5" fill="transparent" stroke="#2563eb"
-                  strokeWidth="1.5" strokeDasharray="5,3" className="interactive-ring" />
+                  strokeWidth="2.5" strokeDasharray="5,3" className="interactive-ring" />
                 <rect x="515" y="91" width="70" height="22" rx="3" fill="#1e3a5f" stroke="#2563eb" strokeWidth="1.5" />
                 <text x="550" y="106" textAnchor="middle" fill="#60a5fa" fontSize="12" fontFamily="monospace">
                   BACKWASH
@@ -135,7 +135,7 @@ export function SedimentationHMI() {
             ) : (
               <g data-interactive="true" style={{ cursor: 'pointer' }} onClick={abortBackwash}>
                 <rect x="512" y="88" width="76" height="28" rx="5" fill="transparent" stroke="#dc2626"
-                  strokeWidth="1.5" strokeDasharray="5,3" className="interactive-ring" />
+                  strokeWidth="2.5" strokeDasharray="5,3" className="interactive-ring" />
                 <rect x="515" y="91" width="70" height="22" rx="3" fill="#7f1d1d" stroke="#dc2626" strokeWidth="1.5" />
                 <text x="550" y="106" textAnchor="middle" fill="#fca5a5" fontSize="12" fontFamily="monospace">
                   ABORT BW
@@ -149,17 +149,17 @@ export function SedimentationHMI() {
             <text x="685" y="120" fill="#4b5563" fontSize="13" fontFamily="monospace">TO</text>
             <text x="685" y="132" fill="#4b5563" fontSize="13" fontFamily="monospace">DIS.</text>
 
-            {/* Filter effluent — centered under filter, aligned with Clarifier Turb row */}
-            <AnalyzerTag tag="FLT-AIT-001" value={sedimentation.filterEffluentTurbidity} unit="NTU"
-              label="Effluent Turb" id="hmi-filterEffluent" x={470} y={195}
-              alarm={getAlarm('FLT-AIT-001')} decimals={3} />
-            <SvgInfo x={527} y={177} onClick={() => setInfoKey('filterEffluent')} />
-
-            {/* Filter head loss — centered under filter, aligned with Sludge Blanket row */}
+            {/* Filter head loss — centered under filter, aligned with Clarifier Turb row */}
             <AnalyzerTag tag="FLT-PDT-001" value={sedimentation.filterHeadLoss} unit="ft"
-              label="Filter Head Loss" id="hmi-filterHeadLoss" x={470} y={270}
+              label="Filter Head Loss" id="hmi-filterHeadLoss" x={470} y={195}
               alarm={getAlarm('FLT-PDT-001')} decimals={1} />
-            <SvgInfo x={527} y={252} onClick={() => setInfoKey('filterHeadLoss')} />
+            <SvgInfo x={527} y={177} onClick={() => setInfoKey('filterHeadLoss')} />
+
+            {/* Filter effluent — centered under filter, aligned with Sludge Blanket row */}
+            <AnalyzerTag tag="FLT-AIT-001" value={sedimentation.filterEffluentTurbidity} unit="NTU"
+              label="Effluent Turb" id="hmi-filterEffluent" x={470} y={270}
+              alarm={getAlarm('FLT-AIT-001')} decimals={3} />
+            <SvgInfo x={527} y={252} onClick={() => setInfoKey('filterEffluent')} />
           </svg>
         </div>
 

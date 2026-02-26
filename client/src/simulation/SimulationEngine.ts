@@ -1,5 +1,8 @@
 import { createInitialState } from './ProcessState';
 import type { ProcessState, Alarm } from './ProcessState';
+
+const STORAGE_KEY = 'scada_sim_state';
+const STORAGE_VERSION = 1;
 import { AlarmManager } from './AlarmManager';
 import { IntakeStage } from './stages/IntakeStage';
 import { CoagulationStage } from './stages/CoagulationStage';
@@ -23,8 +26,28 @@ export class SimulationEngine {
   private simulationStartTime: number = this.simulatedTime;
   private listeners: Map<string, Set<(arg: unknown) => void>> = new Map();
 
+  private loadSavedState(): ProcessState | null {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return null;
+      const parsed = JSON.parse(raw) as { version: number; state: ProcessState };
+      if (parsed.version !== STORAGE_VERSION) return null;
+      return { ...parsed.state, alarms: [] };
+    } catch {
+      return null;
+    }
+  }
+
+  private saveState(): void {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ version: STORAGE_VERSION, state: this.state }));
+    } catch {
+      // Ignore: localStorage may be full or unavailable
+    }
+  }
+
   constructor() {
-    this.state = createInitialState();
+    this.state = this.loadSavedState() ?? createInitialState();
     this.alarmManager = new AlarmManager();
     this.intakeStage = new IntakeStage();
     this.coagStage = new CoagulationStage();
@@ -128,6 +151,7 @@ export class SimulationEngine {
     }
 
     this.emit('state:update', this.state);
+    this.saveState();
     for (const alarm of newAlarms) {
       this.emit('alarm:new', alarm);
     }
@@ -187,6 +211,7 @@ export class SimulationEngine {
       description,
     });
     this.emit('state:update', this.state);
+    this.saveState();
   }
 
   private getPumpById(pumpId: string): { running: boolean; speed: number } | null {
@@ -404,6 +429,7 @@ export class SimulationEngine {
   }
 
   reset(): void {
+    localStorage.removeItem(STORAGE_KEY);
     this.state = createInitialState();
     this.alarmManager = new AlarmManager();
     this.historian.clear();

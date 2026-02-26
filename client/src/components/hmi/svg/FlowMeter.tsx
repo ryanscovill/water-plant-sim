@@ -23,10 +23,7 @@ export function FlowMeter({ value, unit, tag, id, x = 0, y = 0, alarm }: FlowMet
       <text x="0" y="3" textAnchor="middle" fill={color} fontSize="11" fontFamily="monospace" className={animClass}>
         FIT
       </text>
-      <text x="0" y="30" textAnchor="middle" fill="#9ca3af" fontSize="12" fontFamily="monospace">
-        {tag}
-      </text>
-      <text x="0" y="42" textAnchor="middle" fill={color} fontSize="13" fontFamily="monospace" fontWeight="bold" className={animClass}>
+      <text x="0" y="36" textAnchor="middle" fill={color} fontSize="13" fontFamily="monospace" fontWeight="bold" className={animClass}>
         {value.toFixed(2)} {unit}
       </text>
     </g>

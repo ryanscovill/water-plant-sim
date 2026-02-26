@@ -26,8 +26,8 @@ function useStages() {
         { label: 'Screen ΔP', value: intake.screenDiffPressure, unit: 'PSI', alarm: getAlarm('INT-PDT-001'), decimals: 1, tag: 'INT-PDT-001' },
       ],
       equipment: [
-        { label: 'P-101', ...intake.intakePump1 },
-        { label: 'P-102', ...intake.intakePump2 },
+        { label: 'Pump 1', ...intake.intakePump1 },
+        { label: 'Pump 2', ...intake.intakePump2 },
       ],
     },
     {

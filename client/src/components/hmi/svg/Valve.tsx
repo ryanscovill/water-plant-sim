@@ -27,7 +27,7 @@ export function Valve({ status, label, id, onClick, x = 0, y = 0, selected }: Va
       {/* Clickable ring indicator */}
       {onClick && (
         <rect x="-19" y="-27" width="38" height="42" rx="4" fill="transparent" stroke="#22d3ee"
-          strokeWidth="1.5" strokeDasharray="5,3" className="interactive-ring" />
+          strokeWidth="2.5" strokeDasharray="5,3" className="interactive-ring" />
       )}
       {/* Valve body - bow-tie shape */}
       <polygon points="-14,-10 14,-10 0,0" fill={color} stroke="#374151" strokeWidth="1.5" />
@@ -41,7 +41,9 @@ export function Valve({ status, label, id, onClick, x = 0, y = 0, selected }: Va
         <line x1="-8" y1="0" x2="8" y2="0" stroke="white" strokeWidth="1.5" strokeDasharray="3,2" />
       )}
       <text x="0" y="22" textAnchor="middle" fill="#9ca3af" fontSize="13" fontFamily="monospace">
-        {label}
+        {label.split(' ').map((word, i) => (
+          <tspan key={i} x="0" dy={i === 0 ? 0 : 14}>{word}</tspan>
+        ))}
       </text>
     </g>
   );

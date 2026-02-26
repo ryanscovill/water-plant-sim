@@ -4,6 +4,7 @@ import { useSimulationStore } from '../../store/useSimulationStore';
 import { useAlarmStore } from '../../store/useAlarmStore';
 import { getEngine } from '../../simulation/engine';
 import { formatTPlus } from '../../utils/formatTPlus';
+import { Tooltip } from '../common/Tooltip';
 
 export function Navbar() {
   const connected = useSimulationStore((s) => s.connected);
@@ -65,32 +66,40 @@ export function Navbar() {
       {/* Sim speed */}
       <div className="flex items-center gap-1 text-xs text-gray-400">
         <span>SIM:</span>
-        <button
-          onClick={() => state?.running ? getEngine().pause() : getEngine().resume()}
-          title={state?.running ? 'Pause simulation' : 'Resume simulation'}
-          className={`flex items-center gap-1 px-2 py-0.5 rounded text-xs font-mono cursor-pointer ${!state?.running ? 'bg-amber-700 text-amber-100 hover:bg-amber-600' : 'bg-gray-800 text-gray-400 hover:bg-gray-700'}`}
-        >
-          {state?.running ? <Pause size={10} /> : <Play size={10} />}
-          {state?.running ? 'PAUSE' : 'PAUSED'}
-        </button>
-        {[1, 10, 60, 600].map((s) => (
+        <Tooltip text={state?.running ? 'Pause simulation' : 'Resume simulation'}>
           <button
-            key={s}
-            onClick={() => changeSpeed(s)}
-            disabled={!state?.running}
-            className={`px-2 py-0.5 rounded text-xs font-mono cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed ${state?.simSpeed === s && state?.running ? 'bg-blue-700 text-white' : 'bg-gray-800 text-gray-400 hover:bg-gray-700'}`}
+            onClick={() => state?.running ? getEngine().pause() : getEngine().resume()}
+            className={`flex items-center gap-1 px-2 py-0.5 rounded text-xs font-mono cursor-pointer ${!state?.running ? 'bg-amber-700 text-amber-100 hover:bg-amber-600' : 'bg-gray-800 text-gray-400 hover:bg-gray-700'}`}
           >
-            {s}x
+            {state?.running ? <Pause size={10} /> : <Play size={10} />}
+            {state?.running ? 'PAUSE' : 'PAUSED'}
           </button>
+        </Tooltip>
+        {([
+          [1,   '1 s real = 1 s sim (real-time)'],
+          [10,  '1 s real = 10 s sim'],
+          [60,  '1 s real = 1 min sim'],
+          [600, '1 s real = 10 min sim'],
+        ] as const).map(([s, tip]) => (
+          <Tooltip key={s} text={tip}>
+            <button
+              onClick={() => changeSpeed(s)}
+              disabled={!state?.running}
+              className={`px-2 py-0.5 rounded text-xs font-mono cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed ${state?.simSpeed === s && state?.running ? 'bg-blue-700 text-white' : 'bg-gray-800 text-gray-400 hover:bg-gray-700'}`}
+            >
+              {s}x
+            </button>
+          </Tooltip>
         ))}
-        <button
-          onClick={() => setShowResetConfirm(true)}
-          title="Reset simulation"
-          className="ml-1 flex items-center gap-1 px-2 py-0.5 rounded text-xs font-mono bg-gray-800 text-gray-400 hover:bg-red-900 hover:text-red-300 cursor-pointer"
-        >
-          <RotateCcw size={11} />
-          RESET
-        </button>
+        <Tooltip text="Reset simulation to initial state">
+          <button
+            onClick={() => setShowResetConfirm(true)}
+            className="ml-1 flex items-center gap-1 px-2 py-0.5 rounded text-xs font-mono bg-gray-800 text-gray-400 hover:bg-red-900 hover:text-red-300 cursor-pointer"
+          >
+            <RotateCcw size={11} />
+            RESET
+          </button>
+        </Tooltip>
       </div>
 
       {/* Active alarms indicator */}

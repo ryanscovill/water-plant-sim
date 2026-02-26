@@ -28,7 +28,7 @@ export function FilterBed({ headLoss, maxHeadLoss = 10, runTime, backwashInProgr
       data-selected={selected ? 'true' : undefined}>
       {/* Filter bed outline */}
       <rect x="-30" y="-40" width="60" height="80" rx="3" fill="#111827"
-        stroke={onClick ? '#22d3ee' : '#374151'} strokeWidth={onClick ? 1.5 : 2}
+        stroke={onClick ? '#22d3ee' : '#374151'} strokeWidth={onClick ? 2.5 : 2}
         strokeDasharray={onClick ? '6,3' : undefined} className={onClick ? 'interactive-ring' : undefined} />
       {/* Media layers */}
       <rect x="-28" y="0" width="56" height="12" fill="#78716c" opacity="0.6" />
@@ -47,12 +47,6 @@ export function FilterBed({ headLoss, maxHeadLoss = 10, runTime, backwashInProgr
       )}
       {/* Labels */}
       <text x="0" y="-48" textAnchor="middle" fill="#9ca3af" fontSize="12" fontFamily="monospace">FILTER</text>
-      <text x="0" y="52" textAnchor="middle" fill={color} fontSize="12" fontFamily="monospace">
-        HL: {headLoss.toFixed(1)} ft
-      </text>
-      <text x="0" y="63" textAnchor="middle" fill="#6b7280" fontSize="12" fontFamily="monospace">
-        RT: {runTime.toFixed(0)}h
-      </text>
       {backwashInProgress && (
         <text x="0" y="74" textAnchor="middle" fill="#22d3ee" fontSize="12" fontFamily="monospace">
           {Math.ceil(backwashTimeRemaining)}s rem

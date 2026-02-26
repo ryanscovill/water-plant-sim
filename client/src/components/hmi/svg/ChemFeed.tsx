@@ -23,7 +23,7 @@ export function ChemFeed({ status, doseRate, unit, label, id, onClick, x = 0, y 
       {/* Clickable ring indicator */}
       {onClick && (
         <rect x="-19" y="-31" width="38" height="55" rx="4" fill="transparent" stroke="#22d3ee"
-          strokeWidth="1.5" strokeDasharray="5,3" className="interactive-ring" />
+          strokeWidth="2.5" strokeDasharray="5,3" className="interactive-ring" />
       )}
       {/* Chemical drum */}
       <ellipse cx="0" cy="-20" rx="14" ry="6" fill={color} stroke="#374151" strokeWidth="1.5" />

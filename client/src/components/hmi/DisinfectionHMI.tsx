@@ -124,10 +124,10 @@ export function DisinfectionHMI() {
             {/* Distribution outlet */}
             <Pipe x1="430" y1="170" x2="600" y2="170" flowing={flowing} />
             <g data-interactive="true" onClick={() => requestSelect('distribution')} style={{ cursor: 'pointer' }}>
+              <rect x="597" y="147" width="82" height="46" rx="5" fill="transparent" stroke="#22d3ee"
+                strokeWidth="2.5" strokeDasharray="5,3" className="interactive-ring" />
               <rect x="600" y="150" width="76" height="40" rx="4"
-                fill={selected === 'distribution' ? '#1e3a5f' : '#0f172a'}
-                stroke={selected === 'distribution' ? '#3b82f6' : '#4b5563'}
-                strokeWidth="1.5" />
+                fill={selected === 'distribution' ? '#1e3a5f' : '#0f172a'} />
               <text x="638" y="166" textAnchor="middle" fill={selected === 'distribution' ? '#93c5fd' : '#9ca3af'} fontSize="11" fontFamily="monospace">DIST.</text>
               <text x="638" y="179" textAnchor="middle" fill={selected === 'distribution' ? '#93c5fd' : '#9ca3af'} fontSize="11" fontFamily="monospace">SYSTEM</text>
             </g>

@@ -31,12 +31,6 @@ export function Clarifier({ turbidity, sludgeLevel, maxSludge = 8, id, x = 0, y 
       <rect x="-8" y="-12" width="16" height={r * 0.8 + 12} fill="#1f2937" stroke="#4b5563" strokeWidth="1" />
       {/* Labels */}
       <text x="0" y={-r * 0.5} textAnchor="middle" fill="#9ca3af" fontSize="12" fontFamily="monospace">CLARIFIER</text>
-      <text x="0" y={r + 20} textAnchor="middle" fill="#6b7280" fontSize="12" fontFamily="monospace">
-        {turbidity.toFixed(1)} NTU
-      </text>
-      <text x="0" y={r + 32} textAnchor="middle" fill="#92400e" fontSize="12" fontFamily="monospace">
-        Sludge: {sludgeLevel.toFixed(1)} ft
-      </text>
     </g>
   );
 }
