@@ -10,7 +10,7 @@ import { AnalyzerTag } from './svg/AnalyzerTag';
 import { EquipmentPanel, EmptyPanel } from '../equipment/EquipmentPanel';
 import { PumpControl } from '../equipment/PumpControl';
 import { InfoModal } from '../common/InfoModal';
-import { PlantStagesGrid } from './OverviewHMI';
+import { PlantStagesGrid } from './PlantStagesGrid';
 import { getEngine } from '../../simulation/engine';
 
 function SvgInfo({ x, y, onClick }: { x: number; y: number; onClick: () => void }) {

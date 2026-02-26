@@ -14,7 +14,7 @@ import { PumpControl } from '../equipment/PumpControl';
 import { ValveControl } from '../equipment/ValveControl';
 import { SourceWaterControl } from '../equipment/SourceWaterControl';
 import { InfoModal } from '../common/InfoModal';
-import { PlantStagesGrid } from './OverviewHMI';
+import { PlantStagesGrid } from './PlantStagesGrid';
 import { getEngine } from '../../simulation/engine';
 
 function SvgInfo({ x, y, onClick }: { x: number; y: number; onClick: () => void }) {

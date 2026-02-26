@@ -81,8 +81,6 @@ function useStages() {
   ] as const;
 }
 
-// ── Shared child component ────────────────────────────────────────────────────
-
 export function PlantStagesGrid({ activeStage }: { activeStage?: string }) {
   const stages = useStages();
   const navigate = useNavigate();
@@ -130,52 +128,6 @@ export function PlantStagesGrid({ activeStage }: { activeStage?: string }) {
           </div>
         </div>
       ))}
-    </div>
-  );
-}
-
-// ── Full overview page (dashboard) ───────────────────────────────────────────
-
-export function OverviewHMI() {
-  const alarms = useAlarmStore((s) => s.alarms);
-  const activeAlarms = alarms.filter((a) => a.active);
-
-  return (
-    <div className="space-y-4">
-      <h2 className="text-gray-300 font-bold text-sm font-mono">PLANT OVERVIEW</h2>
-
-      <div className="flex items-center gap-2 text-xs text-gray-400 font-mono">
-        <span>RIVER</span>
-        <span>→→→</span>
-        <span>INTAKE</span>
-        <span>→→→</span>
-        <span>COAG/FLOCC</span>
-        <span>→→→</span>
-        <span>SEDIM/FILT</span>
-        <span>→→→</span>
-        <span>DISINFECTION</span>
-        <span>→→→</span>
-        <span>DISTRIBUTION</span>
-      </div>
-
-      <PlantStagesGrid />
-
-      {activeAlarms.length > 0 && (
-        <div className="bg-red-950/30 border border-red-800 rounded-lg p-3">
-          <div className="text-red-400 font-bold text-xs mb-2 font-mono">ACTIVE ALARMS</div>
-          <div className="space-y-1">
-            {activeAlarms.slice(0, 5).map((alarm) => (
-              <div key={alarm.id} className="flex items-center gap-2 text-xs font-mono">
-                <span className={`font-bold ${alarm.priority === 'CRITICAL' ? 'text-red-400' : alarm.priority === 'HIGH' ? 'text-amber-400' : 'text-yellow-300'}`}>
-                  [{alarm.condition}]
-                </span>
-                <span className="text-gray-300">{alarm.description}</span>
-                <span className="text-gray-500 ml-auto">{alarm.value.toFixed(2)}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
     </div>
   );
 }

@@ -68,7 +68,7 @@ async function spotlightTargets(page: Page, id: string): Promise<boolean> {
 //   Step 5  hmi-alumDose clickAdv      → click #hmi-alumDose
 //  (Step 6  waitFor Cl₂ pump running   → auto-advances immediately)
 //   Step 7  nav-trends spotlight       → click #nav-trends
-//   Step 8  nav-overview, last step    → click Finish
+//   Step 8  nav-intake, last step      → click Finish
 
 test.describe('Tutorial: Plant Startup Procedure', () => {
   test.beforeEach(async ({ page }) => {
@@ -241,16 +241,16 @@ test.describe('Tutorial: Plant Startup Procedure', () => {
     await expect(page.getByRole('button', { name: 'Finish' })).toBeVisible();
   });
 
-  test('step 8 instruction mentions Overview screen', async ({ page }) => {
+  test('step 8 instruction mentions Intake screen', async ({ page }) => {
     await startTutorialByTitle(page, 'Plant Startup Procedure');
     await goTo(page, 8);
-    await expect(overlay(page)).toContainText('Overview');
+    await expect(overlay(page)).toContainText('Intake screen');
   });
 
-  test('step 8 spotlights nav-overview', async ({ page }) => {
+  test('step 8 spotlights nav-intake', async ({ page }) => {
     await startTutorialByTitle(page, 'Plant Startup Procedure');
     await goTo(page, 8);
-    expect(await spotlightTargets(page, 'nav-overview')).toBe(true);
+    expect(await spotlightTargets(page, 'nav-intake')).toBe(true);
   });
 
   test('clicking Finish on last step shows Tutorial Complete screen', async ({ page }) => {

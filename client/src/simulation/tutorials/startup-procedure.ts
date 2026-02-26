@@ -53,9 +53,9 @@ export const startupProcedure: TutorialDefinition = {
     },
     {
       id: 'step-8',
-      instruction: 'Excellent! Plant startup is complete. All systems are running normally. You can now monitor the process from the Overview screen.',
-      spotlight: 'nav-overview',
-      hint: 'Click "Overview" in the left navigation menu.',
+      instruction: 'Excellent! Plant startup is complete. All systems are running normally. You can now monitor the process from the Intake screen.',
+      spotlight: 'nav-intake',
+      hint: 'Click "Intake" in the left navigation menu.',
     },
   ],
 };

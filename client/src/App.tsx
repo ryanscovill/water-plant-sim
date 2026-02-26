@@ -1,6 +1,5 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AppShell } from './components/layout/AppShell';
-import { DashboardPage } from './pages/DashboardPage';
 import { IntakePage } from './pages/IntakePage';
 import { CoagFloccPage } from './pages/CoagFloccPage';
 import { SedimentationPage } from './pages/SedimentationPage';
@@ -17,7 +16,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route element={<AppShell />}>
-          <Route path="/" element={<DashboardPage />} />
+          <Route path="/" element={<Navigate to="/intake" replace />} />
           <Route path="/intake" element={<IntakePage />} />
           <Route path="/coagulation" element={<CoagFloccPage />} />
           <Route path="/sedimentation" element={<SedimentationPage />} />

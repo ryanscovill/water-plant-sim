@@ -11,7 +11,7 @@ import { EquipmentPanel, EmptyPanel, UnsavedChangesDialog } from '../equipment/E
 import { PumpControl } from '../equipment/PumpControl';
 import { ChemDoseControl } from '../equipment/ChemDoseControl';
 import { InfoModal } from '../common/InfoModal';
-import { PlantStagesGrid } from './OverviewHMI';
+import { PlantStagesGrid } from './PlantStagesGrid';
 
 function SvgInfo({ x, y, onClick }: { x: number; y: number; onClick: () => void }) {
   return (

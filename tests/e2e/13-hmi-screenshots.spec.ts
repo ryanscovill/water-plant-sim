@@ -74,57 +74,6 @@ async function assertElementsWithinContainer(
   }
 }
 
-// ─── Overview / Dashboard ────────────────────────────────────────────────────
-
-test.describe('Overview HMI screenshot + overlaps', () => {
-  test.beforeEach(async ({ page }) => {
-    await waitForLive(page, '/');
-    await waitForProcessData(page);
-    await page.waitForTimeout(300); // let layout settle
-  });
-
-  test('screenshot: saves overview HMI', async ({ page }) => {
-    await screenshotMain(page, '00-overview');
-    // Screenshot saved — no pixel comparison assertion (live data)
-  });
-
-  test('4 stage cards do not overlap each other', async ({ page }) => {
-    // Target the exact grid wrapper for the 4 stage cards in OverviewHMI
-    const grid = page.locator('.grid.xl\\:grid-cols-4').first();
-    const cards = grid.locator('> div');
-    const count = await cards.count();
-    expect(count).toBeGreaterThanOrEqual(4);
-
-    const elements = [];
-    for (let i = 0; i < Math.min(count, 4); i++) {
-      elements.push({ name: `stage-card-${i}`, locator: cards.nth(i) });
-    }
-    await assertNoOverlaps(page, elements);
-  });
-
-  test('stage cards are not clipped outside viewport', async ({ page }) => {
-    const heading = page.locator('h2').first();
-    await assertNotClipped(page, heading, 'overview h2');
-
-    const main = page.locator('main').first();
-    await assertNotClipped(page, main, 'main content area');
-  });
-
-  test('layout: header does not overlap main content', async ({ page }) => {
-    await assertNoOverlaps(page, [
-      { name: 'header', locator: page.locator('header').first() },
-      { name: 'main', locator: page.locator('main').first() },
-    ]);
-  });
-
-  test('layout: sidebar does not overlap main content', async ({ page }) => {
-    await assertNoOverlaps(page, [
-      { name: 'sidebar', locator: page.locator('nav').first() },
-      { name: 'main', locator: page.locator('main').first() },
-    ]);
-  });
-});
-
 // ─── Intake HMI ─────────────────────────────────────────────────────────────
 
 test.describe('Intake HMI screenshot + overlaps', () => {

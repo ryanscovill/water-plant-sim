@@ -1,12 +1,11 @@
 import { NavLink } from 'react-router-dom';
 import {
-  LayoutDashboard, Droplets, FlaskConical, Layers, Waves,
+  Droplets, FlaskConical, Layers, Waves,
   Bell, TrendingUp, Play, BookOpen, History, Settings,
 } from 'lucide-react';
 import { useAlarmStore } from '../../store/useAlarmStore';
 
 const navItems = [
-  { to: '/', label: 'Overview', icon: LayoutDashboard, id: 'nav-overview' },
   { to: '/intake', label: 'Intake', icon: Droplets, id: 'nav-intake' },
   { to: '/coagulation', label: 'Coagulation', icon: FlaskConical, id: 'nav-coagulation' },
   { to: '/sedimentation', label: 'Sedimentation', icon: Layers, id: 'nav-sedimentation' },
@@ -35,7 +34,6 @@ export function Sidebar() {
             key={item.to}
             to={item.to}
             id={item.id}
-            end={item.to === '/'}
             className={({ isActive }) =>
               `flex items-center gap-2.5 px-3 py-2.5 mx-1 rounded text-sm transition-colors ${
                 isActive

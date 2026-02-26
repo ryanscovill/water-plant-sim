@@ -29,7 +29,7 @@ function evaluateWaitFor(condition: string, processState: ProcessState, alarms: 
 function navSpotlightToPath(spotlight: string): string | null {
   if (!spotlight.startsWith('nav-')) return null;
   const section = spotlight.replace('nav-', '');
-  return section === 'overview' ? '/' : `/${section}`;
+  return `/${section}`;
 }
 
 export function TutorialOverlay() {

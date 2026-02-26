@@ -12,7 +12,7 @@ import { PumpControl } from '../equipment/PumpControl';
 import { ChemDoseControl } from '../equipment/ChemDoseControl';
 import { InfoModal } from '../common/InfoModal';
 import { JarTestModal } from './JarTestModal';
-import { PlantStagesGrid } from './OverviewHMI';
+import { PlantStagesGrid } from './PlantStagesGrid';
 
 function SvgInfo({ x, y, onClick }: { x: number; y: number; onClick: () => void }) {
   return (
