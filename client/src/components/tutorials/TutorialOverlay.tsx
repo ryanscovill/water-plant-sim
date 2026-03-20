@@ -102,10 +102,13 @@ export function TutorialOverlay() {
 
   const step = activeTutorial.steps[currentStep];
 
+  // Shift right on the Trends page so we don't cover the tag selector
+  const coversTagList = location.pathname === '/trends';
+
   return (
     <>
       {/* Overlay card */}
-      <div className="fixed bottom-12 left-4 w-80 bg-gray-800 border border-blue-600 rounded-xl shadow-2xl z-50 overflow-hidden">
+      <div className={`fixed bottom-12 w-80 bg-gray-800 border border-blue-600 rounded-xl shadow-2xl z-50 overflow-hidden ${coversTagList ? 'left-[460px]' : 'left-4'}`}>
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-3 bg-blue-900/40 border-b border-blue-700">
           <div>
