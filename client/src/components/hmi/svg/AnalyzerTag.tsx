@@ -11,7 +11,7 @@ interface AnalyzerTagProps {
   valueColor?: string;
 }
 
-export function AnalyzerTag({ tag, value, unit, label, id, x = 0, y = 0, alarm, decimals = 2, valueColor }: AnalyzerTagProps) {
+export function AnalyzerTag({ tag: _tag, value, unit, label, id, x = 0, y = 0, alarm, decimals = 2, valueColor }: AnalyzerTagProps) {
   const borderColor = alarm === 'CRITICAL' ? '#dc2626'
     : alarm === 'HIGH' ? '#f59e0b'
     : alarm === 'MEDIUM' ? '#facc15'

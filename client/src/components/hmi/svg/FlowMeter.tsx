@@ -8,7 +8,7 @@ interface FlowMeterProps {
   alarm?: 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW' | null;
 }
 
-export function FlowMeter({ value, unit, tag, id, x = 0, y = 0, alarm }: FlowMeterProps) {
+export function FlowMeter({ value, unit, tag: _tag, id, x = 0, y = 0, alarm }: FlowMeterProps) {
   const color = alarm === 'CRITICAL' ? '#dc2626'
     : alarm === 'HIGH' ? '#f59e0b'
     : '#22d3ee';

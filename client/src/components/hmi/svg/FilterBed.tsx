@@ -11,9 +11,8 @@ interface FilterBedProps {
   selected?: boolean;
 }
 
-export function FilterBed({ headLoss, maxHeadLoss = 10, runTime, backwashInProgress, backwashTimeRemaining, id, onClick, x = 0, y = 0, selected }: FilterBedProps) {
+export function FilterBed({ headLoss, maxHeadLoss = 10, runTime: _runTime, backwashInProgress, backwashTimeRemaining, id, onClick, x = 0, y = 0, selected }: FilterBedProps) {
   const fillPct = Math.min(1, headLoss / maxHeadLoss);
-  const color = headLoss >= 8 ? '#dc2626' : headLoss >= 6 ? '#f59e0b' : '#2563eb';
 
   // Solids accumulation layer grows upward from media surface as filter plugs.
   // Headspace above media is 40px (y=-40 to y=0); leave at least 6px of clear water.
