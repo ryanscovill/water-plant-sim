@@ -105,7 +105,7 @@ export function TutorialOverlay() {
   return (
     <>
       {/* Overlay card */}
-      <div className="fixed bottom-12 right-4 w-80 bg-gray-800 border border-blue-600 rounded-xl shadow-2xl z-50 overflow-hidden">
+      <div className="fixed bottom-12 left-4 w-80 bg-gray-800 border border-blue-600 rounded-xl shadow-2xl z-50 overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-3 bg-blue-900/40 border-b border-blue-700">
           <div>
