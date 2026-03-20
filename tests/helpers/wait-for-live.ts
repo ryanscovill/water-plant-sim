@@ -6,6 +6,9 @@ import { expect, type Page } from '@playwright/test';
  * The server emits state immediately on connection, so LIVE typically appears in ~1s.
  */
 export async function waitForLive(page: Page, url = '/') {
+  await page.addInitScript(() => {
+    localStorage.setItem('scada_welcome_seen', 'true');
+  });
   await page.goto(url);
   await expect(page.getByText('LIVE', { exact: true })).toBeVisible({ timeout: 15_000 });
 }
