@@ -1,5 +1,5 @@
-import { useEffect } from 'react';
-import { X, BookOpen, AlertCircle, Settings, FlaskConical, Database, ExternalLink } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { X, BookOpen, AlertCircle, Settings, FlaskConical, Database, ExternalLink, Box } from 'lucide-react';
 import { hmiInfo, type HmiInfo } from '../../data/hmiInfo';
 import { getEngine } from '../../simulation/engine';
 
@@ -18,6 +18,7 @@ const categoryConfig: Record<HmiInfo['category'], { color: string; bg: string; i
 
 export function InfoModal({ infoKey, onClose }: InfoModalProps) {
   const info = hmiInfo[infoKey];
+  const [activeTab, setActiveTab] = useState<'info' | '3dview'>('info');
 
   useEffect(() => {
     getEngine().pause();
@@ -56,7 +57,25 @@ export function InfoModal({ infoKey, onClose }: InfoModalProps) {
           </button>
         </div>
 
+        {/* Tab bar */}
+        <div className="flex border-b border-gray-700 px-5">
+          {(['info', '3dview'] as const).map((tab) => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              className={`px-4 py-2.5 text-xs font-mono cursor-pointer border-b-2 -mb-px transition-colors ${
+                activeTab === tab
+                  ? 'border-blue-500 text-white'
+                  : 'border-transparent text-gray-500 hover:text-gray-300'
+              }`}
+            >
+              {tab === 'info' ? 'Info' : '3D View'}
+            </button>
+          ))}
+        </div>
+
         {/* Body — two-column layout */}
+        {activeTab === 'info' ? (
         <div className="flex gap-0 divide-x divide-gray-700">
           {/* Left column: image + description + why it matters */}
           <div className="flex-1 px-5 py-4 space-y-4 min-w-0">
@@ -128,6 +147,12 @@ export function InfoModal({ infoKey, onClose }: InfoModalProps) {
             )}
           </div>
         </div>
+        ) : (
+        <div className="flex flex-col items-center justify-center py-16 px-5 text-center">
+          <Box size={48} className="text-gray-600 mb-4" />
+          <div className="text-gray-400 text-sm font-mono">3D View coming soon</div>
+        </div>
+        )}
 
         {/* Footer */}
         <div className="px-5 pb-5 border-t border-gray-700 pt-4">
