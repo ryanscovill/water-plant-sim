@@ -1,13 +1,6 @@
 import { useAlarmStore } from '../../store/useAlarmStore';
 import { useNavigate } from 'react-router-dom';
-
-function tagToRoute(tag: string): string {
-  if (tag.startsWith('INT-')) return '/intake';
-  if (tag.startsWith('COG-')) return '/coagulation';
-  if (tag.startsWith('SED-') || tag.startsWith('FLT-')) return '/sedimentation';
-  if (tag.startsWith('DIS-')) return '/disinfection';
-  return '/';
-}
+import { dwTagToRoute } from '../../routes';
 
 export function AlarmHistory() {
   const navigate = useNavigate();
@@ -39,7 +32,7 @@ export function AlarmHistory() {
                 <tr
                   key={`${alarm.id}-${i}`}
                   className="hover:bg-gray-800/50 cursor-pointer"
-                  onClick={() => navigate(tagToRoute(alarm.tag))}
+                  onClick={() => navigate(dwTagToRoute(alarm.tag))}
                 >
                   <td className="px-2 py-1 text-gray-400">{new Date(alarm.timestamp).toLocaleTimeString()}</td>
                   <td className="px-2 py-1 text-gray-300">{alarm.tag}</td>

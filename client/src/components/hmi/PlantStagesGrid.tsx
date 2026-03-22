@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useSimulationStore } from '../../store/useSimulationStore';
 import { useAlarmStore } from '../../store/useAlarmStore';
+import { DW_PATHS } from '../../routes';
 import { ValueDisplay } from '../common/ValueDisplay';
 import { StatusIndicator } from '../common/StatusIndicator';
 
@@ -16,7 +17,7 @@ function useStages() {
   return [
     {
       title: 'INTAKE',
-      path: '/intake',
+      path: DW_PATHS.intake,
       color: 'border-blue-700',
       headerBg: 'bg-blue-900/30',
       values: [
@@ -32,7 +33,7 @@ function useStages() {
     },
     {
       title: 'COAGULATION',
-      path: '/coagulation',
+      path: DW_PATHS.coagulation,
       color: 'border-purple-700',
       headerBg: 'bg-purple-900/30',
       values: [
@@ -48,7 +49,7 @@ function useStages() {
     },
     {
       title: 'SEDIMENTATION',
-      path: '/sedimentation',
+      path: DW_PATHS.sedimentation,
       color: 'border-amber-700',
       headerBg: 'bg-amber-900/30',
       values: [
@@ -64,7 +65,7 @@ function useStages() {
     },
     {
       title: 'DISINFECTION',
-      path: '/disinfection',
+      path: DW_PATHS.disinfection,
       color: 'border-cyan-700',
       headerBg: 'bg-cyan-900/30',
       values: [
@@ -116,7 +117,7 @@ export function PlantStagesGrid({ activeStage }: { activeStage?: string }) {
                   unit={v.unit}
                   decimals={v.decimals}
                   alarm={v.alarm}
-                  onTrendClick={'tag' in v ? () => navigate(`/trends?tag=${v.tag}`) : undefined}
+                  onTrendClick={'tag' in v ? () => navigate(`${DW_PATHS.trends}?tag=${v.tag}`) : undefined}
                 />
               ))}
             </div>

@@ -1,5 +1,6 @@
 import type { Alarm } from '../../types/process';
 import { useNavigate } from 'react-router-dom';
+import { dwTagToRoute } from '../../routes';
 
 interface AlarmRowProps {
   alarm: Alarm;
@@ -19,14 +20,6 @@ const priorityBadge: Record<string, string> = {
   LOW: 'bg-blue-600 text-white',
 };
 
-function tagToRoute(tag: string): string {
-  if (tag.startsWith('INT-')) return '/intake';
-  if (tag.startsWith('COG-')) return '/coagulation';
-  if (tag.startsWith('SED-') || tag.startsWith('FLT-')) return '/sedimentation';
-  if (tag.startsWith('DIS-')) return '/disinfection';
-  return '/';
-}
-
 export function AlarmRow({ alarm }: AlarmRowProps) {
   const navigate = useNavigate();
 
@@ -38,7 +31,7 @@ export function AlarmRow({ alarm }: AlarmRowProps) {
   return (
     <div
       className={`flex items-center gap-3 px-3 py-2 border-l-4 cursor-pointer hover:brightness-125 ${priorityStyles[alarm.priority] || ''}`}
-      onClick={() => navigate(tagToRoute(alarm.tag))}
+      onClick={() => navigate(dwTagToRoute(alarm.tag))}
     >
       <span className={`text-xs px-1.5 py-0.5 rounded font-bold ${priorityBadge[alarm.priority]}`}>
         {alarm.condition}

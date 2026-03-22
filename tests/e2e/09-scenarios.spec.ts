@@ -3,7 +3,7 @@ import { waitForLive } from '../helpers/wait-for-live';
 
 test.describe('Scenarios Page', () => {
   test.beforeEach(async ({ page }) => {
-    await waitForLive(page, '/scenarios');
+    await waitForLive(page, '/dw/scenarios');
   });
 
   test('page heading is TRAINING SCENARIOS', async ({ page }) => {
@@ -42,9 +42,12 @@ test.describe('Scenarios Page', () => {
   test('starting a scenario changes its button to STOP SCENARIO', async ({ page }) => {
     await page.waitForTimeout(2_000);
 
-    // Click first START SCENARIO button
+    // Click first START SCENARIO button — opens confirmation dialog
     const firstStart = page.getByRole('button', { name: 'START SCENARIO' }).first();
     await firstStart.click();
+
+    // Confirm the dialog
+    await page.getByRole('button', { name: 'RESET & START' }).click();
 
     // After starting, a STOP SCENARIO button should appear
     await expect(page.getByRole('button', { name: 'STOP SCENARIO' })).toBeVisible({ timeout: 10_000 });
@@ -55,6 +58,7 @@ test.describe('Scenarios Page', () => {
 
     // Start a scenario
     await page.getByRole('button', { name: 'START SCENARIO' }).first().click();
+    await page.getByRole('button', { name: 'RESET & START' }).click();
     await expect(page.getByRole('button', { name: 'STOP SCENARIO' })).toBeVisible({ timeout: 10_000 });
 
     // Stop it
@@ -66,6 +70,7 @@ test.describe('Scenarios Page', () => {
     await page.waitForTimeout(2_000);
 
     await page.getByRole('button', { name: 'START SCENARIO' }).first().click();
+    await page.getByRole('button', { name: 'RESET & START' }).click();
     await expect(page.getByRole('button', { name: 'STOP SCENARIO' })).toBeVisible({ timeout: 10_000 });
 
     // Active card has border-amber-500 class

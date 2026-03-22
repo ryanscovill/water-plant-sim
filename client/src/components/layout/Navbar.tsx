@@ -5,8 +5,10 @@ import { useAlarmStore } from '../../store/useAlarmStore';
 import { getEngine } from '../../simulation/engine';
 import { formatTPlus } from '../../utils/formatTPlus';
 import { Tooltip } from '../common/Tooltip';
+import type { SimulatorType } from './AppShell';
 
-export function Navbar() {
+export function Navbar({ simulatorType }: { simulatorType: SimulatorType }) {
+  const isDW = simulatorType === 'dw';
   const connected = useSimulationStore((s) => s.connected);
   const state = useSimulationStore((s) => s.state);
   const alarms = useAlarmStore((s) => s.alarms);
@@ -58,11 +60,14 @@ export function Navbar() {
           <path d="M22 10 a9 9 0 0 1 0 12" stroke="#60a5fa" strokeWidth="1.5" fill="none" strokeLinecap="round" opacity="0.7"/>
           <path d="M24 8 a12 12 0 0 1 0 16" stroke="#60a5fa" strokeWidth="1.5" fill="none" strokeLinecap="round" opacity="0.4"/>
         </svg>
-        <span className="text-white font-bold text-sm tracking-wider">WATERWORKS SCADA TRAINER</span>
+        <span className="text-white font-bold text-sm tracking-wider">
+          {isDW ? 'DRINKING WATER SCADA TRAINER' : 'WASTEWATER SCADA TRAINER'}
+        </span>
       </div>
 
       <div className="flex-1" />
 
+      {isDW && (<>
       {/* Sim speed */}
       <div className="flex items-center gap-1 text-xs text-gray-400">
         <span>SIM:</span>
@@ -130,6 +135,7 @@ export function Navbar() {
           {formatTPlus(new Date(state.timestamp).getTime(), getEngine().getSimulationStartTime())}
         </span>
       )}
+      </>)}
     </header>
     </>
   );

@@ -5,21 +5,24 @@ const EXPECTED_TAGS = [
   'INT-FIT-001',
   'INT-AIT-001',
   'INT-PDT-001',
+  'INT-LIT-001',
+  'COG-FIT-001',
   'COG-AIT-001',
   'SED-AIT-001',
   'SED-LIT-001',
   'FLT-PDT-001',
   'FLT-AIT-001',
+  'FLT-RUN-001',
+  'DIS-FIT-001',
   'DIS-AIT-001',
   'DIS-AIT-002',
   'DIS-AIT-003',
-  'DIS-AIT-004',
   'DIS-LIT-001',
 ];
 
 test.describe('Trends Page', () => {
   test.beforeEach(async ({ page }) => {
-    await waitForLive(page, '/trends');
+    await waitForLive(page, '/dw/trends');
   });
 
   test('page heading is correct', async ({ page }) => {
@@ -34,7 +37,7 @@ test.describe('Trends Page', () => {
     await expect(page.getByText('SELECT TAG')).toBeVisible();
   });
 
-  test('all 13 trend tags are listed in selector', async ({ page }) => {
+  test('all 16 trend tags are listed in selector', async ({ page }) => {
     for (const tag of EXPECTED_TAGS) {
       await expect(page.locator('#trend-tag-selector').getByText(tag)).toBeVisible();
     }
@@ -43,12 +46,12 @@ test.describe('Trends Page', () => {
   test('duration buttons are visible', async ({ page }) => {
     await expect(page.getByRole('button', { name: '10 min' })).toBeVisible();
     await expect(page.getByRole('button', { name: '30 min' })).toBeVisible();
-    await expect(page.getByRole('button', { name: '1 hr' })).toBeVisible();
     await expect(page.getByRole('button', { name: '4 hr' })).toBeVisible();
+    await expect(page.getByRole('button', { name: '1 day' })).toBeVisible();
   });
 
-  test('default duration button (30 min) is highlighted', async ({ page }) => {
-    const btn = page.getByRole('button', { name: '30 min' });
+  test('default duration button (10 min) is highlighted', async ({ page }) => {
+    const btn = page.getByRole('button', { name: '10 min' });
     await expect(btn).toHaveClass(/bg-blue-700/);
   });
 
@@ -68,8 +71,8 @@ test.describe('Trends Page', () => {
     await expect(btn).toHaveClass(/bg-blue-700/);
   });
 
-  test('clicking 1 hr duration button highlights it', async ({ page }) => {
-    const btn = page.getByRole('button', { name: '1 hr' });
+  test('clicking 4 hr duration button highlights it', async ({ page }) => {
+    const btn = page.getByRole('button', { name: '4 hr' });
     await btn.click();
 
     await expect(btn).toHaveClass(/bg-blue-700/);

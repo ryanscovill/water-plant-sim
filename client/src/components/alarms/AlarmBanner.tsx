@@ -2,6 +2,7 @@ import { AlertTriangle } from 'lucide-react';
 import { useAlarmStore } from '../../store/useAlarmStore';
 import { useNavigate } from 'react-router-dom';
 import type { Alarm } from '../../types/process';
+import { DW_PATHS } from '../../routes';
 
 function BannerRow({ alarm, count }: { alarm: Alarm; count?: number }) {
   const navigate = useNavigate();
@@ -12,7 +13,7 @@ function BannerRow({ alarm, count }: { alarm: Alarm; count?: number }) {
 
   return (
     <div
-      onClick={() => navigate('/alarms')}
+      onClick={() => navigate(DW_PATHS.alarms)}
       className={`${bgColor} px-4 py-2 flex items-center gap-3 cursor-pointer`}
     >
       <AlertTriangle size={16} className="text-white flex-shrink-0" />

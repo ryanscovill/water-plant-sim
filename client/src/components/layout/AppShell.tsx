@@ -13,13 +13,18 @@ import { useScenarioStore } from '../../store/useScenarioStore';
 import { TutorialOverlay } from '../tutorials/TutorialOverlay';
 import { WelcomeModal } from '../common/WelcomeModal';
 
+export type SimulatorType = 'dw' | 'ww';
+
 const WELCOME_SEEN_KEY = 'scada_welcome_seen';
 
-export function AppShell() {
+export function AppShell({ simulatorType }: { simulatorType: SimulatorType }) {
+  const isDW = simulatorType === 'dw';
+
+  // Hooks must be called unconditionally — the DW engine singleton is always present
   useSocket();
   useAlarmSound();
 
-  const [showWelcome, setShowWelcome] = useState(() => localStorage.getItem(WELCOME_SEEN_KEY) !== 'true');
+  const [showWelcome, setShowWelcome] = useState(() => isDW && localStorage.getItem(WELCOME_SEEN_KEY) !== 'true');
 
   function handleCloseWelcome() {
     localStorage.setItem(WELCOME_SEEN_KEY, 'true');
@@ -33,20 +38,20 @@ export function AppShell() {
   const setCompletedScenario = useScenarioStore((s) => s.setCompletedScenario);
 
   return (
-    <div className={`flex flex-col h-screen bg-gray-950 text-gray-100 overflow-hidden${running ? '' : ' sim-paused'}`}>
-      <Navbar />
-      <AlarmBanner />
+    <div className={`flex flex-col h-screen bg-gray-950 text-gray-100 overflow-hidden${isDW && !running ? ' sim-paused' : ''}`}>
+      <Navbar simulatorType={simulatorType} />
+      {isDW && <AlarmBanner />}
       <div id="content-panel-root" className="relative flex flex-1 overflow-hidden">
-        <Sidebar />
+        <Sidebar simulatorType={simulatorType} />
         <main className="flex-1 overflow-auto p-4">
           <Outlet />
         </main>
       </div>
-      <StatusBar onOpenWelcome={() => setShowWelcome(true)} />
-      {activeTutorial && <TutorialOverlay />}
-      {showWelcome && <WelcomeModal onClose={handleCloseWelcome} />}
+      {isDW && <StatusBar onOpenWelcome={() => setShowWelcome(true)} />}
+      {isDW && activeTutorial && <TutorialOverlay />}
+      {isDW && showWelcome && <WelcomeModal onClose={handleCloseWelcome} />}
 
-      {completedScenarioName && (
+      {isDW && completedScenarioName && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
           <div className="bg-gray-900 border border-green-600 rounded-lg p-8 w-96 shadow-xl text-center">
             <CheckCircle size={40} className="text-green-400 mx-auto mb-4" />

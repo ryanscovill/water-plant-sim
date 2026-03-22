@@ -1,43 +1,46 @@
 import { test, expect } from '@playwright/test';
 import { waitForLive, waitForProcessData } from '../helpers/wait-for-live';
 
-/** Navigate to /history via the sidebar link (SPA nav — preserves Zustand store). */
+/** Navigate to /dw/history via the sidebar link (SPA nav — preserves Zustand store). */
 async function goToHistory(page: import('@playwright/test').Page) {
   await page.locator('#nav-history').click();
-  await expect(page.locator('h2').first()).toContainText('OPERATOR HISTORY');
+  await expect(page.locator('h2').first()).toContainText('EVENT HISTORY');
 }
 
 test.describe('Operator History', () => {
   test('History nav link is visible in sidebar', async ({ page }) => {
-    await waitForLive(page, '/');
+    await waitForLive(page, '/dw/intake');
     await expect(page.locator('#nav-history')).toBeVisible();
   });
 
-  test('History nav link navigates to /history', async ({ page }) => {
-    await waitForLive(page, '/');
+  test('History nav link navigates to /dw/history', async ({ page }) => {
+    await waitForLive(page, '/dw/intake');
     await page.locator('#nav-history').click();
-    await expect(page).toHaveURL(/\/history/);
+    await expect(page).toHaveURL(/\/dw\/history/);
   });
 
-  test('page heading is OPERATOR HISTORY', async ({ page }) => {
-    await waitForLive(page, '/history');
-    await expect(page.locator('h2').first()).toContainText('OPERATOR HISTORY');
+  test('page heading is EVENT HISTORY', async ({ page }) => {
+    await waitForLive(page, '/dw/intake');
+    await goToHistory(page);
+    await expect(page.locator('h2').first()).toContainText('EVENT HISTORY');
   });
 
   test('CLEAR button is visible', async ({ page }) => {
-    await waitForLive(page, '/history');
+    await waitForLive(page, '/dw/intake');
+    await goToHistory(page);
     await expect(page.getByRole('button', { name: 'CLEAR' })).toBeVisible();
   });
 
   test('empty state message appears after clearing', async ({ page }) => {
-    await waitForLive(page, '/history');
+    await waitForLive(page, '/dw/intake');
+    await goToHistory(page);
     await page.getByRole('button', { name: 'CLEAR' }).click();
-    await expect(page.getByText('No operator actions recorded yet.')).toBeVisible();
+    await expect(page.getByText('No events recorded yet.')).toBeVisible();
   });
 
   test('stopping a running pump records event with before→after state', async ({ page }) => {
     // Pump 1 starts running — stop it
-    await waitForLive(page, '/intake');
+    await waitForLive(page, '/dw/intake');
     await waitForProcessData(page);
     await page.locator('#hmi-intakePump1').click();
     await page.getByRole('button', { name: 'STOP' }).click();
@@ -51,7 +54,7 @@ test.describe('Operator History', () => {
 
   test('starting a stopped pump records event with before→after state', async ({ page }) => {
     // Pump 2 starts stopped — start it
-    await waitForLive(page, '/intake');
+    await waitForLive(page, '/dw/intake');
     await waitForProcessData(page);
     await page.locator('#hmi-intakePump2').click();
     await page.locator('#ctrl-pump-start').click();
@@ -63,7 +66,7 @@ test.describe('Operator History', () => {
   });
 
   test('pump event has "pump" type badge', async ({ page }) => {
-    await waitForLive(page, '/intake');
+    await waitForLive(page, '/dw/intake');
     await waitForProcessData(page);
     await page.locator('#hmi-intakePump1').click();
     await page.getByRole('button', { name: 'STOP' }).click();
@@ -74,7 +77,7 @@ test.describe('Operator History', () => {
 
   test('valve close records event with before→after state', async ({ page }) => {
     // Intake valve starts open
-    await waitForLive(page, '/intake');
+    await waitForLive(page, '/dw/intake');
     await waitForProcessData(page);
     await page.locator('#hmi-intakeValve').click();
     await page.getByRole('button', { name: 'CLOSE' }).click();
@@ -85,7 +88,7 @@ test.describe('Operator History', () => {
 
   test('valve open records event with before→after state', async ({ page }) => {
     // Close the valve first, then open it
-    await waitForLive(page, '/intake');
+    await waitForLive(page, '/dw/intake');
     await waitForProcessData(page);
     await page.locator('#hmi-intakeValve').click();
     await page.getByRole('button', { name: 'CLOSE' }).click();
@@ -98,7 +101,7 @@ test.describe('Operator History', () => {
 
   test('valve event has "valve" type badge', async ({ page }) => {
     // Valve may be open from a prior test — just close it (CLOSE works when open)
-    await waitForLive(page, '/intake');
+    await waitForLive(page, '/dw/intake');
     await waitForProcessData(page);
     await page.locator('#hmi-intakeValve').click();
     await page.getByRole('button', { name: 'CLOSE' }).click();
@@ -109,7 +112,7 @@ test.describe('Operator History', () => {
 
   test('alum dose setpoint change records before and after values', async ({ page }) => {
     // ChemDoseControl: change number input value → click APPLY
-    await waitForLive(page, '/coagulation');
+    await waitForLive(page, '/dw/coagulation');
     await waitForProcessData(page);
     await page.locator('#hmi-alumDose').click();
 
@@ -124,7 +127,7 @@ test.describe('Operator History', () => {
   });
 
   test('setpoint event has "setpoint" type badge', async ({ page }) => {
-    await waitForLive(page, '/coagulation');
+    await waitForLive(page, '/dw/coagulation');
     await waitForProcessData(page);
     await page.locator('#hmi-alumDose').click();
 
@@ -138,7 +141,7 @@ test.describe('Operator History', () => {
 
   test('CLEAR button empties the history list', async ({ page }) => {
     // Trigger at least one event
-    await waitForLive(page, '/intake');
+    await waitForLive(page, '/dw/intake');
     await waitForProcessData(page);
     await page.locator('#hmi-intakePump1').click();
     await page.getByRole('button', { name: 'STOP' }).click();
@@ -147,11 +150,11 @@ test.describe('Operator History', () => {
     await expect(page.getByText(/Intake Pump 1/)).toBeVisible({ timeout: 5_000 });
 
     await page.getByRole('button', { name: 'CLEAR' }).click();
-    await expect(page.getByText('No operator actions recorded yet.')).toBeVisible({ timeout: 3_000 });
+    await expect(page.getByText('No events recorded yet.')).toBeVisible({ timeout: 3_000 });
   });
 
   test('newest event appears at the top of the list', async ({ page }) => {
-    await waitForLive(page, '/intake');
+    await waitForLive(page, '/dw/intake');
     await waitForProcessData(page);
 
     // Stop pump 1, then start pump 2 (was stopped)

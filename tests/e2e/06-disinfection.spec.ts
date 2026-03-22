@@ -3,7 +3,7 @@ import { waitForLive, waitForProcessData } from '../helpers/wait-for-live';
 
 test.describe('Disinfection / Clearwell HMI', () => {
   test.beforeEach(async ({ page }) => {
-    await waitForLive(page, '/disinfection');
+    await waitForLive(page, '/dw/disinfection');
     await waitForProcessData(page);
   });
 
@@ -36,11 +36,11 @@ test.describe('Disinfection / Clearwell HMI', () => {
   });
 
   test('CLEARWELL label is visible', async ({ page }) => {
-    await expect(page.getByText('CLEARWELL')).toBeVisible();
+    await expect(page.getByText('CLEARWELL', { exact: true })).toBeVisible();
   });
 
   test('UV label is visible in contact chamber', async ({ page }) => {
-    await expect(page.getByText('UV')).toBeVisible();
+    await expect(page.locator('svg text').filter({ hasText: 'UV' }).first()).toBeVisible();
   });
 
   test('clicking chlorine dose opens chlorine feed modal', async ({ page }) => {

@@ -3,7 +3,7 @@ import { waitForLive, waitForProcessData } from '../helpers/wait-for-live';
 
 test.describe('Intake HMI', () => {
   test.beforeEach(async ({ page }) => {
-    await waitForLive(page, '/intake');
+    await waitForLive(page, '/dw/intake');
     await waitForProcessData(page);
   });
 
@@ -44,7 +44,7 @@ test.describe('Intake HMI', () => {
 
     // Modal title shows pump name and tag
     await expect(page.getByText('Intake Pump 1')).toBeVisible();
-    await expect(page.getByText('P-101')).toBeVisible();
+    await expect(page.getByText('P-101', { exact: true })).toBeVisible();
   });
 
   test('pump modal has START and STOP buttons', async ({ page }) => {
@@ -73,14 +73,14 @@ test.describe('Intake HMI', () => {
     await page.locator('#hmi-intakePump2').click();
 
     await expect(page.getByText('Intake Pump 2')).toBeVisible();
-    await expect(page.getByText('P-102')).toBeVisible();
+    await expect(page.getByText('P-102', { exact: true })).toBeVisible();
   });
 
   test('clicking intake valve opens valve modal', async ({ page }) => {
     await page.locator('#hmi-intakeValve').click();
 
     await expect(page.getByText('Intake Valve')).toBeVisible();
-    await expect(page.getByText('XV-101')).toBeVisible();
+    await expect(page.getByText('XV-101', { exact: true })).toBeVisible();
   });
 
   test('valve modal has OPEN and CLOSE buttons', async ({ page }) => {

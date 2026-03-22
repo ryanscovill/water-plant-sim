@@ -3,7 +3,7 @@ import { waitForLive, waitForProcessData } from '../helpers/wait-for-live';
 
 test.describe('Sedimentation / Filtration HMI', () => {
   test.beforeEach(async ({ page }) => {
-    await waitForLive(page, '/sedimentation');
+    await waitForLive(page, '/dw/sedimentation');
     await waitForProcessData(page);
   });
 
@@ -45,15 +45,15 @@ test.describe('Sedimentation / Filtration HMI', () => {
   test('filter modal shows head loss and run time', async ({ page }) => {
     await page.locator('#hmi-filterBed').click();
 
-    await expect(page.getByText('Head Loss')).toBeVisible();
-    await expect(page.getByText('Run Time')).toBeVisible();
+    await expect(page.getByText('Head Loss', { exact: true })).toBeVisible();
+    await expect(page.getByText('Run Time', { exact: true })).toBeVisible();
   });
 
   test('filter modal has START BACKWASH button when not backwashing', async ({ page }) => {
     await page.locator('#hmi-filterBed').click();
 
     // Only visible when backwash is NOT in progress
-    const startBw = page.locator('#ctrl-backwash-start');
+    const startBw = page.locator('button#ctrl-backwash-start');
     // It may or may not be visible depending on sim state; just check it exists
     const count = await startBw.count();
     // The button exists in the modal body
@@ -71,14 +71,14 @@ test.describe('Sedimentation / Filtration HMI', () => {
   });
 
   test('SLUDGE PUMP text is visible in SVG', async ({ page }) => {
-    await expect(page.getByText('SLUDGE PUMP')).toBeVisible();
+    await expect(page.locator('svg text').filter({ hasText: 'SLUDGE PUMP' })).toBeVisible();
   });
 
   test('clicking sludge pump opens sludge pump modal', async ({ page }) => {
-    await page.getByText('SLUDGE PUMP').click();
+    await page.locator('svg text').filter({ hasText: 'SLUDGE PUMP' }).click();
 
-    await expect(page.getByText('Sludge Pump')).toBeVisible();
-    await expect(page.getByText('P-301')).toBeVisible();
+    await expect(page.getByText('Sludge Pump').first()).toBeVisible();
+    await expect(page.getByText('P-301', { exact: true })).toBeVisible();
   });
 
   test('BACKWASH text is visible in SVG', async ({ page }) => {

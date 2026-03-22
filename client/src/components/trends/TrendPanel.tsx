@@ -73,7 +73,7 @@ export function TrendPanel() {
 
   const allEvents = useEventStore((s) => s.events);
   const alarmHistory = useAlarmStore((s) => s.history);
-  const simNow = useSimulationStore((s) => new Date(s.state!.timestamp).getTime());
+  const simNow = useSimulationStore((s) => s.state ? new Date(s.state.timestamp).getTime() : 0);
   const cutoff = simNow - duration * 1000;
 
   const chartEvents = [

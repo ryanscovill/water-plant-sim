@@ -124,7 +124,7 @@ export function SedimentationHMI() {
 
             {/* Backwash controls — right of filter, above outlet pipe */}
             {!sedimentation.backwashInProgress ? (
-              <g id="ctrl-backwash-start" data-interactive="true" style={{ cursor: 'pointer' }} onClick={() => setSelected('filter')}>
+              <g id="hmi-backwash-btn" data-interactive="true" style={{ cursor: 'pointer' }} onClick={() => setSelected('filter')}>
                 <rect x="512" y="88" width="76" height="28" rx="5" fill="transparent" stroke="#2563eb"
                   strokeWidth="2.5" strokeDasharray="5,3" className="interactive-ring" />
                 <rect x="515" y="91" width="70" height="22" rx="3" fill="#1e3a5f" stroke="#2563eb" strokeWidth="1.5" />

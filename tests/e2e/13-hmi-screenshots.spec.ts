@@ -78,7 +78,7 @@ async function assertElementsWithinContainer(
 
 test.describe('Intake HMI screenshot + overlaps', () => {
   test.beforeEach(async ({ page }) => {
-    await waitForLive(page, '/intake');
+    await waitForLive(page, '/dw/intake');
     await waitForProcessData(page);
     await page.waitForTimeout(300);
   });
@@ -152,7 +152,7 @@ test.describe('Intake HMI screenshot + overlaps', () => {
 
 test.describe('Coagulation HMI screenshot + overlaps', () => {
   test.beforeEach(async ({ page }) => {
-    await waitForLive(page, '/coagulation');
+    await waitForLive(page, '/dw/coagulation');
     await waitForProcessData(page);
     await page.waitForTimeout(300);
   });
@@ -220,7 +220,7 @@ test.describe('Coagulation HMI screenshot + overlaps', () => {
 
 test.describe('Sedimentation HMI screenshot + overlaps', () => {
   test.beforeEach(async ({ page }) => {
-    await waitForLive(page, '/sedimentation');
+    await waitForLive(page, '/dw/sedimentation');
     await waitForProcessData(page);
     await page.waitForTimeout(300);
   });
@@ -250,7 +250,7 @@ test.describe('Sedimentation HMI screenshot + overlaps', () => {
       { name: 'filter-effluent',  locator: page.locator('#hmi-filterEffluent') },
       { name: 'filter-bed',       locator: page.locator('#hmi-filterBed') },
       { name: 'filter-run-time',  locator: page.locator('#hmi-filterRunTime') },
-      { name: 'backwash-btn',     locator: page.locator('#ctrl-backwash-start') },
+      { name: 'backwash-btn',     locator: page.locator('#hmi-backwash-btn') },
     ];
     await assertNoOverlaps(page, elements);
   });
@@ -293,7 +293,7 @@ test.describe('Sedimentation HMI screenshot + overlaps', () => {
 
 test.describe('Disinfection HMI screenshot + overlaps', () => {
   test.beforeEach(async ({ page }) => {
-    await waitForLive(page, '/disinfection');
+    await waitForLive(page, '/dw/disinfection');
     await waitForProcessData(page);
     await page.waitForTimeout(300);
   });

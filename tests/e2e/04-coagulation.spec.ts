@@ -3,7 +3,7 @@ import { waitForLive, waitForProcessData } from '../helpers/wait-for-live';
 
 test.describe('Coagulation / Flocculation HMI', () => {
   test.beforeEach(async ({ page }) => {
-    await waitForLive(page, '/coagulation');
+    await waitForLive(page, '/dw/coagulation');
     await waitForProcessData(page);
   });
 
@@ -16,7 +16,7 @@ test.describe('Coagulation / Flocculation HMI', () => {
   });
 
   test('RAPID MIX label is visible in SVG', async ({ page }) => {
-    await expect(page.getByText('RAPID MIX')).toBeVisible();
+    await expect(page.getByText('RAPID MIX', { exact: true })).toBeVisible();
   });
 
   test('FLOCCULATION BASIN label is visible in SVG', async ({ page }) => {
@@ -38,8 +38,8 @@ test.describe('Coagulation / Flocculation HMI', () => {
   test('clicking rapid mixer opens equipment modal', async ({ page }) => {
     await page.locator('#hmi-rapidMixer').click();
 
-    await expect(page.getByText('Rapid Mixer')).toBeVisible();
-    await expect(page.getByText('M-201')).toBeVisible();
+    await expect(page.getByText('Rapid Mixer').first()).toBeVisible();
+    await expect(page.getByText('M-201', { exact: true })).toBeVisible();
   });
 
   test('rapid mixer modal has START/STOP controls', async ({ page }) => {
@@ -51,10 +51,10 @@ test.describe('Coagulation / Flocculation HMI', () => {
 
   test('clicking backdrop closes rapid mixer modal', async ({ page }) => {
     await page.locator('#hmi-rapidMixer').click();
-    await expect(page.getByText('Rapid Mixer')).toBeVisible();
+    await expect(page.getByText('Rapid Mixer').first()).toBeVisible();
 
     await page.mouse.click(50, 50);
-    await expect(page.getByText('Rapid Mixer')).not.toBeVisible({ timeout: 5_000 });
+    await expect(page.getByText('Rapid Mixer').first()).not.toBeVisible({ timeout: 5_000 });
   });
 
   test('clicking alum dose opens chemical feed modal', async ({ page }) => {

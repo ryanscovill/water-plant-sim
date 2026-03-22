@@ -26,10 +26,12 @@ function evaluateWaitFor(condition: string, processState: ProcessState, alarms: 
   }
 }
 
-function navSpotlightToPath(spotlight: string): string | null {
+function navSpotlightToPath(spotlight: string, pathname: string): string | null {
   if (!spotlight.startsWith('nav-')) return null;
   const section = spotlight.replace('nav-', '');
-  return `/${section}`;
+  // Extract simulator prefix (/dw or /ww) from current pathname
+  const prefix = pathname.match(/^\/(dw|ww)/)?.[0] ?? '/dw';
+  return `${prefix}/${section}`;
 }
 
 export function TutorialOverlay() {
@@ -60,7 +62,7 @@ export function TutorialOverlay() {
     if (!activeTutorial || completed || autoAdvancedRef.current) return;
     const step = activeTutorial.steps[currentStep];
     if (!step || step.waitFor) return;
-    const targetPath = navSpotlightToPath(step.spotlight);
+    const targetPath = navSpotlightToPath(step.spotlight, location.pathname);
     if (targetPath && location.pathname === targetPath) {
       autoAdvancedRef.current = true;
       nextStep();
@@ -71,7 +73,7 @@ export function TutorialOverlay() {
   useEffect(() => {
     if (!activeTutorial || completed) return;
     const step = activeTutorial.steps[currentStep];
-    if (!step || step.waitFor || navSpotlightToPath(step.spotlight)) return;
+    if (!step || step.waitFor || navSpotlightToPath(step.spotlight, location.pathname)) return;
 
     const handleClick = (e: MouseEvent) => {
       if (autoAdvancedRef.current) return;
@@ -103,7 +105,7 @@ export function TutorialOverlay() {
   const step = activeTutorial.steps[currentStep];
 
   // Shift right on the Trends page so we don't cover the tag selector
-  const coversTagList = location.pathname === '/trends';
+  const coversTagList = location.pathname.endsWith('/trends');
 
   return (
     <>
@@ -153,7 +155,7 @@ export function TutorialOverlay() {
                 </button>
                 {(() => {
                   const isLast = currentStep === activeTutorial.steps.length - 1;
-                  const autoAdvances = !!step.waitFor || !!step.clickToAdvance || !!navSpotlightToPath(step.spotlight);
+                  const autoAdvances = !!step.waitFor || !!step.clickToAdvance || !!navSpotlightToPath(step.spotlight, location.pathname);
                   if (autoAdvances && !isLast) return null;
                   return (
                     <button

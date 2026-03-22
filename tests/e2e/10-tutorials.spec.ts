@@ -3,7 +3,7 @@ import { waitForLive } from '../helpers/wait-for-live';
 
 test.describe('Tutorials Page', () => {
   test.beforeEach(async ({ page }) => {
-    await waitForLive(page, '/tutorials');
+    await waitForLive(page, '/dw/tutorials');
   });
 
   test('page heading is OPERATOR TUTORIALS', async ({ page }) => {
@@ -36,7 +36,7 @@ test.describe('Tutorials Page', () => {
     await page.getByRole('button', { name: 'START TUTORIAL' }).first().click();
 
     // Overlay card is visible and Back button is always present
-    const overlay = page.locator('.fixed.bottom-12.right-4');
+    const overlay = page.locator('.fixed.bottom-12.left-4');
     await expect(overlay).toBeVisible({ timeout: 5_000 });
     await expect(page.getByRole('button', { name: 'Back' })).toBeVisible({ timeout: 5_000 });
   });
@@ -46,7 +46,7 @@ test.describe('Tutorials Page', () => {
 
     await page.getByRole('button', { name: 'START TUTORIAL' }).first().click();
 
-    const overlay = page.locator('.fixed.bottom-12.right-4');
+    const overlay = page.locator('.fixed.bottom-12.left-4');
     await expect(overlay).toBeVisible({ timeout: 5_000 });
   });
 
@@ -55,7 +55,7 @@ test.describe('Tutorials Page', () => {
 
     await page.getByRole('button', { name: 'START TUTORIAL' }).first().click();
 
-    const overlay = page.locator('.fixed.bottom-12.right-4');
+    const overlay = page.locator('.fixed.bottom-12.left-4');
     await expect(overlay).toBeVisible({ timeout: 5_000 });
 
     // Click X button in overlay header (it's in the fixed bottom-right card)
@@ -63,7 +63,7 @@ test.describe('Tutorials Page', () => {
     await xButton.click();
 
     // Overlay should be gone
-    await expect(page.locator('.fixed.bottom-12.right-4')).not.toBeVisible({ timeout: 5_000 });
+    await expect(page.locator('.fixed.bottom-12.left-4')).not.toBeVisible({ timeout: 5_000 });
   });
 
   // Alarm Response step 1 spotlights 'alarm-banner' (not a nav element, no waitFor)
@@ -89,7 +89,7 @@ test.describe('Tutorials Page', () => {
 
     await page.getByRole('button', { name: 'START TUTORIAL' }).first().click();
 
-    const overlay = page.locator('.fixed.bottom-12.right-4');
+    const overlay = page.locator('.fixed.bottom-12.left-4');
     await expect(overlay).toBeVisible({ timeout: 5_000 });
 
     // Use SPA navigation to return to tutorials page (preserves Zustand store state)

@@ -2,19 +2,19 @@ import { test, expect } from '@playwright/test';
 import { waitForLive } from '../helpers/wait-for-live';
 
 const navItems = [
-  { id: 'nav-intake', url: '/intake', heading: 'INTAKE' },
-  { id: 'nav-coagulation', url: '/coagulation', heading: 'COAGULATION' },
-  { id: 'nav-sedimentation', url: '/sedimentation', heading: 'SEDIMENTATION' },
-  { id: 'nav-disinfection', url: '/disinfection', heading: 'DISINFECTION' },
-  { id: 'nav-alarms', url: '/alarms', heading: 'ALARM MANAGEMENT' },
-  { id: 'nav-trends', url: '/trends', heading: 'TRENDS' },
-  { id: 'nav-scenarios', url: '/scenarios', heading: 'TRAINING SCENARIOS' },
-  { id: 'nav-tutorials', url: '/tutorials', heading: 'OPERATOR TUTORIALS' },
+  { id: 'nav-intake', url: '/dw/intake', heading: 'INTAKE' },
+  { id: 'nav-coagulation', url: '/dw/coagulation', heading: 'COAGULATION' },
+  { id: 'nav-sedimentation', url: '/dw/sedimentation', heading: 'SEDIMENTATION' },
+  { id: 'nav-disinfection', url: '/dw/disinfection', heading: 'DISINFECTION' },
+  { id: 'nav-alarms', url: '/dw/alarms', heading: 'ALARM MANAGEMENT' },
+  { id: 'nav-trends', url: '/dw/trends', heading: 'TRENDS' },
+  { id: 'nav-scenarios', url: '/dw/scenarios', heading: 'TRAINING SCENARIOS' },
+  { id: 'nav-tutorials', url: '/dw/tutorials', heading: 'OPERATOR TUTORIALS' },
 ];
 
 test.describe('Navigation', () => {
   test('all 8 nav links are visible in the sidebar', async ({ page }) => {
-    await waitForLive(page, '/alarms');
+    await waitForLive(page, '/dw/alarms');
 
     for (const item of navItems) {
       await expect(page.locator(`#${item.id}`)).toBeVisible();
@@ -22,7 +22,7 @@ test.describe('Navigation', () => {
   });
 
   test('each nav link navigates to the correct URL', async ({ page }) => {
-    await waitForLive(page, '/alarms');
+    await waitForLive(page, '/dw/alarms');
 
     for (const item of navItems) {
       await page.locator(`#${item.id}`).click();
@@ -32,7 +32,7 @@ test.describe('Navigation', () => {
   });
 
   test('each nav link shows the correct page heading', async ({ page }) => {
-    await waitForLive(page, '/alarms');
+    await waitForLive(page, '/dw/alarms');
 
     for (const item of navItems) {
       await page.locator(`#${item.id}`).click();
@@ -41,7 +41,7 @@ test.describe('Navigation', () => {
   });
 
   test('active nav link has the highlighted class', async ({ page }) => {
-    await waitForLive(page, '/alarms');
+    await waitForLive(page, '/dw/alarms');
 
     for (const item of navItems) {
       await page.locator(`#${item.id}`).click();
@@ -53,8 +53,8 @@ test.describe('Navigation', () => {
     }
   });
 
-  test('root URL redirects to /intake', async ({ page }) => {
-    await waitForLive(page, '/');
-    await expect(page).toHaveURL(/\/intake$/);
+  test('/dw redirects to /dw/intake', async ({ page }) => {
+    await waitForLive(page, '/dw');
+    await expect(page).toHaveURL(/\/dw\/intake$/);
   });
 });

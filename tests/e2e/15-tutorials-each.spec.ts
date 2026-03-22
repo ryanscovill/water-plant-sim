@@ -4,7 +4,7 @@
  * Tests the content, step progression, spotlight, and completion flow for each
  * of the four tutorials individually.
  *
- * Each describe block calls waitForLive(page, '/tutorials') in beforeEach,
+ * Each describe block calls waitForLive(page, '/dw/tutorials') in beforeEach,
  * which performs a full page reload and therefore resets the Zustand tutorial
  * store — no state bleeds between tests.
  *
@@ -32,7 +32,7 @@ import { waitForLive } from '../helpers/wait-for-live';
 
 // ── Shared helpers ──────────────────────────────────────────────────────────
 
-const overlay = (page: Page) => page.locator('.fixed.bottom-12.right-4');
+const overlay = (page: Page) => page.locator('.fixed.bottom-12.left-4');
 const nextBtn  = (page: Page) => page.getByRole('button', { name: /^(Next|Finish)/ });
 const backBtn  = (page: Page) => page.getByRole('button', { name: 'Back' });
 
@@ -72,7 +72,7 @@ async function spotlightTargets(page: Page, id: string): Promise<boolean> {
 
 test.describe('Tutorial: Plant Startup Procedure', () => {
   test.beforeEach(async ({ page }) => {
-    await waitForLive(page, '/tutorials');
+    await waitForLive(page, '/dw/tutorials');
     await page.waitForTimeout(500);
   });
 
@@ -296,7 +296,7 @@ test.describe('Tutorial: Plant Startup Procedure', () => {
 
 test.describe('Tutorial: Responding to Process Alarms', () => {
   test.beforeEach(async ({ page }) => {
-    await waitForLive(page, '/tutorials');
+    await waitForLive(page, '/dw/tutorials');
     await page.waitForTimeout(500);
   });
 
@@ -473,7 +473,7 @@ test.describe('Tutorial: Responding to Process Alarms', () => {
 
 test.describe('Tutorial: Filter Backwash Procedure', () => {
   test.beforeEach(async ({ page }) => {
-    await waitForLive(page, '/tutorials');
+    await waitForLive(page, '/dw/tutorials');
     await page.waitForTimeout(500);
   });
 
@@ -652,7 +652,7 @@ test.describe('Tutorial: Filter Backwash Procedure', () => {
 
 test.describe('Tutorial: Chlorine Dose Adjustment', () => {
   test.beforeEach(async ({ page }) => {
-    await waitForLive(page, '/tutorials');
+    await waitForLive(page, '/dw/tutorials');
     await page.waitForTimeout(500);
   });
 
@@ -807,7 +807,7 @@ test.describe('Tutorial: Chlorine Dose Adjustment', () => {
 
 test.describe('Cross-tutorial behaviour', () => {
   test.beforeEach(async ({ page }) => {
-    await waitForLive(page, '/tutorials');
+    await waitForLive(page, '/dw/tutorials');
     await page.waitForTimeout(500);
   });
 

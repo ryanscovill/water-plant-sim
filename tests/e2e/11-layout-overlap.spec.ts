@@ -3,15 +3,14 @@ import { waitForLive, waitForProcessData } from '../helpers/wait-for-live';
 import { assertNoOverlaps, assertNotClipped } from '../helpers/overlap';
 
 const pages = [
-  { url: '/', name: 'Overview / Dashboard' },
-  { url: '/intake', name: 'Intake' },
-  { url: '/coagulation', name: 'Coagulation' },
-  { url: '/sedimentation', name: 'Sedimentation' },
-  { url: '/disinfection', name: 'Disinfection' },
-  { url: '/alarms', name: 'Alarms' },
-  { url: '/trends', name: 'Trends' },
-  { url: '/scenarios', name: 'Scenarios' },
-  { url: '/tutorials', name: 'Tutorials' },
+  { url: '/dw/intake', name: 'Intake' },
+  { url: '/dw/coagulation', name: 'Coagulation' },
+  { url: '/dw/sedimentation', name: 'Sedimentation' },
+  { url: '/dw/disinfection', name: 'Disinfection' },
+  { url: '/dw/alarms', name: 'Alarms' },
+  { url: '/dw/trends', name: 'Trends' },
+  { url: '/dw/scenarios', name: 'Scenarios' },
+  { url: '/dw/tutorials', name: 'Tutorials' },
 ];
 
 test.describe('Layout — No Overlaps', () => {
@@ -53,7 +52,7 @@ test.describe('Layout — No Overlaps', () => {
 
 test.describe('Layout — Structural Checks', () => {
   test('sidebar is positioned to the left of main content', async ({ page }) => {
-    await waitForLive(page, '/');
+    await waitForLive(page, '/dw/intake');
     await waitForProcessData(page);
 
     const sidebar = page.locator('nav').first();
@@ -70,7 +69,7 @@ test.describe('Layout — Structural Checks', () => {
   });
 
   test('header is positioned above main content', async ({ page }) => {
-    await waitForLive(page, '/');
+    await waitForLive(page, '/dw/intake');
     await waitForProcessData(page);
 
     const header = page.locator('header').first();
@@ -86,16 +85,16 @@ test.describe('Layout — Structural Checks', () => {
     expect(headerBox!.y + headerBox!.height).toBeLessThanOrEqual(mainBox!.y + 2);
   });
 
-  test('WATERWORKS SCADA TRAINER title is visible and not clipped', async ({ page }) => {
-    await waitForLive(page, '/');
+  test('DRINKING WATER SCADA TRAINER title is visible and not clipped', async ({ page }) => {
+    await waitForLive(page, '/dw/intake');
 
-    const title = page.getByText('WATERWORKS SCADA TRAINER');
+    const title = page.getByText('DRINKING WATER SCADA TRAINER');
     await expect(title).toBeVisible();
     await assertNotClipped(page, title, 'navbar title');
   });
 
   test('LIVE indicator is visible and not clipped in header', async ({ page }) => {
-    await waitForLive(page, '/');
+    await waitForLive(page, '/dw/intake');
 
     const liveIndicator = page.getByText('LIVE', { exact: true });
     await expect(liveIndicator).toBeVisible();
@@ -103,9 +102,9 @@ test.describe('Layout — Structural Checks', () => {
   });
 
   test('sim speed buttons are visible and not clipped', async ({ page }) => {
-    await waitForLive(page, '/');
+    await waitForLive(page, '/dw/intake');
 
-    for (const speed of ['1x', '5x', '10x']) {
+    for (const speed of ['1x', '10x', '60x']) {
       const btn = page.getByRole('button', { name: speed });
       await expect(btn).toBeVisible();
       await assertNotClipped(page, btn, `${speed} speed button`);
