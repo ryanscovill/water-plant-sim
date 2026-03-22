@@ -74,21 +74,21 @@ export function IntakeHMI() {
             <SvgInfo x={67} y={143} onClick={() => setInfoKey('sourceWater')} />
 
             {/* Pipes */}
-            <Pipe x1="80" y1="160" x2="201" y2="160" flowing={intake.rawWaterFlow > 0.5} />
-            <Pipe x1="229" y1="160" x2="270" y2="160" flowing={intake.rawWaterFlow > 0.5} />
+            <Pipe x1="80" y1="160" x2="201" y2="160" flowing={intake.rawWaterFlow > 0.5} filled flowRate={intake.rawWaterFlow} />
+            <Pipe x1="229" y1="160" x2="270" y2="160" flowing={intake.rawWaterFlow > 0.5} flowRate={intake.rawWaterFlow} />
             {/* Split: up to P-101, down to P-102 */}
-            <Pipe x1="270" y1="160" x2="270" y2="100" flowing={intake.intakePump1.running} />
-            <Pipe x1="270" y1="160" x2="270" y2="220" flowing={intake.intakePump2.running} />
-            <Pipe x1="270" y1="100" x2="302" y2="100" flowing={intake.intakePump1.running} />
-            <Pipe x1="270" y1="220" x2="302" y2="220" flowing={intake.intakePump2.running} />
+            <Pipe x1="270" y1="160" x2="270" y2="100" flowing={intake.intakePump1.running && intake.rawWaterFlow > 0.5} flowRate={intake.rawWaterFlow} />
+            <Pipe x1="270" y1="160" x2="270" y2="220" flowing={intake.intakePump2.running && intake.rawWaterFlow > 0.5} flowRate={intake.rawWaterFlow} />
+            <Pipe x1="270" y1="100" x2="302" y2="100" flowing={intake.intakePump1.running && intake.rawWaterFlow > 0.5} flowRate={intake.rawWaterFlow} />
+            <Pipe x1="270" y1="220" x2="302" y2="220" flowing={intake.intakePump2.running && intake.rawWaterFlow > 0.5} flowRate={intake.rawWaterFlow} />
             {/* Rejoin after pumps */}
-            <Pipe x1="338" y1="100" x2="363" y2="100" flowing={intake.intakePump1.running} />
-            <Pipe x1="338" y1="220" x2="363" y2="220" flowing={intake.intakePump2.running} />
-            <Pipe x1="363" y1="100" x2="363" y2="160" flowing={intake.intakePump1.running} />
-            <Pipe x1="363" y1="220" x2="363" y2="160" flowing={intake.intakePump2.running} />
-            <Pipe x1="363" y1="160" x2="397" y2="160" flowing={intake.intakePump1.running || intake.intakePump2.running} />
-            <Pipe x1="443" y1="160" x2="470" y2="160" flowing={intake.rawWaterFlow > 0.5} />
-            <Pipe x1="520" y1="160" x2="660" y2="160" flowing={intake.rawWaterFlow > 0.5} />
+            <Pipe x1="338" y1="100" x2="363" y2="100" flowing={intake.intakePump1.running && intake.rawWaterFlow > 0.5} flowRate={intake.rawWaterFlow} />
+            <Pipe x1="338" y1="220" x2="363" y2="220" flowing={intake.intakePump2.running && intake.rawWaterFlow > 0.5} flowRate={intake.rawWaterFlow} />
+            <Pipe x1="363" y1="100" x2="363" y2="160" flowing={intake.intakePump1.running && intake.rawWaterFlow > 0.5} flowRate={intake.rawWaterFlow} />
+            <Pipe x1="363" y1="220" x2="363" y2="160" flowing={intake.intakePump2.running && intake.rawWaterFlow > 0.5} flowRate={intake.rawWaterFlow} />
+            <Pipe x1="363" y1="160" x2="397" y2="160" flowing={(intake.intakePump1.running || intake.intakePump2.running) && intake.rawWaterFlow > 0.5} flowRate={intake.rawWaterFlow} />
+            <Pipe x1="443" y1="160" x2="470" y2="160" flowing={intake.rawWaterFlow > 0.5} flowRate={intake.rawWaterFlow} />
+            <Pipe x1="520" y1="160" x2="660" y2="160" flowing={intake.rawWaterFlow > 0.5} flowRate={intake.rawWaterFlow} />
 
             {/* Wet well (source tank) */}
             <Tank
