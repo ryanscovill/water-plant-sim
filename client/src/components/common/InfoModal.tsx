@@ -1,7 +1,11 @@
-import { useState, useEffect } from 'react';
-import { X, BookOpen, AlertCircle, Settings, FlaskConical, Database, ExternalLink, Box } from 'lucide-react';
+import { useState, useEffect, lazy, Suspense } from 'react';
+import { X, BookOpen, AlertCircle, Settings, FlaskConical, Database, ExternalLink } from 'lucide-react';
 import { hmiInfo, type HmiInfo } from '../../data/hmiInfo';
 import { getEngine } from '../../simulation/engine';
+
+const WaterPump3D = lazy(() => import('./WaterPump3D'));
+
+const KEYS_WITH_3D_VIEW = new Set(['intakePump1', 'intakePump2', 'sludgePump']);
 
 interface InfoModalProps {
   infoKey: string;
@@ -18,6 +22,7 @@ const categoryConfig: Record<HmiInfo['category'], { color: string; bg: string; i
 
 export function InfoModal({ infoKey, onClose }: InfoModalProps) {
   const info = hmiInfo[infoKey];
+  const has3D = KEYS_WITH_3D_VIEW.has(infoKey);
   const [activeTab, setActiveTab] = useState<'info' | '3dview'>('info');
 
   useEffect(() => {
@@ -35,7 +40,7 @@ export function InfoModal({ infoKey, onClose }: InfoModalProps) {
       style={{ paddingTop: '4rem' }}
     >
       <div
-        className="bg-gray-900 border border-gray-700 rounded-xl max-w-4xl w-full shadow-2xl mb-8"
+        className={`bg-gray-900 border border-gray-700 rounded-xl w-full shadow-2xl mb-8 ${activeTab === '3dview' ? 'max-w-6xl' : 'max-w-4xl'}`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -57,22 +62,24 @@ export function InfoModal({ infoKey, onClose }: InfoModalProps) {
           </button>
         </div>
 
-        {/* Tab bar */}
-        <div className="flex border-b border-gray-700 px-5">
-          {(['info', '3dview'] as const).map((tab) => (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={`px-4 py-2.5 text-xs font-mono cursor-pointer border-b-2 -mb-px transition-colors ${
-                activeTab === tab
-                  ? 'border-blue-500 text-white'
-                  : 'border-transparent text-gray-500 hover:text-gray-300'
-              }`}
-            >
-              {tab === 'info' ? 'Info' : '3D View'}
-            </button>
-          ))}
-        </div>
+        {/* Tab bar — only shown when a 3D view is available */}
+        {has3D && (
+          <div className="flex border-b border-gray-700 px-5">
+            {(['info', '3dview'] as const).map((tab) => (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className={`px-4 py-2.5 text-xs font-mono cursor-pointer border-b-2 -mb-px transition-colors ${
+                  activeTab === tab
+                    ? 'border-blue-500 text-white'
+                    : 'border-transparent text-gray-500 hover:text-gray-300'
+                }`}
+              >
+                {tab === 'info' ? 'Info' : '3D View'}
+              </button>
+            ))}
+          </div>
+        )}
 
         {/* Body — two-column layout */}
         {activeTab === 'info' ? (
@@ -148,9 +155,12 @@ export function InfoModal({ infoKey, onClose }: InfoModalProps) {
           </div>
         </div>
         ) : (
-        <div className="flex flex-col items-center justify-center py-16 px-5 text-center">
-          <Box size={48} className="text-gray-600 mb-4" />
-          <div className="text-gray-400 text-sm font-mono">3D View coming soon</div>
+        <div className="p-2">
+          <Suspense fallback={
+            <div className="flex items-center justify-center py-16 text-gray-500 text-sm font-mono">Loading 3D view...</div>
+          }>
+            <WaterPump3D />
+          </Suspense>
         </div>
         )}
 
