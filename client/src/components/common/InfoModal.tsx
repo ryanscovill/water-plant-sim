@@ -40,7 +40,7 @@ export function InfoModal({ infoKey, onClose }: InfoModalProps) {
       style={{ paddingTop: '4rem' }}
     >
       <div
-        className={`bg-gray-900 border border-gray-700 rounded-xl w-full shadow-2xl mb-8 ${activeTab === '3dview' ? 'max-w-6xl' : 'max-w-4xl'}`}
+        className={`bg-gray-900 border border-gray-700 rounded-xl w-full shadow-2xl mb-8 ${activeTab === '3dview' ? 'max-w-[95vw]' : 'max-w-4xl'}`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
