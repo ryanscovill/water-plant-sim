@@ -1,19 +1,21 @@
 import { useState, useEffect, useCallback } from 'react';
 import { getEngine } from '../simulation/engine';
+import { getWWEngine } from '../simulation/ww/wwEngine';
 
 interface TrendPoint {
   timestamp: string;
   value: number;
 }
 
-export function useTrends(tag: string, durationSeconds: number = 3600) {
+export function useTrends(tag: string, durationSeconds: number = 3600, isWW: boolean = false) {
   const [data, setData] = useState<TrendPoint[]>([]);
 
   const refresh = useCallback(() => {
     if (!tag) return;
-    const result = getEngine().historian.getTagHistory(tag, durationSeconds);
+    const engine = isWW ? getWWEngine() : getEngine();
+    const result = engine.historian.getTagHistory(tag, durationSeconds);
     setData(result);
-  }, [tag, durationSeconds]);
+  }, [tag, durationSeconds, isWW]);
 
   useEffect(() => {
     refresh();
@@ -22,10 +24,10 @@ export function useTrends(tag: string, durationSeconds: number = 3600) {
   }, [refresh]);
 
   useEffect(() => {
-    const engine = getEngine();
+    const engine = isWW ? getWWEngine() : getEngine();
     engine.on('simulation:reset', refresh);
     return () => engine.off('simulation:reset', refresh);
-  }, [refresh]);
+  }, [refresh, isWW]);
 
   return { data, loading: false, error: null, refetch: refresh };
 }

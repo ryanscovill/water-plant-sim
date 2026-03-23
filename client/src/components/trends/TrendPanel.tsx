@@ -1,14 +1,26 @@
 import { useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useLocation } from 'react-router-dom';
 import { useTrends } from '../../hooks/useTrends';
 import { useAlarmStore } from '../../store/useAlarmStore';
 import { useEventStore } from '../../store/useEventStore';
 import { useSimulationStore } from '../../store/useSimulationStore';
 import { TrendChart } from './TrendChart';
 import { getEngine } from '../../simulation/engine';
+import { getWWEngine } from '../../simulation/ww/wwEngine';
 import type { Alarm } from '../../types/process';
 
-const AVAILABLE_TAGS = [
+interface TagDef {
+  tag: string;
+  label: string;
+  unit: string;
+  decimals: number;
+  highLimit?: number;
+  lowLimit?: number;
+  yMin?: number;
+  yMax?: number;
+}
+
+const DW_TAGS: TagDef[] = [
   { tag: 'INT-FIT-001', label: 'Raw Water Flow', unit: 'MGD', decimals: 2 },
   { tag: 'INT-AIT-001', label: 'Raw Turbidity', unit: 'NTU', decimals: 1 },
   { tag: 'INT-PDT-001', label: 'Screen Diff Press', unit: 'PSI', decimals: 1 },
@@ -25,6 +37,38 @@ const AVAILABLE_TAGS = [
   { tag: 'DIS-AIT-002', label: 'Dist Cl2 Residual', unit: 'mg/L', decimals: 2, highLimit: 2.0, lowLimit: 0.3 },
   { tag: 'DIS-AIT-003', label: 'Finished Water pH', unit: '', decimals: 2, highLimit: 8.0, lowLimit: 6.8, yMin: 6, yMax: 8 },
   { tag: 'DIS-LIT-001', label: 'Clearwell Level', unit: 'm', decimals: 2 },
+];
+
+const WW_TAGS: TagDef[] = [
+  // Headworks
+  { tag: 'HW-FIT-001', label: 'Influent Flow', unit: 'MGD', decimals: 2 },
+  { tag: 'HW-PDT-001', label: 'Bar Screen DP', unit: 'in H2O', decimals: 1 },
+  { tag: 'HW-AIT-001', label: 'Influent BOD', unit: 'mg/L', decimals: 0 },
+  { tag: 'HW-AIT-002', label: 'Influent TSS', unit: 'mg/L', decimals: 0 },
+  { tag: 'HW-AIT-003', label: 'Influent NH3', unit: 'mg/L', decimals: 1 },
+  // Primary
+  { tag: 'PRI-AIT-001', label: 'Primary Eff BOD', unit: 'mg/L', decimals: 0 },
+  { tag: 'PRI-AIT-002', label: 'Primary Eff TSS', unit: 'mg/L', decimals: 0 },
+  { tag: 'PRI-LIT-001', label: 'Primary Sludge Blanket', unit: 'ft', decimals: 1 },
+  // Aeration
+  { tag: 'AER-AIT-001', label: 'Dissolved Oxygen', unit: 'mg/L', decimals: 1, highLimit: 4.0, lowLimit: 1.0 },
+  { tag: 'AER-AIT-002', label: 'MLSS', unit: 'mg/L', decimals: 0, highLimit: 4000, lowLimit: 1500 },
+  { tag: 'AER-AIT-003', label: 'SVI', unit: 'mL/g', decimals: 0, highLimit: 150 },
+  { tag: 'AER-AIT-004', label: 'Aeration Basin BOD', unit: 'mg/L', decimals: 1 },
+  { tag: 'AER-AIT-005', label: 'Aeration Basin NH3', unit: 'mg/L', decimals: 1 },
+  { tag: 'AER-AIT-006', label: 'Aeration Basin NO3', unit: 'mg/L', decimals: 1 },
+  { tag: 'AER-FIT-001', label: 'Airflow Rate', unit: 'SCFM', decimals: 0 },
+  // Secondary
+  { tag: 'SEC-AIT-001', label: 'Sec Effluent TSS', unit: 'mg/L', decimals: 1, highLimit: 25 },
+  { tag: 'SEC-AIT-002', label: 'Sec Effluent BOD', unit: 'mg/L', decimals: 1, highLimit: 25 },
+  { tag: 'SEC-LIT-001', label: 'Sec Sludge Blanket', unit: 'ft', decimals: 1 },
+  // Disinfection
+  { tag: 'WDI-AIT-001', label: 'Chlorine Residual', unit: 'mg/L', decimals: 2, highLimit: 2.0, lowLimit: 0.5 },
+  { tag: 'WDI-AIT-002', label: 'TRC After Dechlor', unit: 'mg/L', decimals: 3, highLimit: 0.05 },
+  { tag: 'WDI-AIT-003', label: 'Effluent pH', unit: '', decimals: 2, highLimit: 9.0, lowLimit: 6.5, yMin: 6, yMax: 10 },
+  { tag: 'WDI-AIT-004', label: 'Effluent NH3', unit: 'mg/L', decimals: 1, highLimit: 5.0 },
+  { tag: 'WDI-FIT-001', label: 'Chlorine Dose Rate', unit: 'mg/L', decimals: 1 },
+  { tag: 'WDI-FIT-002', label: 'Effluent Flow', unit: 'MGD', decimals: 2 },
 ];
 
 const DURATIONS = [
@@ -65,11 +109,17 @@ function topAlarmForTag(alarms: Alarm[], tag: string): Alarm | null {
 
 export function TrendPanel() {
   const [searchParams] = useSearchParams();
-  const initialTag = AVAILABLE_TAGS.find((t) => t.tag === searchParams.get('tag'))?.tag ?? 'DIS-AIT-001';
+  const location = useLocation();
+  const isWW = location.pathname.startsWith('/ww');
+  const AVAILABLE_TAGS = isWW ? WW_TAGS : DW_TAGS;
+  const defaultTag = isWW ? 'AER-AIT-001' : 'DIS-AIT-001';
+  const activeEngine = isWW ? getWWEngine() : getEngine();
+
+  const initialTag = AVAILABLE_TAGS.find((t) => t.tag === searchParams.get('tag'))?.tag ?? defaultTag;
   const [selectedTag, setSelectedTag] = useState(initialTag);
   const [duration, setDuration] = useState(600);
   const tagInfo = AVAILABLE_TAGS.find((t) => t.tag === selectedTag);
-  const { data, loading } = useTrends(selectedTag, duration);
+  const { data, loading } = useTrends(selectedTag, duration, isWW);
 
   const allEvents = useEventStore((s) => s.events);
   const alarmHistory = useAlarmStore((s) => s.history);
@@ -168,7 +218,7 @@ export function TrendPanel() {
             height={300}
             activeAlarms={tagAlarms}
             events={chartEvents}
-            simStartTime={getEngine().getSimulationStartTime()}
+            simStartTime={activeEngine.getSimulationStartTime()}
           />
         )}
 

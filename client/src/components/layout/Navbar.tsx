@@ -1,26 +1,39 @@
 import { useState } from 'react';
 import { Wifi, WifiOff, RotateCcw, Pause, Play } from 'lucide-react';
 import { useSimulationStore } from '../../store/useSimulationStore';
+import { useWWSimulationStore } from '../../store/useWWSimulationStore';
 import { useAlarmStore } from '../../store/useAlarmStore';
 import { getEngine } from '../../simulation/engine';
+import { getWWEngine } from '../../simulation/ww/wwEngine';
 import { formatTPlus } from '../../utils/formatTPlus';
 import { Tooltip } from '../common/Tooltip';
 import type { SimulatorType } from './AppShell';
 
 export function Navbar({ simulatorType }: { simulatorType: SimulatorType }) {
   const isDW = simulatorType === 'dw';
-  const connected = useSimulationStore((s) => s.connected);
-  const state = useSimulationStore((s) => s.state);
+
+  const dwConnected = useSimulationStore((s) => s.connected);
+  const dwState = useSimulationStore((s) => s.state);
+  const wwConnected = useWWSimulationStore((s) => s.connected);
+  const wwState = useWWSimulationStore((s) => s.state);
+
+  const connected = isDW ? dwConnected : wwConnected;
+  const simSpeed = isDW ? dwState?.simSpeed : wwState?.simSpeed;
+  const running = isDW ? (dwState?.running ?? true) : (wwState?.running ?? true);
+  const timestamp = isDW ? dwState?.timestamp : wwState?.timestamp;
+
   const alarms = useAlarmStore((s) => s.alarms);
   const activeUnacked = alarms.filter((a) => a.active).length;
   const [showResetConfirm, setShowResetConfirm] = useState(false);
 
+  const engine = isDW ? getEngine() : getWWEngine();
+
   const changeSpeed = (speed: number) => {
-    getEngine().applyControl('setpoint', { tagId: 'simSpeed', value: speed });
+    engine.applyControl('setpoint', { tagId: 'simSpeed', value: speed });
   };
 
   const confirmReset = () => {
-    getEngine().reset();
+    engine.reset();
     setShowResetConfirm(false);
   };
 
@@ -67,17 +80,16 @@ export function Navbar({ simulatorType }: { simulatorType: SimulatorType }) {
 
       <div className="flex-1" />
 
-      {isDW && (<>
       {/* Sim speed */}
       <div className="flex items-center gap-1 text-xs text-gray-400">
         <span>SIM:</span>
-        <Tooltip text={state?.running ? 'Pause simulation' : 'Resume simulation'}>
+        <Tooltip text={running ? 'Pause simulation' : 'Resume simulation'}>
           <button
-            onClick={() => state?.running ? getEngine().pause() : getEngine().resume()}
-            className={`flex items-center gap-1 px-2 py-0.5 rounded text-xs font-mono cursor-pointer ${!state?.running ? 'bg-amber-700 text-amber-100 hover:bg-amber-600' : 'bg-gray-800 text-gray-400 hover:bg-gray-700'}`}
+            onClick={() => running ? engine.pause() : engine.resume()}
+            className={`flex items-center gap-1 px-2 py-0.5 rounded text-xs font-mono cursor-pointer ${!running ? 'bg-amber-700 text-amber-100 hover:bg-amber-600' : 'bg-gray-800 text-gray-400 hover:bg-gray-700'}`}
           >
-            {state?.running ? <Pause size={10} /> : <Play size={10} />}
-            {state?.running ? 'PAUSE' : 'PAUSED'}
+            {running ? <Pause size={10} /> : <Play size={10} />}
+            {running ? 'PAUSE' : 'PAUSED'}
           </button>
         </Tooltip>
         {([
@@ -89,8 +101,8 @@ export function Navbar({ simulatorType }: { simulatorType: SimulatorType }) {
           <Tooltip key={s} text={tip}>
             <button
               onClick={() => changeSpeed(s)}
-              disabled={!state?.running}
-              className={`px-2 py-0.5 rounded text-xs font-mono cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed ${state?.simSpeed === s && state?.running ? 'bg-blue-700 text-white' : 'bg-gray-800 text-gray-400 hover:bg-gray-700'}`}
+              disabled={!running}
+              className={`px-2 py-0.5 rounded text-xs font-mono cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed ${simSpeed === s && running ? 'bg-blue-700 text-white' : 'bg-gray-800 text-gray-400 hover:bg-gray-700'}`}
             >
               {s}x
             </button>
@@ -130,12 +142,11 @@ export function Navbar({ simulatorType }: { simulatorType: SimulatorType }) {
       </div>
 
       {/* Timestamp */}
-      {state && (
+      {timestamp && (
         <span className="text-gray-500 text-xs font-mono">
-          {formatTPlus(new Date(state.timestamp).getTime(), getEngine().getSimulationStartTime())}
+          {formatTPlus(new Date(timestamp).getTime(), engine.getSimulationStartTime())}
         </span>
       )}
-      </>)}
     </header>
     </>
   );

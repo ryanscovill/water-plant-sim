@@ -12,6 +12,11 @@ import { ScenariosPage } from './pages/ScenariosPage';
 import { TutorialsPage } from './pages/TutorialsPage';
 import { HistoryPage } from './pages/HistoryPage';
 import { SettingsPage } from './pages/SettingsPage';
+import { HeadworksPage } from './pages/ww/HeadworksPage';
+import { PrimaryPage } from './pages/ww/PrimaryPage';
+import { AerationPage } from './pages/ww/AerationPage';
+import { SecondaryPage } from './pages/ww/SecondaryPage';
+import { WWDisinfectionPage } from './pages/ww/WWDisinfectionPage';
 import { WWPlaceholderPage } from './pages/WWPlaceholderPage';
 
 function App() {
@@ -38,14 +43,14 @@ function App() {
           <Route path="settings" element={<SettingsPage />} />
         </Route>
 
-        {/* Waste Water simulator (placeholder) */}
+        {/* Waste Water simulator */}
         <Route path="/ww" element={<AppShell simulatorType="ww" />}>
           <Route index element={<Navigate to="headworks" replace />} />
-          <Route path="headworks" element={<WWPlaceholderPage stage="Headworks" />} />
-          <Route path="primary" element={<WWPlaceholderPage stage="Primary Clarification" />} />
-          <Route path="aeration" element={<WWPlaceholderPage stage="Aeration" />} />
-          <Route path="secondary" element={<WWPlaceholderPage stage="Secondary Clarification" />} />
-          <Route path="disinfection" element={<WWPlaceholderPage stage="Disinfection" />} />
+          <Route path="headworks" element={<HeadworksPage />} />
+          <Route path="primary" element={<PrimaryPage />} />
+          <Route path="aeration" element={<AerationPage />} />
+          <Route path="secondary" element={<SecondaryPage />} />
+          <Route path="disinfection" element={<WWDisinfectionPage />} />
           <Route path="alarms" element={<WWPlaceholderPage stage="Alarms" />} />
           <Route path="trends" element={<WWPlaceholderPage stage="Trends" />} />
           <Route path="history" element={<WWPlaceholderPage stage="History" />} />

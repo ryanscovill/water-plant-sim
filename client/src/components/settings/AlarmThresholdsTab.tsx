@@ -1,6 +1,8 @@
 import { useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { useSettingsStore } from '../../store/useSettingsStore';
 import { config } from '../../simulation/config';
+import { wwConfig } from '../../simulation/ww/wwConfig';
 
 type Level = 'll' | 'l' | 'h' | 'hh';
 
@@ -11,7 +13,7 @@ interface TagMeta {
   levels: Level[];
 }
 
-const TAG_META: TagMeta[] = [
+const DW_TAG_META: TagMeta[] = [
   { tag: 'INT-FIT-001', description: 'Raw Water Flow',            unit: 'MGD',  levels: ['ll', 'l', 'h', 'hh'] },
   { tag: 'INT-AIT-001', description: 'Raw Turbidity',             unit: 'NTU',  levels: ['h', 'hh'] },
   { tag: 'INT-PDT-001', description: 'Screen Diff Pressure',      unit: 'ft',   levels: ['h', 'hh'] },
@@ -26,6 +28,22 @@ const TAG_META: TagMeta[] = [
   { tag: 'DIS-LIT-001', description: 'Clearwell Level',           unit: 'm',    levels: ['ll'] },
 ];
 
+const WW_TAG_META: TagMeta[] = [
+  { tag: 'HW-FIT-001',  description: 'Influent Flow',             unit: 'MGD',    levels: ['ll', 'l', 'h', 'hh'] },
+  { tag: 'HW-PDT-001',  description: 'Bar Screen DP',             unit: 'in H2O', levels: ['h', 'hh'] },
+  { tag: 'PRI-LIT-001', description: 'Primary Sludge Blanket',    unit: 'ft',     levels: ['h', 'hh'] },
+  { tag: 'AER-AIT-001', description: 'Dissolved Oxygen',          unit: 'mg/L',   levels: ['ll', 'l', 'h', 'hh'] },
+  { tag: 'AER-AIT-002', description: 'MLSS',                      unit: 'mg/L',   levels: ['l', 'h', 'hh'] },
+  { tag: 'AER-AIT-003', description: 'Sludge Volume Index',       unit: 'mL/g',   levels: ['h', 'hh'] },
+  { tag: 'SEC-AIT-001', description: 'Sec Effluent TSS',          unit: 'mg/L',   levels: ['h', 'hh'] },
+  { tag: 'SEC-AIT-002', description: 'Sec Effluent BOD',          unit: 'mg/L',   levels: ['h', 'hh'] },
+  { tag: 'SEC-LIT-001', description: 'Sec Sludge Blanket',        unit: 'ft',     levels: ['h', 'hh'] },
+  { tag: 'WDI-AIT-001', description: 'Chlorine Residual',         unit: 'mg/L',   levels: ['ll', 'l', 'h', 'hh'] },
+  { tag: 'WDI-AIT-002', description: 'TRC After Dechlor',         unit: 'mg/L',   levels: ['h', 'hh'] },
+  { tag: 'WDI-AIT-003', description: 'Effluent pH',               unit: '',       levels: ['ll', 'l', 'h', 'hh'] },
+  { tag: 'WDI-AIT-004', description: 'Effluent NH3',              unit: 'mg/L',   levels: ['h', 'hh'] },
+];
+
 const LEVEL_LABELS: Record<Level, { label: string; color: string }> = {
   ll: { label: 'LL',  color: 'text-red-400' },
   l:  { label: 'L',   color: 'text-yellow-400' },
@@ -35,9 +53,15 @@ const LEVEL_LABELS: Record<Level, { label: string; color: string }> = {
 
 const ALL_LEVELS: Level[] = ['ll', 'l', 'h', 'hh'];
 
-const DEFAULT_THRESHOLDS = config.alarmThresholds as Record<string, Partial<Record<Level, number>>>;
+const DW_DEFAULT_THRESHOLDS = config.alarmThresholds as Record<string, Partial<Record<Level, number>>>;
+const WW_DEFAULT_THRESHOLDS = wwConfig.alarmThresholds as Record<string, Partial<Record<Level, number>>>;
 
 export function AlarmThresholdsTab() {
+  const location = useLocation();
+  const isWW = location.pathname.startsWith('/ww');
+  const TAG_META = isWW ? WW_TAG_META : DW_TAG_META;
+  const DEFAULT_THRESHOLDS = isWW ? WW_DEFAULT_THRESHOLDS : DW_DEFAULT_THRESHOLDS;
+
   const { alarmThresholds, setAlarmThreshold, resetThresholds } = useSettingsStore();
   const [dirty, setDirty] = useState(false);
 

@@ -35,3 +35,12 @@ export function dwTagToRoute(tag: string): string {
   if (tag.startsWith('DIS-')) return DW_PATHS.disinfection;
   return DW_PATHS.intake;
 }
+
+export function wwTagToRoute(tag: string): string {
+  if (tag.startsWith('HW-')) return WW_PATHS.headworks;
+  if (tag.startsWith('PRI-')) return WW_PATHS.primary;
+  if (tag.startsWith('AER-')) return WW_PATHS.aeration;
+  if (tag.startsWith('SEC-')) return WW_PATHS.secondary;
+  if (tag.startsWith('WDI-')) return WW_PATHS.disinfection;
+  return WW_PATHS.headworks;
+}

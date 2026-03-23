@@ -1,6 +1,6 @@
 import type { Alarm } from '../../types/process';
-import { useNavigate } from 'react-router-dom';
-import { dwTagToRoute } from '../../routes';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { dwTagToRoute, wwTagToRoute } from '../../routes';
 
 interface AlarmRowProps {
   alarm: Alarm;
@@ -22,6 +22,9 @@ const priorityBadge: Record<string, string> = {
 
 export function AlarmRow({ alarm }: AlarmRowProps) {
   const navigate = useNavigate();
+  const location = useLocation();
+  const isWW = location.pathname.startsWith('/ww');
+  const tagToRoute = isWW ? wwTagToRoute : dwTagToRoute;
 
   const time = new Date(alarm.timestamp).toLocaleTimeString();
   const isHigh = alarm.condition === 'H' || alarm.condition === 'HH';
@@ -31,7 +34,7 @@ export function AlarmRow({ alarm }: AlarmRowProps) {
   return (
     <div
       className={`flex items-center gap-3 px-3 py-2 border-l-4 cursor-pointer hover:brightness-125 ${priorityStyles[alarm.priority] || ''}`}
-      onClick={() => navigate(dwTagToRoute(alarm.tag))}
+      onClick={() => navigate(tagToRoute(alarm.tag))}
     >
       <span className={`text-xs px-1.5 py-0.5 rounded font-bold ${priorityBadge[alarm.priority]}`}>
         {alarm.condition}

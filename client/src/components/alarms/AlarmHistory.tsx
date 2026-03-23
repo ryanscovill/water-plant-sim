@@ -1,9 +1,12 @@
 import { useAlarmStore } from '../../store/useAlarmStore';
-import { useNavigate } from 'react-router-dom';
-import { dwTagToRoute } from '../../routes';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { dwTagToRoute, wwTagToRoute } from '../../routes';
 
 export function AlarmHistory() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const isWW = location.pathname.startsWith('/ww');
+  const tagToRoute = isWW ? wwTagToRoute : dwTagToRoute;
   const history = useAlarmStore((s) => s.history);
 
   return (
@@ -32,7 +35,7 @@ export function AlarmHistory() {
                 <tr
                   key={`${alarm.id}-${i}`}
                   className="hover:bg-gray-800/50 cursor-pointer"
-                  onClick={() => navigate(dwTagToRoute(alarm.tag))}
+                  onClick={() => navigate(tagToRoute(alarm.tag))}
                 >
                   <td className="px-2 py-1 text-gray-400">{new Date(alarm.timestamp).toLocaleTimeString()}</td>
                   <td className="px-2 py-1 text-gray-300">{alarm.tag}</td>

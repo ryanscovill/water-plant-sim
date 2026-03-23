@@ -1,10 +1,10 @@
 import { AlertTriangle } from 'lucide-react';
 import { useAlarmStore } from '../../store/useAlarmStore';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import type { Alarm } from '../../types/process';
-import { DW_PATHS } from '../../routes';
+import { DW_PATHS, WW_PATHS } from '../../routes';
 
-function BannerRow({ alarm, count }: { alarm: Alarm; count?: number }) {
+function BannerRow({ alarm, count, alarmsPath }: { alarm: Alarm; count?: number; alarmsPath: string }) {
   const navigate = useNavigate();
 
   const bgColor = alarm.priority === 'CRITICAL' ? 'bg-red-700 animate-flash'
@@ -13,7 +13,7 @@ function BannerRow({ alarm, count }: { alarm: Alarm; count?: number }) {
 
   return (
     <div
-      onClick={() => navigate(DW_PATHS.alarms)}
+      onClick={() => navigate(alarmsPath)}
       className={`${bgColor} px-4 py-2 flex items-center gap-3 cursor-pointer`}
     >
       <AlertTriangle size={16} className="text-white flex-shrink-0" />
@@ -29,6 +29,9 @@ function BannerRow({ alarm, count }: { alarm: Alarm; count?: number }) {
 
 export function AlarmBanner() {
   const alarms = useAlarmStore((s) => s.alarms);
+  const location = useLocation();
+  const isWW = location.pathname.startsWith('/ww');
+  const alarmsPath = isWW ? WW_PATHS.alarms : DW_PATHS.alarms;
 
   const active = alarms.filter((a) => a.active);
   const criticals = active.filter((a) => a.priority === 'CRITICAL');
@@ -43,6 +46,7 @@ export function AlarmBanner() {
           <BannerRow
             key={alarm.id}
             alarm={alarm}
+            alarmsPath={alarmsPath}
             count={i === 0 ? active.length : undefined}
           />
         ))}
@@ -53,7 +57,7 @@ export function AlarmBanner() {
   const worst = active.find((a) => a.priority === 'HIGH') ?? active[0];
   return (
     <div id="alarm-banner">
-      <BannerRow alarm={worst} count={active.length} />
+      <BannerRow alarm={worst} alarmsPath={alarmsPath} count={active.length} />
     </div>
   );
 }
